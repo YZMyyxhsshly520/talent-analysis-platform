@@ -85,6 +85,17 @@ section { margin-bottom: 40px; }
 .grid-2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
+/* Live feed */
+.live-feed { max-height: 420px; overflow-y: auto; padding-right: 8px; }
+.live-feed::-webkit-scrollbar { width: 6px; }
+.live-feed::-webkit-scrollbar-track { background: transparent; }
+.live-feed::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.3); border-radius: 3px; }
+.feed-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-size: 13px; }
+.feed-item:last-child { border-bottom: none; }
+.feed-time { font-family: 'JetBrainsMono', monospace; color: var(--accent3); font-size: 11px; white-space: nowrap; padding-top: 2px; }
+.feed-text { color: var(--ink); line-height: 1.5; }
+.feed-text strong { color: var(--accent2); }
+
 /* Chart figure */
 .chart-figure { margin: 0; }
 .chart-figure figcaption { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
@@ -185,6 +196,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <div class="tabs">
       <button class="tab-btn active" data-view="overview">数据总览</button>
       <button class="tab-btn" data-view="assessment">能力评估</button>
+      <button class="tab-btn" data-view="market">市场洞察</button>
     </div>
   </div>
 </nav>
@@ -371,6 +383,126 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
   </div>
 
 </div>
+
+<!-- 市场洞察视图 -->
+<div class="view" id="view-market">
+  <section class="hero">
+    <span class="tag">MARKET INSIGHTS</span>
+    <h1>招聘市场数据洞察</h1>
+    <p>基于灵枢知岗真实招聘数据，涵盖热门岗位、技能需求、行业分布、薪资趋势、地域需求与前瞻岗位分析</p>
+  </section>
+
+  <div class="metrics">
+    <div class="metric"><div class="label">岗位总数</div><div class="value" id="mk-metric-jobs">-</div><div class="sub">在招 + 新增 + 前瞻</div></div>
+    <div class="metric"><div class="label">热门技能</div><div class="value" id="mk-metric-skills">-</div><div class="sub">市场需求量 Top10</div></div>
+    <div class="metric"><div class="label">行业分布</div><div class="value" id="mk-metric-industries">-</div><div class="sub">覆盖主要行业</div></div>
+    <div class="metric"><div class="label">覆盖省份</div><div class="value" id="mk-metric-provinces">-</div><div class="sub">全国地域需求</div></div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2>热门岗位排行</h2>
+      <span class="desc">市场需求量最大的 8 个技术岗位</span>
+    </div>
+    <div class="card">
+      <div id="mk-chart-hot-jobs" class="chart-box tall"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2>热门技能需求</h2>
+      <span class="desc">岗位招聘中出现频次最高的技能</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">市场需求 Top10 技能</div>
+        <div class="card-sub">来自 main_board 热门技能数据</div>
+        <div id="mk-chart-hot-skills" class="chart-box tall"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">岗位要求技能频次</div>
+        <div class="card-sub">统计 69 个岗位的 required_skills 出现次数</div>
+        <div id="mk-chart-skill-freq" class="chart-box tall"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2>行业分布</h2>
+      <span class="desc">招聘需求的行业占比</span>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">行业需求占比</div>
+        <div class="card-sub">main_board 行业趋势数据</div>
+        <div id="mk-chart-industry" class="chart-box tall"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">岗位标签行业频次</div>
+        <div class="card-sub">统计 69 个岗位的 tags 行业标签</div>
+        <div id="mk-chart-industry-freq" class="chart-box tall"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">04</span>
+      <h2>薪资趋势分析</h2>
+      <span class="desc">84 个岗位的 8 期薪资变化（单位：K/月）</span>
+    </div>
+    <div class="card">
+      <div class="card-title">岗位薪资趋势</div>
+      <div class="card-sub">点击图例可切换显示岗位，默认展示 Top8 热门岗位</div>
+      <div id="mk-chart-salary" class="chart-box" style="min-height:420px;"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">05</span>
+      <h2>地域需求分布</h2>
+      <span class="desc">全国 32 个省份的热门需求岗位</span>
+    </div>
+    <div class="card">
+      <div class="card-title">各省份需求岗位</div>
+      <div class="card-sub">数据来源：map 表（32 个省级行政区）</div>
+      <div id="mk-chart-map" class="chart-box" style="min-height:400px;"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">06</span>
+      <h2>前瞻岗位与新兴技能</h2>
+      <span class="desc">未来趋势岗位及其所需的新兴技能</span>
+    </div>
+    <div class="card">
+      <div class="card-title">前瞻岗位新兴技能</div>
+      <div class="card-sub">数据来源：pre_jobs 表（15 个前瞻岗位）</div>
+      <div id="mk-chart-pre-jobs" class="chart-box" style="min-height:380px;"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">07</span>
+      <h2>实时招聘动态</h2>
+      <span class="desc">最新招聘信息滚动展示</span>
+    </div>
+    <div class="card">
+      <div class="card-title">实时招聘动态</div>
+      <div class="card-sub">数据来源：main_board live_feed（30 条）</div>
+      <div class="live-feed" id="mk-live-feed"></div>
+    </div>
+  </section>
+
+</div>
 </div>
 
 <footer>TalentAnalysis Platform · 学习资源来自公开数据（Coursera / B站 / 慕课网 / 官方文档等）· 2026-11-13</footer>
@@ -379,7 +511,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 <script>
 (function () {
   var btns = document.querySelectorAll('.tab-btn');
-  var views = { overview: document.getElementById('view-overview'), assessment: document.getElementById('view-assessment') };
+  var views = { overview: document.getElementById('view-overview'), assessment: document.getElementById('view-assessment'), market: document.getElementById('view-market') };
   btns.forEach(function (b) {
     b.addEventListener('click', function () {
       btns.forEach(function (x) { x.classList.remove('active'); });
@@ -394,7 +526,9 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="./assets/market_data.js"></script>
 <script src="./assets/charts.js"></script>
 <script src="./assets/assessment.js"></script>
+<script src="./assets/market_charts.js"></script>
 </body>
 </html>
