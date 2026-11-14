@@ -20,6 +20,8 @@
       { q: 'Python 中用于异常处理的关键字组合是？', opts: ['try / except', 'if / else', 'for / in', 'with / as'] },
       { q: '列表推导式 [x*2 for x in range(3)] 的结果是？', opts: ['[0, 2, 4]', '[0, 1, 2]', '[2, 4, 6]', '[1, 2, 3]'] },
       { q: 'Python 中关于可变类型的正确说法是？', opts: ['list 可变、tuple 不可变', 'list 不可变、tuple 可变', '两者都不可变', '两者都可变'] },
+      { q: 'Python 中 len([1,2,3]) 的返回值是？', opts: ['3', '2', '[1,2,3]', '报错'] },
+      { q: 'Python 中用于生成随机数的标准库是？', opts: ['random', 'math', 'os', 'sys'] },
     ] },
     { id: 'java', label: 'Java', re: /java\b(?!script)/i, qs: [
       { q: 'Java 源代码编译后的字节码由什么执行？', opts: ['JVM', '浏览器', '操作系统内核', '数据库'] },
@@ -30,6 +32,8 @@
       { q: 'Java 集合中保证元素唯一的是？', opts: ['Set', 'List', 'Map', 'Queue'] },
       { q: 'Java 中基本类型 int 的默认值是？', opts: ['0', 'null', '1', '-1'] },
       { q: 'Java 中用于捕获异常的关键字是？', opts: ['catch', 'except', 'rescue', 'handle'] },
+      { q: 'Java 中 List 与 Set 的主要区别是？', opts: ['List 有序可重复、Set 不重复', 'List 不可重复', 'Set 有序可重复', '两者完全相同'] },
+      { q: 'Java 中 static 成员属于？', opts: ['类本身而非实例', '每个实例', '局部变量', '接口'] },
     ] },
     { id: 'web', label: '前端 / JavaScript / TypeScript', re: /javascript|typescript|node|前端|web/i, qs: [
       { q: 'JavaScript 中 === 与 == 的主要区别是？', opts: ['=== 同时比较类型和值', '=== 只比较值', '== 更严格', '两者完全相同'] },
@@ -40,6 +44,8 @@
       { q: '浏览器本地持久化存储应使用？', opts: ['localStorage', 'sessionStorage', 'URL 参数', '内存变量'] },
       { q: 'JavaScript 中数组去重最简洁的现代写法是？', opts: ['[...new Set(arr)]', 'arr.unique()', 'Set(arr)', 'arr.distinct()'] },
       { q: 'CSS Flex 布局中主轴对齐使用？', opts: ['justify-content', 'align-items', 'flex-wrap', 'order'] },
+      { q: 'JavaScript 中 typeof null 的结果是？', opts: ['object', 'null', 'undefined', 'number'] },
+      { q: 'CSS 中实现块级元素水平居中的常用方式是？', opts: ['margin: 0 auto', 'padding: auto', 'text-align: middle', 'float: center'] },
     ] },
     { id: 'vue', label: 'Vue', re: /vue/i, qs: [
       { q: 'Vue 3 组合式 API 中 ref 定义的响应式数据通过什么访问？', opts: ['.value', '.data', '.state', '直接使用变量名'] },
@@ -50,6 +56,8 @@
       { q: 'Vue Router 中声明式导航应使用？', opts: ['<router-link>', '<a href>', '<navigate>', '<route-view>'] },
       { q: 'Vue 中 computed 与 methods 的关键区别是？', opts: ['computed 有缓存', 'computed 不能返回值', 'methods 有缓存', '两者完全相同'] },
       { q: 'Pinia / Vuex 主要用于？', opts: ['集中式状态管理', '样式管理', '路由管理', '接口请求'] },
+      { q: 'Vue 中监听 props 变化应使用？', opts: ['watch', 'computed', 'methods', 'mounted'] },
+      { q: 'Vue 单文件组件通常包含哪三部分？', opts: ['template / script / style', 'html / css / js', 'view / model / controller', 'jsx / css / json'] },
     ] },
     { id: 'react', label: 'React', re: /react/i, qs: [
       { q: 'React 中用于管理函数组件状态的 Hook 是？', opts: ['useState', 'useFetch', 'useRoute', 'useStyle'] },
@@ -60,6 +68,8 @@
       { q: 'React 中减少子组件无效重渲染可使用？', opts: ['React.memo', 'useRef', 'useId', 'dangerouslySetInnerHTML'] },
       { q: 'React 中跨组件共享状态常用的方案是？', opts: ['Context 或状态管理库', '全局变量', 'localStorage', 'window 对象'] },
       { q: 'React 中受控组件的表单值由什么驱动？', opts: ['state', 'DOM 自身', 'ref', 'localStorage'] },
+      { q: 'React 中 Fragment 的作用是？', opts: ['包裹多个元素但不增加 DOM 节点', '创建新组件', '管理状态', '发送请求'] },
+      { q: 'React 中 useRef 适合存放？', opts: ['不触发渲染的可变引用', '响应式状态', '路由参数', '全局配置'] },
     ] },
     { id: 'go', label: 'Go', re: /golang|go\b/i, qs: [
       { q: 'Go 中启动一个协程使用哪个关键字？', opts: ['go', 'async', 'thread', 'spawn'] },
@@ -70,6 +80,8 @@
       { q: 'Go 模块依赖管理使用的文件是？', opts: ['go.mod', 'package.json', 'pom.xml', 'requirements.txt'] },
       { q: 'Go 中判断 error 是否为空通常写作？', opts: ['if err != nil', 'if err == null', 'if !err', 'if err.empty()'] },
       { q: 'Go 中定义结构体使用的关键字是？', opts: ['type 与 struct', 'class', 'object', 'interface'] },
+      { q: 'Go 中 map 的零值是？', opts: ['nil', '空 map', '0', 'false'] },
+      { q: 'Go 中用于格式化输出的包是？', opts: ['fmt', 'os', 'io', 'net'] },
     ] },
     { id: 'sql', label: 'SQL / 数据库', re: /sql|mysql|redis|数据库/i, qs: [
       { q: 'SQL 中对分组结果进行过滤应使用？', opts: ['HAVING', 'WHERE', 'ORDER BY', 'LIMIT'] },
@@ -80,6 +92,8 @@
       { q: 'SQL 中连接两张表最常用的关键字是？', opts: ['JOIN', 'MERGE', 'LIMIT', 'DISTINCT'] },
       { q: 'SQL 中查询前 10 行常用的写法是？', opts: ['LIMIT 10', 'ROWS 10', 'TAKE 10', 'SIZE 10'] },
       { q: 'SQL 聚合函数中计算平均值的是？', opts: ['AVG', 'SUM', 'COUNT', 'MAX'] },
+      { q: 'SQL 中 DISTINCT 的作用是？', opts: ['去重', '排序', '分组', '限制行数'] },
+      { q: 'SQL 中 BETWEEN 用于？', opts: ['范围条件', '模糊匹配', '空值判断', '字符串拼接'] },
     ] },
     { id: 'docker', label: 'Docker', re: /docker/i, qs: [
       { q: 'Dockerfile 中指定基础镜像的指令是？', opts: ['FROM', 'BASE', 'IMAGE', 'RUN'] },
@@ -90,6 +104,8 @@
       { q: '容器数据持久化常用的方式是？', opts: ['挂载 volume', '写入容器层', '写入镜像', '使用环境变量'] },
       { q: 'Docker 中构建镜像的命令是？', opts: ['docker build', 'docker run', 'docker pull', 'docker push'] },
       { q: '容器端口映射使用的参数是？', opts: ['-p', '-v', '-e', '--name'] },
+      { q: 'Dockerfile 中安装依赖通常使用？', opts: ['RUN', 'FROM', 'CMD', 'EXPOSE'] },
+      { q: 'docker run -d 表示？', opts: ['后台运行容器', '删除容器', '查看日志', '进入容器'] },
     ] },
     { id: 'k8s', label: 'Kubernetes / 云原生', re: /kubernetes|k8s|云原生/i, qs: [
       { q: 'Kubernetes 中最小的可调度单元是？', opts: ['Pod', 'Node', 'Service', 'Namespace'] },
@@ -100,6 +116,14 @@
       { q: 'Secret 资源主要用于存放？', opts: ['密码与密钥等敏感信息', '公共配置', '容器镜像', '运行日志'] },
       { q: 'Kubernetes 中负责水平扩缩容的对象是？', opts: ['HPA', 'PVC', 'Ingress', 'CronJob'] },
       { q: 'Ingress 的主要作用是？', opts: ['统一入口与七层路由', '存储卷管理', '密钥管理', '节点扩容'] },
+      { q: 'Kubernetes 中命名空间用于？', opts: ['逻辑隔离资源', '存储镜像', '调度节点', '加密流量'] },
+      { q: 'kubectl apply 的作用是？', opts: ['声明式创建或更新资源', '删除资源', '查看日志', '进入容器'] },
+    ] },
+    { id: 'ai', label: 'AI / AIGC 应用', re: /^ai$|ai\/|aigc|人工智能/i, qs: [
+      { q: '以下哪项属于生成式 AI 的典型应用？', opts: ['文本与图像生成', '关系型数据库', '静态网页托管', 'DNS 解析'] },
+      { q: '大模型应用开发中，Prompt 的主要作用是？', opts: ['向模型描述任务与约束', '编译代码', '管理数据库', '部署容器'] },
+      { q: 'AI 应用中的「幻觉」指？', opts: ['模型生成看似合理但不真实的内容', '服务器宕机', '网络延迟', '数据加密'] },
+      { q: '调用大模型 API 时，token 通常表示？', opts: ['文本切分后的计费与处理单位', '用户登录凭证', '数据库主键', '网络地址'] }
     ] },
     { id: 'ml', label: '机器学习 / 深度学习', re: /机器学习|深度学习|pytorch|tensorflow|模型/i, qs: [
       { q: '模型在训练集表现好、测试集明显变差，通常称为？', opts: ['过拟合', '欠拟合', '梯度消失', '数据泄漏'] },
@@ -110,6 +134,8 @@
       { q: 'L1 正则化的主要效果是？', opts: ['产生稀疏权重', '增大模型复杂度', '加速推理', '增加训练数据'] },
       { q: '分类任务常用的评估指标是？', opts: ['准确率 / F1', 'MSE', 'R²', 'MAE'] },
       { q: '特征标准化的主要目的是？', opts: ['消除量纲影响', '增加特征数量', '降低模型容量', '加速数据采集'] },
+      { q: '训练集损失下降但验证集损失上升，说明？', opts: ['可能过拟合', '一定欠拟合', '数据无问题', '学习率过低'] },
+      { q: '混淆矩阵中 Precision 指？', opts: ['预测为正样本中真正为正的比例', '真实正样本被找出的比例', '准确率', '召回率'] },
     ] },
     { id: 'llm', label: 'NLP / 大模型 / Agent', re: /nlp|大模型|agent|rag|自然语言/i, qs: [
       { q: 'Transformer 中建模序列依赖的核心机制是？', opts: ['自注意力机制', '卷积池化', '循环门控', '哈希索引'] },
@@ -120,6 +146,8 @@
       { q: '在 Prompt 中给出示例进行引导称为？', opts: ['Few-shot 提示', '零样本提示', '模型微调', '模型量化'] },
       { q: '大模型的 temperature 参数主要控制？', opts: ['输出随机性', '最大长度', '显存占用', '词表大小'] },
       { q: '向量数据库在大模型应用中主要用于？', opts: ['语义检索', '模型训练', '前端渲染', '日志采集'] },
+      { q: '大模型量化（Quantization）的主要目的是？', opts: ['降低显存占用与推理成本', '增加参数量', '提升训练数据量', '改变词表'] },
+      { q: 'Embedding 的主要作用是？', opts: ['把文本映射为向量', '压缩图片', '生成 SQL', '管理容器'] },
     ] },
     { id: 'algo', label: '算法 / 数据结构', re: /算法|数据结构/i, qs: [
       { q: '有序数组上二分查找的时间复杂度是？', opts: ['O(log n)', 'O(n)', 'O(n log n)', 'O(1)'] },
@@ -130,6 +158,8 @@
       { q: '链表相比数组的优势是？', opts: ['插入删除更高效', '随机访问更快', '内存连续', '缓存更友好'] },
       { q: '广度优先搜索通常使用什么数据结构？', opts: ['队列', '栈', '堆', '哈希表'] },
       { q: '归并排序的空间复杂度是？', opts: ['O(n)', 'O(1)', 'O(log n)', 'O(n log n)'] },
+      { q: '动态规划适合解决的问题通常具有？', opts: ['最优子结构与重叠子问题', '完全随机性', '无需状态转移', '只能递归实现'] },
+      { q: '堆（Heap）常用于实现？', opts: ['优先队列', '哈希表', '并查集', '图遍历'] },
     ] },
     { id: 'test', label: '测试 / 自动化', re: /测试|自动化|qa/i, qs: [
       { q: '单元测试主要验证什么？', opts: ['最小可测试单元的行为', '整体部署流程', '网络带宽', '数据库容量'] },
@@ -140,6 +170,8 @@
       { q: '自动化测试相比手工测试的优势是？', opts: ['可重复执行、回归效率高', '完全不需要维护', '能发现所有缺陷', '无需编写代码'] },
       { q: '接口测试通常关注？', opts: ['请求参数与响应结果', '页面配色', '机房温度', '代码注释'] },
       { q: '等价类划分属于哪类测试方法？', opts: ['黑盒测试', '白盒测试', '性能测试', '安全测试'] },
+      { q: '性能测试中 QPS 指？', opts: ['每秒查询数', '每次查询耗时', '并发用户总数', '错误率'] },
+      { q: '冒烟测试的主要目的是？', opts: ['快速验证核心功能是否可用', '测试全部边界值', '评估性能', '检查代码风格'] },
     ] },
     { id: 'linux', label: 'Linux / 运维', re: /linux|运维|shell/i, qs: [
       { q: 'Linux 中查看当前目录文件列表的命令是？', opts: ['ls', 'cd', 'cp', 'mv'] },
@@ -150,6 +182,8 @@
       { q: 'Linux 中按关键字过滤文本常用？', opts: ['grep', 'ls', 'top', 'tar'] },
       { q: 'Linux 中修改文件权限的命令是？', opts: ['chmod', 'chown', 'chgrp', 'umask'] },
       { q: '查看内存使用情况的命令是？', opts: ['free -m', 'df -h', 'du -sh', 'ps -ef'] },
+      { q: 'Linux 中切换目录的命令是？', opts: ['cd', 'ls', 'pwd', 'mkdir'] },
+      { q: 'Linux 中管道符 | 的作用是？', opts: ['把前一命令输出作为后一命令输入', '后台运行', '重定向错误', '终止进程'] },
     ] },
     { id: 'viz', label: '数据可视化 / BI', re: /数据可视化|echarts|bi|图表/i, qs: [
       { q: 'ECharts 中更新图表配置使用的方法是？', opts: ['setOption', 'render', 'update', 'draw'] },
@@ -160,6 +194,8 @@
       { q: '使用饼图时应特别注意？', opts: ['分类不宜过多且占比合计为 100%', '必须使用 3D 效果', '颜色越多越好', '必须标注坐标轴'] },
       { q: '柱状图与条形图的主要区别是？', opts: ['方向不同：纵向与横向', '数据必须不同', '颜色数量不同', '坐标轴可省略'] },
       { q: '可视化配色应优先保证？', opts: ['可读性与对比度', '颜色数量多', '渐变复杂', '荧光色'] },
+      { q: '热力图最适合展示？', opts: ['二维数据的密度或强度', '单一进度', '层级结构', '时间趋势'] },
+      { q: '散点图主要用于观察？', opts: ['两个变量之间的关系', '类别占比', '流程步骤', '单一指标'] },
     ] },
     { id: 'arch', label: '系统设计 / 架构', re: /系统|架构|微服务|设计模式/i, qs: [
       { q: '微服务架构中，服务间通信常用的协议是？', opts: ['HTTP / RPC', 'FTP', 'SMTP', 'SNMP'] },
@@ -170,6 +206,8 @@
       { q: '接口的幂等性指？', opts: ['同一请求重复执行结果一致', '请求必须只执行一次', '接口必须无状态', '响应必须缓存'] },
       { q: '负载均衡中的轮询算法指？', opts: ['请求依次分发到各节点', '随机选择节点', '按权重固定节点', '总是发往同一节点'] },
       { q: '数据库读写分离主要解决？', opts: ['读多写少场景的读压力', '存储加密', '表结构变更', '网络延迟'] },
+      { q: '微服务中服务注册与发现常用于？', opts: ['动态定位服务实例地址', '压缩日志', '加密数据库', '生成前端页面'] },
+      { q: '分布式系统中的熔断机制用于？', opts: ['故障时快速失败、防止雪崩', '提升存储容量', '自动扩容', '负载均衡'] },
     ] },
     { id: 'product', label: '产品 / 运营', re: /产品|运营/i, qs: [
       { q: 'MVP 的核心含义是？', opts: ['最小可行产品', '最大价值产品', '多版本计划', '市场验证报告'] },
@@ -180,6 +218,8 @@
       { q: '北极星指标应具备什么特点？', opts: ['能反映产品核心价值', '数量越多越好', '只关注收入', '每月更换一次'] },
       { q: '用户画像的主要用途是？', opts: ['精准运营与个性化推荐', '压缩图片', '提升带宽', '统一代码风格'] },
       { q: '需求评审的核心目的是？', opts: ['对齐范围与可行性', '确定服务器型号', '设计配色', '编写测试用例'] },
+      { q: '产品需求文档（PRD）主要描述？', opts: ['功能需求与验收标准', '服务器采购清单', '代码实现细节', '测试脚本'] },
+      { q: '用户漏斗分析主要用于？', opts: ['定位转化流失环节', '统计服务器负载', '设计数据库表', '管理代码分支'] },
     ] },
     { id: 'design', label: '设计 / 交互', re: /figma|交互|ui|ux|平面设计|视觉设计|设计规范/i, qs: [
       { q: '平面设计四大原则不包括？', opts: ['随机性', '对比', '对齐', '亲密性'] },
@@ -190,6 +230,8 @@
       { q: '交互设计中的「反馈」原则强调？', opts: ['操作后及时告知结果', '隐藏所有状态', '尽量减少按钮', '统一所有字体'] },
       { q: '移动端点击热区建议不小于？', opts: ['44 × 44 px', '10 × 10 px', '100 × 100 px', '无要求'] },
       { q: '色彩对比度不足会主要影响？', opts: ['可读性与无障碍访问', '加载速度', '图片体积', '服务器性能'] },
+      { q: '设计规范中「一致性」强调？', opts: ['相同元素保持统一样式与交互', '每个页面风格不同', '颜色越多越好', '字体随时变化'] },
+      { q: '原型图的主要用途是？', opts: ['验证流程与交互结构', '替代最终视觉稿', '部署上线', '数据库建模'] },
     ] },
     { id: 'bigdata', label: '大数据 / Spark', re: /大数据|hadoop|spark|hive/i, qs: [
       { q: 'Spark 相比 MapReduce 的核心优势之一是？', opts: ['内存计算', '只能处理小数据', '不支持分布式', '无需集群'] },
@@ -200,6 +242,8 @@
       { q: 'Kafka 分区的主要作用是？', opts: ['支持并行消费与水平扩展', '加密消息', '压缩存储', '跨主题排序'] },
       { q: 'Hive 的主要作用是？', opts: ['提供 SQL 风格的数据仓库查询', '容器编排', '前端渲染', '消息推送'] },
       { q: '数据湖相比数据仓库的特点是？', opts: ['可存储原始多结构数据', '只能存结构化数据', '不支持海量数据', '必须预定义 Schema'] },
+      { q: 'MapReduce 中 Shuffle 阶段主要负责？', opts: ['按 key 分组并分发数据', '压缩镜像', '调度容器', '渲染图表'] },
+      { q: '数据质量中「唯一性」指？', opts: ['同一实体不重复记录', '字段不能为空', '数值范围合理', '格式统一'] },
     ] },
     { id: 'data', label: '数据分析 / 数据处理', re: /数据分析|数据处理|数据工程|数据挖掘|数据治理|数据/i, qs: [
       { q: '描述性统计中，衡量数据离散程度的指标是？', opts: ['标准差', '均值', '中位数', '众数'] },
@@ -210,6 +254,8 @@
       { q: 'A/B 实验的评估指标应？', opts: ['实验前确定并保持稳定', '实验后随意更换', '只看绝对值', '只看样本量'] },
       { q: '数据透视表主要用于？', opts: ['多维度汇总分析', '图片压缩', '接口调试', '版本管理'] },
       { q: '缺失值占比很高时优先考虑？', opts: ['评估该字段是否仍有分析价值', '直接填均值', '全部填 0', '忽略缺失'] },
+      { q: 'SQL 中窗口函数常用于？', opts: ['分组内排名与累计计算', '创建索引', '备份数据库', '修改表结构'] },
+      { q: '异常值检测常用的方法是？', opts: ['箱线图 / 3σ 原则', '均值填充', '字符串截断', '随机抽样'] },
     ] },
     { id: 'security', label: '安全', re: /安全|渗透|等保/i, qs: [
       { q: '防止 SQL 注入最有效的做法是？', opts: ['使用参数化查询', '前端隐藏输入框', '关闭数据库', '增加验证码'] },
@@ -220,6 +266,8 @@
       { q: 'CSRF 攻击主要利用？', opts: ['用户已登录的会话凭证', '服务器磁盘故障', '弱密码爆破', 'DNS 劫持'] },
       { q: 'SQL 注入的常见入口是？', opts: ['未过滤的用户输入拼接 SQL', 'HTTPS 加密', '强密码策略', 'CDN 加速'] },
       { q: '双因素认证的核心是？', opts: ['密码之外的第二种验证因素', '两个相同密码', '两套用户名', '两台服务器'] },
+      { q: '越权漏洞通常指？', opts: ['用户访问了无权访问的资源', '密码强度不足', '服务器宕机', '网络延迟'] },
+      { q: '日志脱敏的主要目的是？', opts: ['避免敏感信息泄露', '提升日志写入速度', '压缩日志体积', '统一日志格式'] },
     ] },
     { id: 'network', label: '网络 / HTTP', re: /网络|tcp|http|通信/i, qs: [
       { q: 'HTTP 状态码 404 表示？', opts: ['资源未找到', '服务器内部错误', '请求成功', '永久重定向'] },
@@ -230,6 +278,8 @@
       { q: '负载均衡的主要作用是？', opts: ['将请求分发到多台服务器', '加密传输数据', '压缩图片体积', '缓存 DNS 记录'] },
       { q: 'HTTP 与 HTTPS 的主要区别是？', opts: ['HTTPS 增加 TLS 加密', 'HTTPS 一定更快', 'HTTP 更安全', '两者无区别'] },
       { q: 'CDN 的主要作用是？', opts: ['就近分发内容、降低延迟', '加密数据', '数据库备份', '代码编译'] },
+      { q: 'TCP 与 UDP 的主要区别是？', opts: ['TCP 可靠有序、UDP 轻量低延迟', 'UDP 更可靠', 'TCP 无连接', '两者完全相同'] },
+      { q: 'NAT 的主要作用是？', opts: ['地址转换以节省公网 IP', '加密流量', '负载均衡', '域名解析'] },
     ] }
   ];
 
@@ -298,9 +348,11 @@
       skills.push(k);
     });
 
+    var usedQ = {};
     return skills.slice(0, MAX_SKILLS).map(function (skill) {
-      var pool = questionsForSkill(skill);
+      var pool = questionsForSkill(skill).filter(function (item) { return !usedQ[item.q]; });
       var picked = shuffle(pool).slice(0, KNOWLEDGE_PER_SKILL);
+      picked.forEach(function (item) { usedQ[item.q] = 1; });
       var qs = picked.map(function (item) {
         var opts = shuffle(item.opts);
         return { type: 'k', q: item.q, opts: opts, correct: item.correct };
