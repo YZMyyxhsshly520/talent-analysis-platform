@@ -10,19 +10,22 @@
   ];
 
   var RESOURCE_RULES = [
-    [/python/i, 'Python 官方文档 + 廖雪峰教程'],
-    [/java\b(?!script)/i, 'Java 官方文档 + 黑马程序员实战'],
-    [/javascript|typescript|react|vue|node/i, 'MDN + 官方文档 + B站实战课程'],
-    [/kubernetes|k8s|云原生/i, 'K8s 官方文档 + 极客时间专栏'],
-    [/docker/i, 'Docker 官方文档 + 实战练习'],
-    [/linux|运维|shell/i, '鸟哥的 Linux 私房菜 + 官方文档'],
-    [/sql|数据库|mysql|redis/i, 'SQL 必知必会 + LeetCode 数据库题库'],
-    [/机器学习|深度学习|pytorch|tensorflow/i, '吴恩达课程 +《动手学深度学习》'],
-    [/自然语言|nlp|大模型|agent|rag/i, 'HuggingFace 课程 + 大模型实战项目'],
-    [/算法|数据结构/i, '《剑指 Offer》+ LeetCode 热题 100'],
-    [/测试|自动化/i, '测试开发实战 + 官方文档'],
-    [/设计|figma|交互/i, 'Figma 官方教程 + 设计规范'],
-    [/数据可视化|echarts|bi/i, 'ECharts 官方示例 + 数据可视化实战']
+    [/python/i, [['Python 官方文档', 'https://docs.python.org/zh-cn/3/'], ['廖雪峰 Python 教程', 'https://liaoxuefeng.com/books/python/introduction/index.html']]],
+    [/java\b(?!script)/i, [['Java 入门教程', 'https://www.runoob.com/java/java-tutorial.html'], ['JDK 官方文档', 'https://docs.oracle.com/en/java/']]],
+    [/vue/i, [['Vue 3 中文文档', 'https://cn.vuejs.org/guide/'], ['MDN 前端文档', 'https://developer.mozilla.org/zh-CN/docs/Web']]],
+    [/react/i, [['React 中文文档', 'https://zh-hans.react.dev/learn'], ['MDN 前端文档', 'https://developer.mozilla.org/zh-CN/docs/Web']]],
+    [/javascript|typescript|node|h5|小程序|web前端|前端/i, [['MDN Web 文档', 'https://developer.mozilla.org/zh-CN/docs/Web'], ['Node.js 中文文档', 'https://nodejs.cn/learn']]],
+    [/kubernetes|k8s|云原生/i, [['Kubernetes 中文文档', 'https://kubernetes.io/zh-cn/docs/home/'], ['极客时间', 'https://time.geekbang.org/']]],
+    [/docker/i, [['Docker 官方文档', 'https://docs.docker.com/get-started/'], ['Docker 菜鸟教程', 'https://www.runoob.com/docker/docker-tutorial.html']]],
+    [/linux|运维|shell/i, [['Linux 菜鸟教程', 'https://www.runoob.com/linux/linux-tutorial.html'], ['鸟哥的 Linux 私房菜', 'https://linux.vbird.org/']]],
+    [/sql|数据库|mysql|redis/i, [['SQL 菜鸟教程', 'https://www.runoob.com/sql/sql-tutorial.html'], ['LeetCode 数据库题库', 'https://leetcode.cn/problemset/database/']]],
+    [/\bai\b|人工智能|aigc/i, [['Hugging Face 课程', 'https://huggingface.co/learn'], ['吴恩达机器学习', 'https://www.coursera.org/specializations/machine-learning-introduction']]],
+    [/机器学习|深度学习|pytorch|tensorflow/i, [['吴恩达机器学习', 'https://www.coursera.org/specializations/machine-learning-introduction'], ['动手学深度学习', 'https://zh.d2l.ai/']]],
+    [/自然语言|nlp|大模型|agent|rag|提示词/i, [['Hugging Face 课程', 'https://huggingface.co/learn'], ['Prompt 提示工程指南', 'https://www.promptingguide.ai/zh']]],
+    [/算法|数据结构/i, [['LeetCode 题库', 'https://leetcode.cn/problemset/'], ['剑指 Offer 题单', 'https://leetcode.cn/studyplan/coding-interviews/']]],
+    [/测试|自动化/i, [['Playwright 文档', 'https://playwright.dev/python/docs/intro'], ['Selenium 教程', 'https://www.runoob.com/selenium/selenium-tutorial.html']]],
+    [/设计|figma|交互/i, [['Figma 学习中心', 'https://help.figma.com/hc/en-us'], ['Material 设计规范', 'https://m3.material.io/']]],
+    [/数据可视化|echarts|bi/i, [['ECharts 官方示例', 'https://echarts.apache.org/zh/index.html'], ['AntV 可视化', 'https://antv.antgroup.com/']]]
   ];
 
   var PREREQ_RULES = [
@@ -60,6 +63,27 @@
       if (rules[i][0].test(name)) return rules[i][1];
     }
     return fallback;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // 推荐资源：返回可点击外链，未匹配的技能给出 B站 / 慕课网搜索入口
+  function resourceLinks(name) {
+    var links = null;
+    for (var i = 0; i < RESOURCE_RULES.length; i++) {
+      if (RESOURCE_RULES[i][0].test(name)) { links = RESOURCE_RULES[i][1]; break; }
+    }
+    if (!links) {
+      links = [
+        ['B站课程搜索', 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(name)],
+        ['慕课网搜索', 'https://www.imooc.com/search/?words=' + encodeURIComponent(name)]
+      ];
+    }
+    return links.map(function (l) {
+      return '<a class="plan-link" href="' + l[1] + '" target="_blank" rel="noopener noreferrer">' + esc(l[0]) + ' ↗</a>';
+    }).join('<span style="color:var(--muted);"> · </span>');
   }
 
   function toast(msg) {
@@ -162,7 +186,7 @@
         + '<td style="font-family:InstrumentSans;font-weight:600;">' + x.name + '</td>'
         + '<td>' + months + '</td>'
         + '<td style="color:var(--muted);">' + matchRule(PREREQ_RULES, x.name, '无') + '</td>'
-        + '<td style="font-size:12px;color:var(--muted);">' + matchRule(RESOURCE_RULES, x.name, '官方文档 + B站/慕课网实战课程') + '</td>'
+        + '<td style="font-size:12px;line-height:1.8;">' + resourceLinks(x.name) + '</td>'
         + '<td><select class="plan-status" data-key="' + k + '">' + opts + '</select></td>'
         + '<td><button class="plan-del" data-del="' + k + '" title="移除">×</button></td>'
         + '</tr>';
