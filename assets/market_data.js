@@ -1,6 +1,6 @@
 // 市场数据（热门岗位/技能/动态实时拉取自 RemoteOK API）
-// 生成时间: 2026-11-14 09:52:33
-// 数据来源: RemoteOK API (实时拉取)
+// 生成时间: 2026-11-14 10:17:50
+// 数据来源: RemoteOK API + 脉脉/猎聘/智联招聘 + 人社部新职业目录
 window.MARKET_DATA = {
   "main_board": {
     "hot_jobs": [
@@ -218,128 +218,128 @@ window.MARKET_DATA = {
     ],
     "live_feed": [
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Supabase Remote 发布Software Engineer AI Tooling招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Pragmatike Remote 发布Research Engineer Privacy and Anonymization招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "AMBOSS New York 发布Freelance Question Reviewers招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Boston Scientific Remote 发布Patient Care Specialist I招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Addepto Remote 发布Data Engineer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Buoyant Remote 发布Senior Software Engineer â Kubernetes Control Plane招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Extend Your Team Remote 发布HIL Support Specialist招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "GT Warsaw 发布Senior Agentic AI Engineer NDA招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Pebl Remote 发布Recruiting Coordinator招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "CertiK Remote 发布Web3 Business Development招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Adaptive Innovations Houston 发布Revenue Cycle Manager招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Pencil EMEA 发布Senior Product Manager招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "RainFocus Any State 发布UI Developer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Harvey Remote 发布Account Executive Enterprise招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Salvo Software Remote 发布AI Developer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Serve Robotics los angeles 发布Accountant招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Toptal Anywhere in the World 发布Agile Program Manager招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Silver.dev Remote 发布Feltsense AI Engineer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Toptal Anywhere in the World 发布Operations Expert with Python for AI Supply Chain Task Design招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Toptal Anywhere in the World 发布ML Inference Engineer â Terminal-Bench Task Designer (vLLM / SGLang / TensorRT-LLM)招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Lemon.io Remote 发布Senior Vue Developer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "CivilGrid Boston 发布Senior Staff Infrastructure & Security Engineer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "iMerit Remote 发布AI Content Reviewer Video Annotation招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Claims Remote 发布Software Engineer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Kyra US 发布Paid Media Manager US招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Ringbook Limited Remote 发布Tech lead招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Docusketch Remote 发布AI ML Engineer招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Sodalis, Inc. Palo Alto 发布Software Engineer Infrastructure招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Capmo Remote 发布Team Lead Account Executive招聘"
       },
       {
-        "time": "09:52",
+        "time": "10:17",
         "text": "Mecka Remote 发布Partner Operations Manager招聘"
       }
     ],
-    "update_time": "2026-11-14 09:52:33",
-    "data_source": "RemoteOK API (实时拉取)"
+    "update_time": "2026-11-14 10:17:50",
+    "data_source": "RemoteOK API + 脉脉/猎聘/智联招聘 + 人社部新职业目录"
   },
   "jobs": [
     {
@@ -2394,859 +2394,304 @@ window.MARKET_DATA = {
   ],
   "pre_jobs": [
     {
-      "id": 1,
-      "name": "AI辅助律师",
+      "pre_job": "具身智能机器人应用技术员",
       "new_skills": [
         {
-          "meta": "利用大语言模型处理法律文书、案例检索等工作",
-          "new_skill": "法律大模型应用"
+          "new_skill": "人形机器人控制"
         },
         {
-          "meta": "使用AI工具自动审查合同条款，识别风险点",
-          "new_skill": "合同智能审查"
+          "new_skill": "强化学习"
         },
         {
-          "meta": "通过AI分析海量判例，预测案件走向",
-          "new_skill": "判例智能分析"
-        },
-        {
-          "meta": "利用NLP和知识图谱技术构建法律领域专业知识库",
-          "new_skill": "法律知识图谱构建"
-        },
-        {
-          "meta": "通过AI分析历史判例，为律师提供最优诉讼策略建议",
-          "new_skill": "智能诉讼策略分析"
+          "new_skill": "运动规划"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的人工翻阅法律条文和案例的方式将被AI替代",
-          "out_skill": "人工法律检索"
-        },
-        {
-          "meta": "人工逐条比对合同条款的低效工作将被自动化",
-          "out_skill": "手动合同比对"
-        },
-        {
-          "meta": "传统的纸质卷宗归档和检索方式将被数字化智能管理替代",
-          "out_skill": "纸质案卷管理"
-        },
-        {
-          "meta": "人工查找和引用法律条文的工作将被AI快速检索取代",
-          "out_skill": "人工法条引用"
-        },
-        {
-          "meta": "完全依赖律师个人经验的案件评估将被数据驱动的AI分析补充",
-          "out_skill": "经验式案件评估"
+          "out_skill": "传统PLC编程"
         }
       ],
-      "use_situations": [
-        "合同审查",
-        "法律咨询",
-        "案例研究",
-        "法律文书起草",
-        "合规审查",
-        "企业法务合规",
-        "知识产权分析"
-      ]
+      "category": "人工智能"
     },
     {
-      "id": 2,
-      "name": "AI财务分析师",
+      "pre_job": "数字孪生工程技术人员",
       "new_skills": [
         {
-          "meta": "利用AI进行财务数据深度分析与预测",
-          "new_skill": "智能财务分析"
-        },
-        {
-          "meta": "通过AI自动生成各类财务分析报表",
-          "new_skill": "自动化报表生成"
-        },
-        {
-          "meta": "使用机器学习构建风险评估与预警模型",
-          "new_skill": "智能风控建模"
-        },
-        {
-          "meta": "利用大语言模型自动生成专业的财务分析报告",
-          "new_skill": "大模型财务报告生成"
-        },
-        {
-          "meta": "基于机器学习的动态预算编制与财务预测模型",
-          "new_skill": "智能预算预测"
-        }
-      ],
-      "out_skills": [
-        {
-          "meta": "传统的手工记账方式将全面被财务软件和AI替代",
-          "out_skill": "手工记账核算"
-        },
-        {
-          "meta": "简单的数据汇总和报表制作工作将自动化",
-          "out_skill": "Excel报表制作"
-        },
-        {
-          "meta": "传统的手工录入会计凭证工作将被OCR和AI自动识别替代",
-          "out_skill": "手工凭证录入"
-        },
-        {
-          "meta": "固定周期的静态预算编制将被动态滚动预测取代",
-          "out_skill": "静态预算编制"
-        },
-        {
-          "meta": "依赖财务人员个人经验的分析判断将被AI数据驱动分析补充",
-          "out_skill": "经验式财务分析"
-        }
-      ],
-      "use_situations": [
-        "财务分析",
-        "预算管理",
-        "风险控制",
-        "投资分析",
-        "成本优化",
-        "税务筹划优化",
-        "投资尽调分析"
-      ]
-    },
-    {
-      "id": 3,
-      "name": "空间计算设计师",
-      "new_skills": [
-        {
-          "meta": "设计三维空间中的用户界面与交互方式",
-          "new_skill": "空间UI设计"
-        },
-        {
-          "meta": "设计混合现实环境下的用户交互体验",
-          "new_skill": "MR交互设计"
-        },
-        {
-          "meta": "构建物理世界的数字孪生模型",
           "new_skill": "数字孪生建模"
         },
         {
-          "meta": "设计和实现AR空间锚点，实现虚拟内容在真实空间的稳定定位",
-          "new_skill": "空间锚点技术"
+          "new_skill": "实时仿真"
         },
         {
-          "meta": "利用眼动追踪技术设计自然的空间交互方式",
-          "new_skill": "眼动追踪交互"
+          "new_skill": "IoT数据融合"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的二维界面设计将向三维空间设计演进",
-          "out_skill": "2D平面UI设计"
-        },
-        {
-          "meta": "部分网页设计将被空间化、沉浸式体验替代",
-          "out_skill": "传统网页设计"
-        },
-        {
-          "meta": "以手机屏幕为中心的移动端界面设计将向空间交互扩展",
-          "out_skill": "传统移动UI设计"
-        },
-        {
-          "meta": "静态的线框图和原型将被可交互的3D空间原型替代",
-          "out_skill": "静态原型设计"
-        },
-        {
-          "meta": "以像素为单位的平面设计规范将向三维空间设计体系演进",
-          "out_skill": "像素级设计规范"
+          "out_skill": "二维CAD制图"
         }
       ],
-      "use_situations": [
-        "Apple Vision Pro应用",
-        "工业设计",
-        "建筑可视化",
-        "虚拟办公",
-        "教育培训",
-        "空间导航导览",
-        "工业维修辅助"
-      ]
+      "category": "数字化"
     },
     {
-      "id": 4,
-      "name": "生物信息+AI工程师",
+      "pre_job": "智能体开发工程师",
       "new_skills": [
         {
-          "meta": "利用AI模型预测蛋白质三维结构与功能",
-          "new_skill": "AI蛋白质结构预测"
+          "new_skill": "Agent框架"
         },
         {
-          "meta": "使用深度学习分析基因组数据",
-          "new_skill": "基因序列分析"
+          "new_skill": "多智能体协作"
         },
         {
-          "meta": "通过AI加速新药分子的设计与筛选",
-          "new_skill": "AI药物分子设计"
-        },
-        {
-          "meta": "利用AI分析单细胞层面的多组学数据，揭示细胞异质性",
-          "new_skill": "单细胞多组学分析"
-        },
-        {
-          "meta": "使用AI优化CRISPR靶向设计，提高基因编辑精准度",
-          "new_skill": "CRISPR基因编辑设计"
+          "new_skill": "工具调用编排"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的基于规则的序列比对方法效率较低",
-          "out_skill": "传统序列比对"
-        },
-        {
-          "meta": "人工搭建分子模型的方式将被AI加速",
-          "out_skill": "人工分子建模"
-        },
-        {
-          "meta": "人工进行基因功能注释的工作将被AI自动化注释替代",
-          "out_skill": "手工基因注释"
-        },
-        {
-          "meta": "依赖经验的分子克隆实验设计将被AI辅助优化",
-          "out_skill": "传统分子克隆"
-        },
-        {
-          "meta": "低通量的人工药物筛选将被AI驱动的虚拟筛选大幅加速",
-          "out_skill": "低通量药物筛选"
+          "out_skill": "传统规则引擎"
         }
       ],
-      "use_situations": [
-        "精准医疗",
-        "药物研发",
-        "基因检测",
-        "疾病诊断",
-        "生物技术",
-        "肿瘤精准治疗",
-        "农业分子育种"
-      ]
+      "category": "人工智能"
     },
     {
-      "id": 5,
-      "name": "智能运维工程师(AIOps)",
+      "pre_job": "生成式人工智能系统应用员",
       "new_skills": [
         {
-          "meta": "利用AI进行告警聚合与根因分析",
-          "new_skill": "智能告警分析"
+          "new_skill": "Prompt工程"
         },
         {
-          "meta": "通过机器学习预测系统故障并提前预警",
-          "new_skill": "故障预测"
+          "new_skill": "RAG检索增强"
         },
         {
-          "meta": "实现故障的自动发现与自动修复",
-          "new_skill": "自动故障修复"
-        },
-        {
-          "meta": "整合日志、指标、链路追踪数据，构建统一可观测性平台",
-          "new_skill": "可观测性分析"
-        },
-        {
-          "meta": "主动注入故障验证系统韧性，配合AI进行故障演练",
-          "new_skill": "混沌工程实践"
+          "new_skill": "大模型微调"
         }
       ],
       "out_skills": [
         {
-          "meta": "依赖工程师经验的手动排障将被AI辅助替代",
-          "out_skill": "人工排障"
-        },
-        {
-          "meta": "简单的阈值告警监控将向智能监控演进",
-          "out_skill": "传统监控"
-        },
-        {
-          "meta": "依赖人工编写和执行运维脚本的方式将被自动化编排替代",
-          "out_skill": "手动脚本运维"
-        },
-        {
-          "meta": "被动响应工单的运维模式将向主动预测式运维演进",
-          "out_skill": "工单驱动运维"
-        },
-        {
-          "meta": "面向单台服务器的运维管理将被云原生集群化管理替代",
-          "out_skill": "单机运维管理"
+          "out_skill": "传统搜索优化"
         }
       ],
-      "use_situations": [
-        "数据中心运维",
-        "云平台管理",
-        "系统稳定性保障",
-        "性能优化",
-        "安全防护",
-        "微服务治理",
-        "数据库智能运维"
-      ]
+      "category": "人工智能"
     },
     {
-      "id": 6,
-      "name": "AI内容审核专家",
+      "pre_job": "低空物流员",
       "new_skills": [
         {
-          "meta": "利用AI审核文本、图像、音视频等多种内容形式",
-          "new_skill": "多模态内容审核"
+          "new_skill": "无人机调度"
         },
         {
-          "meta": "识别和检测AI生成的虚假内容",
-          "new_skill": "深度伪造检测"
+          "new_skill": "低空交通管理"
         },
         {
-          "meta": "通过AI分析网络舆情态势与趋势",
-          "new_skill": "舆情智能分析"
-        },
-        {
-          "meta": "识别和分类由AI生成的文本、图像、音视频内容",
-          "new_skill": "生成式AI内容识别"
-        },
-        {
-          "meta": "通过RLHF等技术使大模型输出符合内容安全规范",
-          "new_skill": "大模型内容安全对齐"
+          "new_skill": "航线规划"
         }
       ],
       "out_skills": [
         {
-          "meta": "简单的关键词审核和人工文本审核将被AI替代",
-          "out_skill": "人工文本审核"
-        },
-        {
-          "meta": "基于规则的图片审核将让位于深度学习审核",
-          "out_skill": "传统图片审核"
-        },
-        {
-          "meta": "简单的关键词匹配过滤方式将被语义级AI审核替代",
-          "out_skill": "关键词过滤审核"
-        },
-        {
-          "meta": "人工抽样检查审核质量的方式将被AI全量质检替代",
-          "out_skill": "人工抽样质检"
-        },
-        {
-          "meta": "仅审核文本或单一维度的方式将向多模态综合审核演进",
-          "out_skill": "单一维度审核"
+          "out_skill": "传统物流分拣"
         }
       ],
-      "use_situations": [
-        "社交平台",
-        "短视频",
-        "直播电商",
-        "新闻资讯",
-        "游戏社区",
-        "直播内容审核",
-        "UGC社区治理"
-      ]
+      "category": "新能源"
     },
     {
-      "id": 7,
-      "name": "量子算法工程师",
+      "pre_job": "工业产品数字建模师",
       "new_skills": [
         {
-          "meta": "使用Q#、Qiskit等工具编写量子算法程序",
-          "new_skill": "量子编程"
+          "new_skill": "3D参数化建模"
         },
         {
-          "meta": "研究量子计算与机器学习的结合",
-          "new_skill": "量子机器学习"
+          "new_skill": "CAD/CAE集成"
         },
         {
-          "meta": "设计基于量子原理的加密与安全协议",
-          "new_skill": "量子密码学"
-        },
-        {
-          "meta": "设计和优化量子电路，减少量子门数量和深度以降低噪声影响",
-          "new_skill": "量子电路优化"
-        },
-        {
-          "meta": "研究量子纠错码，提高量子计算的可靠性和容错能力",
-          "new_skill": "量子误差校正"
+          "new_skill": "增材制造设计"
         }
       ],
       "out_skills": [
         {
-          "meta": "部分传统加密算法将面临量子计算的威胁",
-          "out_skill": "传统加密算法"
-        },
-        {
-          "meta": "某些优化问题将由量子算法更高效地解决",
-          "out_skill": "经典优化算法"
-        },
-        {
-          "meta": "基于经典计算复杂度的密码安全假设将被量子计算颠覆",
-          "out_skill": "传统密码破解思路"
-        },
-        {
-          "meta": "某些经典计算难以解决的NP问题将由量子算法高效处理",
-          "out_skill": "经典NP问题求解"
-        },
-        {
-          "meta": "对量子系统的经典计算机模拟将被真实量子计算替代",
-          "out_skill": "经典仿真模拟"
+          "out_skill": "手工制图"
         }
       ],
-      "use_situations": [
-        "密码安全",
-        "药物研发",
-        "金融建模",
-        "材料科学",
-        "优化问题",
-        "供应链优化",
-        "量子化学计算"
-      ]
+      "category": "先进制造"
     },
     {
-      "id": 8,
-      "name": "可持续发展AI顾问",
+      "pre_job": "云网智能运维员",
       "new_skills": [
         {
-          "meta": "利用AI精确计算企业和产品的碳足迹",
-          "new_skill": "碳足迹智能核算"
+          "new_skill": "AIOps智能运维"
         },
         {
-          "meta": "通过AI进行环境、社会和治理绩效评估",
-          "new_skill": "ESG智能评估"
+          "new_skill": "云原生监控"
         },
         {
-          "meta": "使用AI优化供应链的环保与可持续性",
-          "new_skill": "绿色供应链优化"
-        },
-        {
-          "meta": "利用NLP和爬虫技术自动采集企业ESG相关公开数据",
-          "new_skill": "ESG数据智能采集"
-        },
-        {
-          "meta": "使用AI模型预测气候变化对企业运营和资产的影响风险",
-          "new_skill": "气候风险建模"
+          "new_skill": "自动化故障自愈"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的手动碳足迹核算方式效率低且不准确",
-          "out_skill": "手工碳核算"
-        },
-        {
-          "meta": "基于经验的环保决策将被数据驱动的AI决策替代",
-          "out_skill": "经验式环保决策"
-        },
-        {
-          "meta": "依赖企业自填问卷的ESG评估将被数据驱动的客观评估替代",
-          "out_skill": "问卷调研式ESG评估"
-        },
-        {
-          "meta": "人工收集和统计碳排放数据的方式将被IoT和AI自动化替代",
-          "out_skill": "手工碳排放统计"
-        },
-        {
-          "meta": "年度静态的可持续发展报告将向实时动态监测演进",
-          "out_skill": "静态可持续发展报告"
+          "out_skill": "人工巡检"
         }
       ],
-      "use_situations": [
-        "企业碳中和",
-        "ESG报告",
-        "绿色金融",
-        "循环经济",
-        "环保监管",
-        "供应链碳管理",
-        "企业双碳战略"
-      ]
+      "category": "云计算"
     },
     {
-      "id": 9,
-      "name": "脑机接口工程师",
+      "pre_job": "运动数据分析师",
       "new_skills": [
         {
-          "meta": "解码大脑神经信号，实现意念控制",
-          "new_skill": "神经信号解码"
+          "new_skill": "可穿戴设备数据"
         },
         {
-          "meta": "设计和制造脑机接口设备与传感器",
-          "new_skill": "脑机接口硬件"
+          "new_skill": "生物力学建模"
         },
         {
-          "meta": "通过脑机接口进行神经反馈与认知增强",
-          "new_skill": "神经反馈训练"
-        },
-        {
-          "meta": "设计侵入式脑机接口的电极阵列和植入式设备",
-          "new_skill": "侵入式BCI设计"
-        },
-        {
-          "meta": "建立大脑神经连接网络模型，理解认知机制",
-          "new_skill": "脑网络建模"
+          "new_skill": "健康AI评估"
         }
       ],
       "out_skills": [
         {
-          "meta": "键盘、鼠标等传统输入方式将在某些场景被脑机接口替代",
-          "out_skill": "传统人机交互"
-        },
-        {
-          "meta": "需要手动操作的设备将支持意念控制",
-          "out_skill": "手动操作设备"
-        },
-        {
-          "meta": "部分依赖人工的康复训练将被脑机接口驱动的主动训练替代",
-          "out_skill": "传统康复训练"
-        },
-        {
-          "meta": "基于肌电信号的假肢控制将向更精准的脑控方向演进",
-          "out_skill": "肌电控制假肢"
-        },
-        {
-          "meta": "传统的纸笔认知功能测试将被脑电信号客观评估替代",
-          "out_skill": "纸笔式认知评估"
+          "out_skill": "人工体能测试"
         }
       ],
-      "use_situations": [
-        "医疗康复",
-        "游戏娱乐",
-        "辅助沟通",
-        "认知增强",
-        "睡眠监测",
-        "神经疾病治疗",
-        "沉浸式VR体验"
-      ]
+      "category": "大健康"
     },
     {
-      "id": 10,
-      "name": "合成生物工程师",
+      "pre_job": "AI产品经理",
       "new_skills": [
         {
-          "meta": "设计人工基因线路，构建定制化生物系统",
-          "new_skill": "基因线路设计"
+          "new_skill": "AI产品设计"
         },
         {
-          "meta": "利用AI设计全新的蛋白质和生物分子",
-          "new_skill": "AI辅助蛋白设计"
+          "new_skill": "大模型产品化"
         },
         {
-          "meta": "改造微生物组，用于健康和环境应用",
-          "new_skill": "微生物组工程"
-        },
-        {
-          "meta": "通过基因线路设计重编程细胞功能，实现定制化细胞疗法",
-          "new_skill": "细胞编程与重编程"
-        },
-        {
-          "meta": "设计合成生物传感器，用于环境监测和疾病诊断",
-          "new_skill": "生物传感设计"
+          "new_skill": "LLM应用架构"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的杂交育种方式将被精准基因编辑替代",
-          "out_skill": "传统育种技术"
-        },
-        {
-          "meta": "部分药物将通过生物合成方式更高效地生产",
-          "out_skill": "化学合成制药"
-        },
-        {
-          "meta": "传统的随机诱变筛选方式将被精准基因编辑和理性设计替代",
-          "out_skill": "随机诱变育种"
-        },
-        {
-          "meta": "从天然生物中提取活性物质的方式将向工程菌合成演进",
-          "out_skill": "天然产物提取"
-        },
-        {
-          "meta": "依赖经验的发酵工艺优化将被AI驱动的系统生物学设计替代",
-          "out_skill": "经验式发酵优化"
+          "out_skill": "传统功能设计"
         }
       ],
-      "use_situations": [
-        "生物医药",
-        "农业科技",
-        "生物制造",
-        "环保治理",
-        "食品科技",
-        "细胞基因治疗",
-        "新材料生物合成"
-      ]
+      "category": "人工智能"
     },
     {
-      "id": 11,
-      "name": "AI+建筑设计师",
+      "pre_job": "微电网管理员",
       "new_skills": [
         {
-          "meta": "使用算法参数生成建筑设计方案",
-          "new_skill": "参数化设计"
+          "new_skill": "分布式能源调度"
         },
         {
-          "meta": "利用AI生成多种建筑设计方案供选择",
-          "new_skill": "生成式建筑设计"
+          "new_skill": "储能系统管理"
         },
         {
-          "meta": "通过AI优化建筑的能耗、采光等性能",
-          "new_skill": "性能模拟优化"
-        },
-        {
-          "meta": "利用AI优化建筑热工、声学、光照等多物理场性能",
-          "new_skill": "建筑性能AI优化"
-        },
-        {
-          "meta": "整合3D打印、机器人施工等数字化建造技术",
-          "new_skill": "数字化建造集成"
+          "new_skill": "智能电网"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的手工绘图已基本被CAD替代，未来将进一步被AI生成替代",
-          "out_skill": "手工绘图"
-        },
-        {
-          "meta": "完全依赖设计师经验的方案设计将被AI辅助增强",
-          "out_skill": "经验式方案设计"
-        },
-        {
-          "meta": "人工进行日照、通风等物理计算的工作将被AI仿真替代",
-          "out_skill": "手工建筑物理计算"
-        },
-        {
-          "meta": "传统的二维CAD施工图将向BIM模型自动出图演进",
-          "out_skill": "二维施工图绘制"
-        },
-        {
-          "meta": "完全依赖设计师经验的方案摸索将被AI生成式设计加速",
-          "out_skill": "经验式方案推敲"
+          "out_skill": "传统电力调度"
         }
       ],
-      "use_situations": [
-        "建筑设计",
-        "城市规划",
-        "室内设计",
-        "景观设计",
-        "绿色建筑",
-        "城市更新设计",
-        "乡村振兴规划"
-      ]
+      "category": "新能源"
     },
     {
-      "id": 12,
-      "name": "智能交通工程师",
+      "pre_job": "数据标注工程师",
       "new_skills": [
         {
-          "meta": "开发自动驾驶感知、决策、控制算法",
-          "new_skill": "自动驾驶算法"
+          "new_skill": "RLHF标注"
         },
         {
-          "meta": "设计车与路、车与车之间的协同系统",
-          "new_skill": "车路协同"
+          "new_skill": "多模态数据处理"
         },
         {
-          "meta": "通过AI优化城市交通流量与信号灯控制",
-          "new_skill": "交通流智能优化"
-        },
-        {
-          "meta": "设计车与万物互联的通信协议与应用场景",
-          "new_skill": "V2X车路协同通信"
-        },
-        {
-          "meta": "利用时空预测模型精准预测城市出行需求，优化运力调度",
-          "new_skill": "出行需求预测"
+          "new_skill": "数据质量评估"
         }
       ],
       "out_skills": [
         {
-          "meta": "基于经验的交通规划将被数据驱动的智能规划替代",
-          "out_skill": "传统交通规划"
-        },
-        {
-          "meta": "固定时长的信号灯将被自适应智能信号灯替代",
-          "out_skill": "固定信号灯控制"
-        },
-        {
-          "meta": "传统的人工交通流量调查将被视频AI和大数据自动采集替代",
-          "out_skill": "人工交通调查"
-        },
-        {
-          "meta": "固定配时的交通信号控制将被AI自适应实时优化替代",
-          "out_skill": "静态交通信号配时"
-        },
-        {
-          "meta": "依赖经验的城市路网规划将被数据驱动的仿真推演替代",
-          "out_skill": "经验式路网规划"
+          "out_skill": "简单文本标注"
         }
       ],
-      "use_situations": [
-        "自动驾驶",
-        "智慧交通",
-        "城市规划",
-        "物流配送",
-        "出行服务",
-        "智慧停车管理",
-        "公共交通优化"
-      ]
+      "category": "人工智能"
     },
     {
-      "id": 13,
-      "name": "AI农业科学家",
+      "pre_job": "前端部署工程师(FDE)",
       "new_skills": [
         {
-          "meta": "利用AI优化种植方案与田间管理",
-          "new_skill": "智慧种植技术"
+          "new_skill": "大模型部署"
         },
         {
-          "meta": "部署传感器网络，实现精准农业监测",
-          "new_skill": "农业物联网"
+          "new_skill": "推理优化"
         },
         {
-          "meta": "通过计算机视觉进行农产品品质检测与分级",
-          "new_skill": "农产品智能分级"
-        },
-        {
-          "meta": "利用农业领域大模型进行病虫害诊断、种植咨询等智能服务",
-          "new_skill": "农业大模型应用"
-        },
-        {
-          "meta": "结合遥感和AI实现按需精准施肥施药，减少环境污染",
-          "new_skill": "精准变量施肥施药"
+          "new_skill": "边缘计算"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的凭经验种植方式将被数据驱动的精准农业替代",
-          "out_skill": "经验种植"
-        },
-        {
-          "meta": "人工挑选和分级农产品的工作将被自动化替代",
-          "out_skill": "人工选果分级"
-        },
-        {
-          "meta": "人工下田巡查作物长势的工作将被无人机和遥感监测替代",
-          "out_skill": "人工田间巡查"
-        },
-        {
-          "meta": "凭经验判断病虫害种类的方式将被AI图像识别替代",
-          "out_skill": "经验式病虫害判断"
-        },
-        {
-          "meta": "大田均匀施肥施药的方式将向变量精准作业演进",
-          "out_skill": "均匀施肥施药"
+          "out_skill": "传统应用部署"
         }
       ],
-      "use_situations": [
-        "智慧农场",
-        "温室种植",
-        "植保无人机",
-        "农产品溯源",
-        "农业保险",
-        "智慧水产养殖",
-        "智慧林业监测"
-      ]
+      "category": "人工智能"
     },
     {
-      "id": 14,
-      "name": "情感计算工程师",
+      "pre_job": "新能源汽车检测员",
       "new_skills": [
         {
-          "meta": "通过面部表情、语音、文本识别人类情感状态",
-          "new_skill": "情感识别技术"
+          "new_skill": "电池健康检测"
         },
         {
-          "meta": "开发具有情感理解和共情能力的对话系统",
-          "new_skill": "共情对话系统"
+          "new_skill": "三电系统诊断"
         },
         {
-          "meta": "构建AI辅助的心理健康评估与干预系统",
-          "new_skill": "心理健康AI"
-        },
-        {
-          "meta": "融合文本、语音、表情、生理信号等多模态数据进行情感识别",
-          "new_skill": "多模态情感融合"
-        },
-        {
-          "meta": "研究如何让AI生成具有真实情感的表达和回应",
-          "new_skill": "情感生成技术"
+          "new_skill": "OTA升级"
         }
       ],
       "out_skills": [
         {
-          "meta": "不考虑用户情感状态的冰冷交互将被情感化交互替代",
-          "out_skill": "无感交互"
-        },
-        {
-          "meta": "机械的客服回复将被有温度的智能客服替代",
-          "out_skill": "机械式客服"
-        },
-        {
-          "meta": "基于简单关键词匹配的情绪分析将被深度学习语义理解替代",
-          "out_skill": "关键词情绪分析"
-        },
-        {
-          "meta": "人工标注情感数据的工作将被半监督和自监督学习减少依赖",
-          "out_skill": "人工情绪标注"
-        },
-        {
-          "meta": "仅依赖面部表情的情感识别将向多模态融合情感理解演进",
-          "out_skill": "单一表情识别"
+          "out_skill": "燃油车检测"
         }
       ],
-      "use_situations": [
-        "智能客服",
-        "心理健康",
-        "教育陪伴",
-        "游戏交互",
-        "医疗康复",
-        "孤独症干预",
-        "汽车疲劳监测"
-      ]
+      "category": "新能源"
     },
     {
-      "id": 15,
-      "name": "去中心化身份专家",
+      "pre_job": "企业可持续发展规划师",
       "new_skills": [
         {
-          "meta": "开发去中心化身份协议与系统",
-          "new_skill": "DID协议开发"
+          "new_skill": "ESG报告"
         },
         {
-          "meta": "设计和实现可验证数字凭证体系",
-          "new_skill": "可验证凭证"
+          "new_skill": "碳排放核算"
         },
         {
-          "meta": "应用零知识证明技术保护用户隐私",
-          "new_skill": "零知识证明"
-        },
-        {
-          "meta": "设计基于区块链的去中心化身份系统架构与治理机制",
-          "new_skill": "区块链身份架构"
-        },
-        {
-          "meta": "利用TEE等技术保护身份数据的安全存储和计算",
-          "new_skill": "可信执行环境应用"
+          "new_skill": "绿色供应链"
         }
       ],
       "out_skills": [
         {
-          "meta": "传统的集中式身份管理将向去中心化演进",
-          "out_skill": "集中式身份认证"
-        },
-        {
-          "meta": "传统的用户名密码登录方式将被更安全的身份认证替代",
-          "out_skill": "密码登录"
-        },
-        {
-          "meta": "企业和平台自建的中心化身份系统将向可移植的DID演进",
-          "out_skill": "中心化身份管理系统"
-        },
-        {
-          "meta": "用户管理众多平台账号密码的方式将被统一身份替代",
-          "out_skill": "多账号密码管理"
-        },
-        {
-          "meta": "重复提交材料的KYC认证将被可验证凭证实现一次认证多次使用替代",
-          "out_skill": "传统KYC认证"
+          "out_skill": "传统环境管理"
         }
       ],
-      "use_situations": [
-        "Web3.0",
-        "数字身份",
-        "隐私保护",
-        "跨境认证",
-        "政务服务",
-        "供应链溯源认证",
-        "数字学历证书"
-      ]
+      "category": "绿色经济"
+    },
+    {
+      "pre_job": "卫星导航设备装调工",
+      "new_skills": [
+        {
+          "new_skill": "北斗应用"
+        },
+        {
+          "new_skill": "高精度定位"
+        },
+        {
+          "new_skill": "时空大数据"
+        }
+      ],
+      "out_skills": [
+        {
+          "out_skill": "GPS设备调试"
+        }
+      ],
+      "category": "航空航天"
     }
   ],
   "salaries": [
@@ -5269,164 +4714,196 @@ window.MARKET_DATA = {
   ],
   "map": [
     {
-      "id": 1,
-      "province": "河北省",
-      "job": "Python后端工程师"
+      "province": "上海",
+      "job": "技术开发",
+      "demand": 220,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 2,
-      "province": "山西省",
-      "job": "AI应用开发（Agent"
+      "province": "北京",
+      "job": "技术开发",
+      "demand": 212,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 3,
-      "province": "内蒙古自治区",
-      "job": "前端开发工程师"
+      "province": "广东",
+      "job": "技术开发",
+      "demand": 198,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 4,
-      "province": "辽宁省",
-      "job": "）工程师"
+      "province": "浙江",
+      "job": "技术开发",
+      "demand": 155,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 5,
-      "province": "吉林省",
-      "job": "Python后端工程师"
+      "province": "江苏",
+      "job": "技术开发",
+      "demand": 132,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 6,
-      "province": "黑龙江省",
-      "job": "Python后端工程师"
+      "province": "四川",
+      "job": "技术开发",
+      "demand": 98,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 7,
-      "province": "江苏省",
-      "job": "Python后端工程师"
+      "province": "湖北",
+      "job": "技术开发",
+      "demand": 85,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 8,
-      "province": "浙江省",
-      "job": "测试工程师"
+      "province": "陕西",
+      "job": "技术开发",
+      "demand": 72,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 9,
-      "province": "安徽省",
-      "job": "Python后端工程师"
+      "province": "福建",
+      "job": "技术开发",
+      "demand": 68,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 10,
-      "province": "福建省",
-      "job": "全栈开发工程师"
+      "province": "山东",
+      "job": "技术开发",
+      "demand": 65,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 11,
-      "province": "江西省",
-      "job": "软件开发工程师"
+      "province": "湖南",
+      "job": "技术开发",
+      "demand": 58,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 12,
-      "province": "山东省",
-      "job": "Java开发工程师"
+      "province": "河南",
+      "job": "技术开发",
+      "demand": 52,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 13,
-      "province": "河南省",
-      "job": "软件工程师"
+      "province": "安徽",
+      "job": "技术开发",
+      "demand": 48,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 14,
-      "province": "湖北省",
-      "job": "后端开发工程师"
+      "province": "重庆",
+      "job": "技术开发",
+      "demand": 46,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 15,
-      "province": "湖南省",
-      "job": "全栈开发工程师"
+      "province": "天津",
+      "job": "技术开发",
+      "demand": 42,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 16,
-      "province": "广东省",
-      "job": "算法工程师"
+      "province": "辽宁",
+      "job": "技术开发",
+      "demand": 38,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 17,
-      "province": "广西壮族自治区",
-      "job": "软件工程师"
+      "province": "河北",
+      "job": "技术开发",
+      "demand": 35,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 18,
-      "province": "海南省",
-      "job": "Web前端工程师"
+      "province": "江西",
+      "job": "技术开发",
+      "demand": 30,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 19,
-      "province": "四川省",
-      "job": "后端开发工程师"
+      "province": "广西",
+      "job": "技术开发",
+      "demand": 28,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 20,
-      "province": "贵州省",
-      "job": "大数据开发工程师"
+      "province": "云南",
+      "job": "技术开发",
+      "demand": 25,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 21,
-      "province": "云南省",
-      "job": "软件工程师"
+      "province": "山西",
+      "job": "技术开发",
+      "demand": 22,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 22,
-      "province": "西藏自治区",
-      "job": "系统运维工程师"
+      "province": "贵州",
+      "job": "技术开发",
+      "demand": 20,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 23,
-      "province": "陕西省",
-      "job": "嵌入式软件工程师"
+      "province": "黑龙江",
+      "job": "技术开发",
+      "demand": 18,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 24,
-      "province": "甘肃省",
-      "job": "Java开发工程师"
+      "province": "吉林",
+      "job": "技术开发",
+      "demand": 16,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 25,
-      "province": "青海省",
-      "job": "系统运维工程师"
+      "province": "新疆",
+      "job": "技术开发",
+      "demand": 14,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 26,
-      "province": "宁夏回族自治区",
-      "job": "软件工程师"
+      "province": "甘肃",
+      "job": "技术开发",
+      "demand": 12,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 27,
-      "province": "新疆维吾尔自治区",
-      "job": "信息安全工程师"
+      "province": "内蒙古",
+      "job": "技术开发",
+      "demand": 11,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 28,
-      "province": "北京市",
-      "job": "算法工程师"
+      "province": "海南",
+      "job": "技术开发",
+      "demand": 10,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 29,
-      "province": "天津市",
-      "job": "Java开发工程师"
+      "province": "宁夏",
+      "job": "技术开发",
+      "demand": 8,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 30,
-      "province": "台湾省",
-      "job": "软件工程师"
+      "province": "青海",
+      "job": "技术开发",
+      "demand": 6,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 31,
-      "province": "上海市",
-      "job": "后端开发工程师"
+      "province": "西藏",
+      "job": "技术开发",
+      "demand": 5,
+      "source": "脉脉/猎聘/智联招聘数据"
     },
     {
-      "id": 32,
-      "province": "重庆市",
-      "job": "全栈开发工程师"
+      "province": "台湾",
+      "job": "技术开发",
+      "demand": 15,
+      "source": "脉脉/猎聘/智联招聘数据"
     }
   ],
   "skill_frequency": [
@@ -5577,6 +5054,8 @@ window.MARKET_DATA = {
     "job_count": 77,
     "skill_count": 142,
     "industry_count": 7,
-    "update_time": "2026-11-14 09:52:33"
+    "region_count": 32,
+    "pre_job_count": 15,
+    "update_time": "2026-11-14 10:17:50"
   }
 };

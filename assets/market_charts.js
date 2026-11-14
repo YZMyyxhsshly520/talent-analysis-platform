@@ -178,31 +178,27 @@
     const chart = init('mk-chart-map');
     if (!chart) return;
     const mapData = D.map || [];
-    // 按省份统计需求量
-    const provinceCount = {};
-    const provinceJobs = {};
-    mapData.forEach(m => {
-      const p = m.province.replace('省', '').replace('市', '').replace('自治区', '').replace('壮族', '').replace('回族', '').replace('维吾尔', '');
-      provinceCount[p] = (provinceCount[p] || 0) + 1;
-      if (!provinceJobs[p]) provinceJobs[p] = {};
-      provinceJobs[p][m.job] = (provinceJobs[p][m.job] || 0) + 1;
+
+    // 判断数据格式：有 demand 字段则直接使用，否则按省份计数
+    const hasDemand = mapData.length > 0 && mapData[0].demand != null;
+    const provinceData = mapData.map(m => {
+      const p = (m.province || '').replace('省', '').replace('市', '').replace('自治区', '').replace('壮族', '').replace('回族', '').replace('维吾尔', '');
+      return { name: p, demand: hasDemand ? m.demand : 1, job: m.job || '技术开发' };
     });
 
     // 按需求量排序，取 Top 20
-    const sorted = Object.entries(provinceCount).sort((a, b) => a[1] - b[1]).slice(-20);
-    const names = sorted.map(s => s[0]);
-    const values = sorted.map(s => s[1]);
+    const sorted = provinceData.sort((a, b) => a.demand - b.demand).slice(-20);
+    const names = sorted.map(s => s.name);
+    const values = sorted.map(s => s.demand);
 
     chart.setOption({
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => {
         const idx = p[0].dataIndex;
-        const name = names[idx];
-        const jobs = provinceJobs[name];
-        const topJob = Object.entries(jobs).sort((a, b) => b[1] - a[1])[0];
-        return `${name}<br/>需求总量：<strong>${values[idx]}</strong><br/>热门岗位：${topJob ? topJob[0] : '-'}`;
+        const item = sorted[idx];
+        return `${item.name}<br/>需求指数：<strong>${item.demand}</strong><br/>热门岗位：${item.job || '-'}`;
       }},
       grid: { left: 80, right: 50, top: 20, bottom: 30 },
-      xAxis: { type: 'value', ...AXIS, name: '需求量', nameTextStyle: { color: '#8b95a7' } },
+      xAxis: { type: 'value', ...AXIS, name: '需求指数', nameTextStyle: { color: '#8b95a7' } },
       yAxis: { type: 'category', data: names, ...AXIS, axisLabel: { color: '#8b95a7', fontSize: 10 } },
       visualMap: {
         show: false, min: Math.min(...values), max: Math.max(...values),
