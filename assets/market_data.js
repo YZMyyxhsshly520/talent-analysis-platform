@@ -1,5 +1,5 @@
 // 市场数据（热门岗位/技能/动态实时拉取自 RemoteOK API）
-// 生成时间: 2026-11-14 09:47:51
+// 生成时间: 2026-11-14 09:52:33
 // 数据来源: RemoteOK API (实时拉取)
 window.MARKET_DATA = {
   "main_board": {
@@ -218,127 +218,127 @@ window.MARKET_DATA = {
     ],
     "live_feed": [
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Supabase Remote 发布Software Engineer AI Tooling招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Pragmatike Remote 发布Research Engineer Privacy and Anonymization招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "AMBOSS New York 发布Freelance Question Reviewers招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Boston Scientific Remote 发布Patient Care Specialist I招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Addepto Remote 发布Data Engineer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Buoyant Remote 发布Senior Software Engineer â Kubernetes Control Plane招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Extend Your Team Remote 发布HIL Support Specialist招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "GT Warsaw 发布Senior Agentic AI Engineer NDA招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Pebl Remote 发布Recruiting Coordinator招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "CertiK Remote 发布Web3 Business Development招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Adaptive Innovations Houston 发布Revenue Cycle Manager招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Pencil EMEA 发布Senior Product Manager招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "RainFocus Any State 发布UI Developer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Harvey Remote 发布Account Executive Enterprise招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Salvo Software Remote 发布AI Developer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Serve Robotics los angeles 发布Accountant招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Toptal Anywhere in the World 发布Agile Program Manager招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Silver.dev Remote 发布Feltsense AI Engineer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Toptal Anywhere in the World 发布Operations Expert with Python for AI Supply Chain Task Design招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Toptal Anywhere in the World 发布ML Inference Engineer â Terminal-Bench Task Designer (vLLM / SGLang / TensorRT-LLM)招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Lemon.io Remote 发布Senior Vue Developer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "CivilGrid Boston 发布Senior Staff Infrastructure & Security Engineer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "iMerit Remote 发布AI Content Reviewer Video Annotation招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Claims Remote 发布Software Engineer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Kyra US 发布Paid Media Manager US招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Ringbook Limited Remote 发布Tech lead招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Docusketch Remote 发布AI ML Engineer招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Sodalis, Inc. Palo Alto 发布Software Engineer Infrastructure招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Capmo Remote 发布Team Lead Account Executive招聘"
       },
       {
-        "time": "09:47",
+        "time": "09:52",
         "text": "Mecka Remote 发布Partner Operations Manager招聘"
       }
     ],
-    "update_time": "2026-11-14 09:47:51",
+    "update_time": "2026-11-14 09:52:33",
     "data_source": "RemoteOK API (实时拉取)"
   },
   "jobs": [
@@ -5577,6 +5577,6 @@ window.MARKET_DATA = {
     "job_count": 77,
     "skill_count": 142,
     "industry_count": 7,
-    "update_time": "2026-11-14 09:47:51"
+    "update_time": "2026-11-14 09:52:33"
   }
 };
