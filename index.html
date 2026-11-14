@@ -529,8 +529,18 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       b.classList.add('active');
       var v = b.getAttribute('data-view');
       Object.keys(views).forEach(function (k) { views[k].classList.toggle('active', k === v); });
-      // 触发图表 resize（切换 Tab 后容器尺寸可能变化）
-      window.dispatchEvent(new Event('resize'));
+      // 市场洞察图表懒加载初始化（首次显示时）
+      if (v === 'market' && typeof window.initMarketCharts === 'function') {
+        setTimeout(function () {
+          window.initMarketCharts();
+          window.dispatchEvent(new Event('resize'));
+        }, 50);
+      } else {
+        // 其他 Tab 切换也触发 resize
+        requestAnimationFrame(function () {
+          window.dispatchEvent(new Event('resize'));
+        });
+      }
     });
   });
 })();

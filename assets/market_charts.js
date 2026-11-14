@@ -29,7 +29,7 @@
     const jobs = (MB.hot_jobs || []).slice().sort((a, b) => a.value - b.value);
     chart.setOption({
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => `${p[0].name}<br/>需求量：${p[0].value}<br/>市场占比：${p[0].data.share || '-'}%` },
-      grid: { left: 120, right: 60, top: 20, bottom: 30 },
+      grid: { left: 120, right: 70, top: 20, bottom: 30 },
       xAxis: { type: 'value', ...AXIS, name: '需求量', nameTextStyle: { color: '#8b95a7' } },
       yAxis: { type: 'category', data: jobs.map(j => j.name), ...AXIS },
       series: [{
@@ -37,7 +37,9 @@
         itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
           { offset: 0, color: '#6366f1' }, { offset: 1, color: '#a855f7' }
         ]), borderRadius: [0, 6, 6, 0] },
-        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 11, formatter: '{c}' }
+        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 11,
+          formatter: p => `${p.value}  (${p.data.share}%)`
+        }
       }]
     });
   }
@@ -48,16 +50,33 @@
     if (!chart) return;
     const skills = (MB.hot_skills || []).slice().sort((a, b) => a.value - b.value);
     chart.setOption({
-      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => {
+        const s = skills[p[0].dataIndex];
+        const growth = s.growth_rate != null ? s.growth_rate : 0;
+        const sign = growth >= 0 ? '+' : '';
+        return `${s.name}<br/>需求量：${s.value}<br/>增长率：${sign}${growth}%`;
+      }},
       grid: { left: 80, right: 50, top: 20, bottom: 30 },
       xAxis: { type: 'value', ...AXIS },
       yAxis: { type: 'category', data: skills.map(s => s.name), ...AXIS },
       series: [{
-        type: 'bar', data: skills.map(s => s.value),
-        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-          { offset: 0, color: '#22d3ee' }, { offset: 1, color: '#6366f1' }
-        ]), borderRadius: [0, 5, 5, 0] },
-        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 11 }
+        type: 'bar', data: skills.map(s => ({
+          value: s.value,
+          growth: s.growth_rate || 0,
+          itemStyle: {
+            color: s.growth_rate != null && s.growth_rate >= 0
+              ? new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#22d3ee' }, { offset: 1, color: '#22c55e' }])
+              : new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#f59e0b' }, { offset: 1, color: '#ef4444' }]),
+            borderRadius: [0, 5, 5, 0]
+          }
+        })),
+        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 11,
+          formatter: p => {
+            const g = p.data.growth || 0;
+            const sign = g >= 0 ? '▲' : '▼';
+            return `${p.value}  ${sign}${Math.abs(g)}%`;
+          }
+        }
       }]
     });
   }
@@ -92,9 +111,10 @@
       legend: { bottom: 0, textStyle: { color: '#8b95a7' }, type: 'scroll' },
       series: [{
         type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
-        data: ind.map((i, idx) => ({ name: i.industry, value: i.count, itemStyle: { color: COLORS[idx % COLORS.length] } })),
-        label: { color: '#e8ecf4', fontSize: 11 },
-        labelLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } }
+        data: ind.map((i, idx) => ({ name: i.name, value: i.value, itemStyle: { color: COLORS[idx % COLORS.length] } })),
+        label: { color: '#e8ecf4', fontSize: 11, formatter: '{b}\n{d}%' },
+        labelLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+        emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' } }
       }]
     });
   }
@@ -158,30 +178,40 @@
     const chart = init('mk-chart-map');
     if (!chart) return;
     const mapData = D.map || [];
-    // 统计各岗位在省份中的出现频次
-    const jobCount = {};
-    mapData.forEach(m => { jobCount[m.job] = (jobCount[m.job] || 0) + 1; });
-    const topJobs = Object.entries(jobCount).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    // 按省份统计需求量
+    const provinceCount = {};
+    const provinceJobs = {};
+    mapData.forEach(m => {
+      const p = m.province.replace('省', '').replace('市', '').replace('自治区', '').replace('壮族', '').replace('回族', '').replace('维吾尔', '');
+      provinceCount[p] = (provinceCount[p] || 0) + 1;
+      if (!provinceJobs[p]) provinceJobs[p] = {};
+      provinceJobs[p][m.job] = (provinceJobs[p][m.job] || 0) + 1;
+    });
 
-    // 省份横向条形图，颜色按岗位分类
-    const provinceNames = mapData.map(m => m.province.replace('省', '').replace('市', '').replace('自治区', '').replace('壮族', '').replace('回族', '').replace('维吾尔', ''));
-    const jobColorMap = {};
-    topJobs.forEach((j, i) => { jobColorMap[j[0]] = COLORS[i % COLORS.length]; });
+    // 按需求量排序，取 Top 20
+    const sorted = Object.entries(provinceCount).sort((a, b) => a[1] - b[1]).slice(-20);
+    const names = sorted.map(s => s[0]);
+    const values = sorted.map(s => s[1]);
 
     chart.setOption({
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => {
-        const m = mapData[p[0].dataIndex];
-        return `${m.province}<br/>需求岗位：<strong>${m.job}</strong>`;
+        const idx = p[0].dataIndex;
+        const name = names[idx];
+        const jobs = provinceJobs[name];
+        const topJob = Object.entries(jobs).sort((a, b) => b[1] - a[1])[0];
+        return `${name}<br/>需求总量：<strong>${values[idx]}</strong><br/>热门岗位：${topJob ? topJob[0] : '-'}`;
       }},
-      grid: { left: 80, right: 100, top: 20, bottom: 30 },
-      xAxis: { type: 'value', max: 1, show: false },
-      yAxis: { type: 'category', data: provinceNames.reverse(), ...AXIS, axisLabel: { color: '#8b95a7', fontSize: 10 } },
+      grid: { left: 80, right: 50, top: 20, bottom: 30 },
+      xAxis: { type: 'value', ...AXIS, name: '需求量', nameTextStyle: { color: '#8b95a7' } },
+      yAxis: { type: 'category', data: names, ...AXIS, axisLabel: { color: '#8b95a7', fontSize: 10 } },
+      visualMap: {
+        show: false, min: Math.min(...values), max: Math.max(...values),
+        inRange: { color: ['#22d3ee', '#6366f1', '#a855f7', '#ec4899'] }
+      },
       series: [{
-        type: 'bar', data: mapData.slice().reverse().map(m => ({
-          value: 1,
-          itemStyle: { color: jobColorMap[m.job] || '#6b7280', borderRadius: [0, 4, 4, 0] }
-        })),
-        label: { show: true, position: 'right', color: '#e8ecf4', fontSize: 10, formatter: p => mapData.slice().reverse()[p.dataIndex].job },
+        type: 'bar', data: values,
+        itemStyle: { borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 10, formatter: '{c}' },
         barWidth: '60%'
       }]
     });
@@ -283,8 +313,11 @@
     tryFetch(0);
   }
 
-  // ===== 初始化 =====
+  // ===== 初始化（懒加载：仅在市场洞察标签页首次显示时执行）=====
+  var marketInited = false;
   function initAll() {
+    if (marketInited) return;
+    marketInited = true;
     renderMetrics();
     renderHotJobs();
     renderHotSkills();
@@ -299,10 +332,20 @@
     fetchRealTimeFeed();
   }
 
+  // 暴露给外部，由标签页切换时调用
+  window.initMarketCharts = initAll;
+
+  // 兼容：如果页面加载时市场洞察已是激活状态，则直接初始化
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAll);
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.getElementById('view-market') && document.getElementById('view-market').classList.contains('active')) {
+        initAll();
+      }
+    });
   } else {
-    initAll();
+    if (document.getElementById('view-market') && document.getElementById('view-market').classList.contains('active')) {
+      initAll();
+    }
   }
 
   // resize 支持
