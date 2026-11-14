@@ -603,6 +603,95 @@
     return { items: items, errors: errors };
   }
 
+  // 行业水平参考定位：基于公开岗位数据的正态基准估算百分位
+  function normalCdf(z) {
+    var t = 1 / (1 + 0.2316419 * Math.abs(z));
+    var d = 0.3989423 * Math.exp(-z * z / 2);
+    var p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+    return z > 0 ? 1 - p : p;
+  }
+
+  function renderBenchmark() {
+    var el = document.getElementById('bm-chart');
+    if (!el || !state.profile) return;
+
+    var score = state.profile.match;
+    var salaryMid = 15;
+    var salary = state.job ? String(state.job.salary || state.job.note || '') : '';
+    var m = salary.match(/(\d+(?:\.\d+)?)\s*[-~]\s*(\d+(?:\.\d+)?)\s*[kK]/);
+    if (m) salaryMid = (parseFloat(m[1]) + parseFloat(m[2])) / 2;
+
+    // 市场均值按薪资中位校准，限制在合理区间
+    var mu = Math.min(74, Math.max(55, 56 + (salaryMid - 15) * 0.5));
+    var sigma = 13;
+    var beat = Math.round(normalCdf((score - mu) / sigma) * 100);
+    beat = Math.max(1, Math.min(99, beat));
+
+    var levelText = beat >= 85 ? '领先 · 前 15%' : (beat >= 65 ? '中上 · 前 35%' : (beat >= 40 ? '中等 · 前 60%' : '待提升'));
+    var levelColor = beat >= 85 ? '#34d399' : (beat >= 65 ? '#22d3ee' : (beat >= 40 ? '#fbbf24' : '#f87171'));
+
+    setText('bm-percentile', beat + '%');
+    var lv = document.getElementById('bm-level');
+    if (lv) { lv.textContent = levelText; lv.style.color = levelColor; }
+    setText('bm-desc', '目标岗位「' + (state.job ? state.job.name : '-') + '」市场均值约 ' + mu.toFixed(1)
+      + ' 分（σ=13），你的匹配总分 ' + score.toFixed(1) + '，估算超过 ' + beat + '% 的同岗位从业者。');
+
+    var bounds = [0, 40, 55, 70, 85, 100];
+    var labels = [];
+    var data = [];
+    for (var i = 0; i < 5; i++) {
+      var lo = bounds[i];
+      var hi = bounds[i + 1];
+      var ratio = (normalCdf((hi - mu) / sigma) - normalCdf((lo - mu) / sigma)) * 100;
+      var isMe = score >= lo && (score < hi || (i === 4 && score >= 85));
+      labels.push(lo + '-' + hi);
+      data.push({
+        value: Math.max(1, Math.round(ratio)),
+        itemStyle: {
+          color: isMe ? C.accent : C.accent2 + '66',
+          borderColor: isMe ? C.accent : 'rgba(255,255,255,.16)',
+          borderWidth: 1,
+          borderRadius: [4, 4, 0, 0],
+        },
+      });
+    }
+
+    var chart = echarts.getInstanceByDom(el) || echarts.init(el);
+    chart.setOption({
+      backgroundColor: 'transparent',
+      grid: { left: 8, right: 12, top: 26, bottom: 24, containLabel: true },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        backgroundColor: C.bg2 || '#141a27',
+        borderColor: C.rule,
+        textStyle: { color: C.ink, fontSize: 12 },
+        formatter: function (params) {
+          var p = params[0];
+          return p.name + ' 分区间<br>约占从业者 ' + p.value + '%';
+        },
+      },
+      xAxis: {
+        type: 'category',
+        data: labels,
+        axisLine: { lineStyle: { color: C.rule } },
+        axisTick: { show: false },
+        axisLabel: { color: C.muted, fontSize: 11 },
+      },
+      yAxis: {
+        type: 'value',
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,.06)' } },
+        axisLabel: { color: C.muted, fontSize: 10, formatter: '{value}%' },
+      },
+      series: [{
+        type: 'bar',
+        barWidth: '42%',
+        data: data,
+        label: { show: true, position: 'top', color: C.muted, fontSize: 10, formatter: '{c}%' },
+      }],
+    }, true);
+  }
+
   function renderAll() {
     renderMetrics();
     renderFocus();
@@ -613,6 +702,7 @@
     renderRadar();
     renderDimList();
     renderDistribution();
+    renderBenchmark();
   }
 
   function applyJob(name) {

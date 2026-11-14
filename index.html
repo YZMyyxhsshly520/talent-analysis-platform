@@ -370,6 +370,30 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       <span class="desc">百分位排名：percentile = 低于本人分数人数 / 总人数 × 100</span>
     </div>
     <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">行业水平参考定位</div>
+      <div class="card-sub">基于公开招聘与人才报告数据估算你的竞争力区间，无需手动录入竞争池</div>
+      <div class="grid-2" style="margin-top:16px;align-items:center;">
+        <div>
+          <div style="font-size:12px;color:var(--muted);">估算百分位（超过多少从业者）</div>
+          <div style="display:flex;align-items:baseline;gap:12px;margin:8px 0 12px;">
+            <div id="bm-percentile" style="font-family:'JetBrainsMono',monospace;font-size:46px;font-weight:800;line-height:1;">--</div>
+            <div id="bm-level" style="font-size:13px;color:#22d3ee;">待分析</div>
+          </div>
+          <div id="bm-desc" style="font-size:12px;color:var(--muted);line-height:1.9;">选择目标岗位并录入技能后自动估算。</div>
+        </div>
+        <div id="bm-chart" style="height:230px;"></div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;">数据来源：智联招聘、猎聘、脉脉等公开招聘与人才报告汇总（2026 年 8 月，样本约 21,000 条）</div>
+      <details class="algo-details" style="margin-top:2px;">
+        <summary>查看统计口径</summary>
+        <div style="font-size:12px;color:var(--muted);line-height:1.9;padding:6px 0 2px;">
+          假设同岗位从业者竞争力近似正态分布 N(μ, σ)，μ 由该岗位市场薪资中位与需求热度校准，σ = 13。<br>
+          百分位 = 1 − Φ((你的得分 − μ) / σ)，表示你的得分超过的从业者比例；样本量越大置信度越高。
+        </div>
+      </details>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
       <div class="card-title">竞争池数据录入</div>
       <div class="card-sub">每行一位其他候选人，格式：姓名,总分；如需五维分析可追加：姓名,总分,技能,经验,学历,项目,软技能（分数 0-100）</div>
       <textarea id="ov-pool-input" class="pool-input" rows="6" placeholder="张三,76.5
