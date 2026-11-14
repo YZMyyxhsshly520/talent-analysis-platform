@@ -244,6 +244,10 @@
   }
 
   // ===== 07 实时招聘动态 =====
+  var liveScrollRaf = null;
+  var liveScrollPaused = false;
+  var liveFeedCloned = false;
+
   function renderLiveFeed() {
     const container = document.getElementById('mk-live-feed');
     if (!container) return;
@@ -256,6 +260,51 @@
       const rest = parts.slice(1).join(' ');
       return `<div class="feed-item"><span class="feed-time">${f.time || ''}</span><span class="feed-text">${company ? `<strong>${company}</strong> ` : ''}${rest || text}</span></div>`;
     }).join('');
+    liveFeedCloned = false;
+    startLiveFeedAutoScroll();
+  }
+
+  // 招聘动态自动滚动（无缝循环，悬停暂停）
+  function startLiveFeedAutoScroll() {
+    var container = document.getElementById('mk-live-feed');
+    if (!container) return;
+    if (liveScrollRaf) { cancelAnimationFrame(liveScrollRaf); liveScrollRaf = null; }
+    liveScrollPaused = false;
+
+    // 只绑定一次交互事件：悬停/触摸暂停，移开继续
+    if (!container.dataset.scrollBound) {
+      container.dataset.scrollBound = '1';
+      container.addEventListener('mouseenter', function () { liveScrollPaused = true; });
+      container.addEventListener('mouseleave', function () { liveScrollPaused = false; });
+      container.addEventListener('touchstart', function () { liveScrollPaused = true; }, { passive: true });
+      container.addEventListener('touchend', function () { liveScrollPaused = false; }, { passive: true });
+    }
+
+    // 内容超出可视高度时复制一份，实现无缝循环
+    if (!liveFeedCloned) {
+      if (container.scrollHeight <= container.clientHeight + 4) return;
+      Array.prototype.slice.call(container.children).forEach(function (node) {
+        var clone = node.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        container.appendChild(clone);
+      });
+      liveFeedCloned = true;
+    }
+
+    var loopHeight = container.scrollHeight / 2;
+    var lastTs = 0;
+    function step(ts) {
+      if (!lastTs) lastTs = ts;
+      var dt = Math.min(ts - lastTs, 100);
+      lastTs = ts;
+      // 标签页隐藏或容器不可见时不滚动
+      if (!liveScrollPaused && container.offsetParent !== null) {
+        container.scrollTop += 0.4 * (dt / 16.67); // 约 24px/s
+        if (container.scrollTop >= loopHeight - 1) container.scrollTop -= loopHeight;
+      }
+      liveScrollRaf = requestAnimationFrame(step);
+    }
+    liveScrollRaf = requestAnimationFrame(step);
   }
 
   // ===== 实时拉取 RemoteOK 招聘数据 =====
