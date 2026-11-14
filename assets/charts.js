@@ -114,7 +114,7 @@
     names = names.slice(0, 12);
 
     var rows = names.map(function (name) {
-      var cur = clamp(0.45 + hash01(job.name + '|' + name + '|c') * 0.4, 0.4, 0.85);
+      var cur = clamp(0.6 + hash01(job.name + '|' + name + '|c') * 0.28, 0.55, 0.88);
       var target = 0.9;
       var rate = 0.5 + hash01(job.name + '|' + name + '|r') * 0.3;
       var difficulty = getDifficulty(name);
@@ -333,7 +333,7 @@
       if (circle) circle.style.background = 'conic-gradient(from -90deg, var(--bg3) 0deg, var(--bg3) 360deg)';
       setText('ov-rank-title', '待分析');
       var meta = document.getElementById('ov-rank-meta');
-      if (meta) meta.textContent = '请先录入其他候选人的匹配总分，再生成竞争力排名。';
+      if (meta) meta.textContent = '请先确认其他候选人数据，点击「开始分析」后生成竞争力排名。';
       return;
     }
     var st = poolStats();
@@ -418,10 +418,10 @@
   function renderDistribution() {
     var caption = document.getElementById('ov-dist-caption');
     if (!state.analyzed) {
-      if (caption) caption.textContent = '竞争池分数段分布（待录入数据）';
+      if (caption) caption.textContent = '竞争池分数段分布（待分析）';
       chartDist.setOption({
         animation: false,
-        graphic: [{ type: 'text', left: 'center', top: 'middle', style: { text: '请输入其他候选人数据后生成分数段分布', fill: C.muted, fontSize: 13 } }],
+        graphic: [{ type: 'text', left: 'center', top: 'middle', style: { text: '点击「开始分析」后生成分数段分布', fill: C.muted, fontSize: 13 } }],
         xAxis: { show: false }, yAxis: { show: false },
         grid: { left: 0, right: 0, top: 0, bottom: 0 },
         series: [],
@@ -551,33 +551,32 @@
     renderAll();
   }
 
-  // 生成 20 位示例候选人（含五维分数），围绕当前岗位本人得分分布，便于演示
+  // 示例竞争池数据（20 位候选人，含五维分数），用于项目演示
+  var SAMPLE_POOL_LINES = [
+    '陈晨,95.6,94.2,90.5,96.8,92.4,95.1',
+    '李明,91.2,92.8,86.4,93.5,88.9,90.2',
+    '王芳,88.4,86.5,89.2,91.4,84.7,88.8',
+    '张伟,85.1,83.6,86.9,82.4,87.5,84.2',
+    '刘洋,82.6,84.1,79.8,85.7,80.3,83.6',
+    '赵敏,80.3,78.9,82.6,84.2,77.8,81.1',
+    '周杰,78.9,80.2,76.4,79.8,77.1,78.5',
+    '吴倩,77.2,75.8,78.9,81.6,73.4,76.8',
+    '徐磊,75.8,74.6,77.2,72.9,76.5,75.3',
+    '孙悦,71.0,70.6,72.4,74.2,69.3,71.5',
+    '马超,71.1,72.6,68.4,73.2,69.8,71.6',
+    '朱婷,68.5,67.2,70.4,72.8,65.9,68.1',
+    '胡军,66.2,68.4,63.1,64.8,66.7,65.3',
+    '郭静,63.9,62.5,65.8,67.4,61.2,63.6',
+    '何涛,61.4,63.2,59.7,60.5,62.8,60.9',
+    '高雪,58.7,57.4,61.2,59.6,55.8,58.2',
+    '林峰,54.3,56.8,51.4,53.7,54.9,52.6',
+    '罗娜,49.8,48.2,52.6,51.3,47.5,49.1',
+    '郑浩,44.6,46.3,42.8,43.5,45.7,44.1',
+    '梁爽,38.2,36.5,40.8,39.4,37.6,38.9',
+  ];
+
   function buildSampleData() {
-    var names = ['陈晨', '李明', '王芳', '张伟', '刘洋', '赵敏', '周杰', '吴倩', '徐磊', '孙悦',
-      '马超', '朱婷', '胡军', '郭静', '何涛', '高雪', '林峰', '罗娜', '郑浩', '梁爽'];
-    var self = state.profile ? state.profile.match : 65;
-    var belowCount = 12, aboveCount = 8;
-    var lowStart = Math.max(12, round1(self - 40));
-    var highEnd = Math.min(99, round1(self + 52));
-    var scores = [];
-    for (var i = 0; i < belowCount; i++) {
-      scores.push(lowStart + (self - 1.5 - lowStart) * (i / (belowCount - 1)));
-    }
-    for (var j = 0; j < aboveCount; j++) {
-      scores.push(self + 2 + (highEnd - (self + 2)) * (j / (aboveCount - 1)));
-    }
-    return scores.map(function (score, idx) {
-      var name = names[idx % names.length];
-      var total = clamp(round1(score), 0, 100);
-      var dims = [
-        clamp(round1(total + (hash01(name + '|技能') - 0.5) * 12), 0, 100),
-        clamp(round1(total + (hash01(name + '|经验') - 0.5) * 16), 0, 100),
-        clamp(round1(total + (hash01(name + '|学历') - 0.5) * 10), 0, 100),
-        clamp(round1(total + (hash01(name + '|项目') - 0.5) * 14), 0, 100),
-        clamp(round1(total + (hash01(name + '|软技能') - 0.5) * 10), 0, 100),
-      ];
-      return name + ',' + total.toFixed(1) + ',' + dims.map(function (d) { return d.toFixed(1); }).join(',');
-    }).join('\n');
+    return SAMPLE_POOL_LINES.join('\n');
   }
 
   if (analyzeBtn) {
@@ -602,6 +601,15 @@
       }
       renderAll();
     });
+  }
+
+  // 预置示例数据，便于演示（不会自动分析，仍需点击「开始分析」）
+  if (poolInput) {
+    poolInput.value = buildSampleData();
+    if (poolMsg) {
+      poolMsg.textContent = '已预置 20 位示例候选人数据，点击「开始分析」生成排名与分布';
+      poolMsg.style.color = C.muted;
+    }
   }
 
   window.addEventListener('resize', function () {
