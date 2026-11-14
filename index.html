@@ -185,6 +185,35 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 
 footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; text-align: center; color: var(--muted); font-size: 12px; }
 
+/* ===== 岗位详情抽屉 ===== */
+.jd-overlay { position: fixed; inset: 0; background: rgba(3, 6, 16, .66); backdrop-filter: blur(4px); display: none; z-index: 300; }
+.jd-overlay.open { display: block; }
+.jd-panel { position: absolute; right: 0; top: 0; height: 100%; width: min(580px, 95vw); background: var(--bg2); border-left: 1px solid var(--rule); padding: 28px 26px 48px; overflow-y: auto; box-shadow: -24px 0 70px rgba(0, 0, 0, .55); }
+.jd-close { position: absolute; right: 18px; top: 16px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--rule); background: var(--bg3); color: var(--ink); font-size: 20px; line-height: 1; cursor: pointer; }
+.jd-close:hover { border-color: var(--accent); }
+.jd-title { font-size: 22px; font-weight: 700; margin: 4px 40px 6px 0; }
+.jd-block { margin-top: 22px; }
+.jd-block h4 { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 10px; letter-spacing: .02em; }
+.jd-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; margin: 0 8px 8px 0; border-radius: 8px; font-size: 12px; border: 1px solid var(--rule); background: var(--bg3); color: var(--ink); }
+.jd-chip.ok { border-color: rgba(52, 211, 153, .45); color: #34d399; background: rgba(52, 211, 153, .1); }
+.jd-chip.partial { border-color: rgba(251, 191, 36, .45); color: #fbbf24; background: rgba(251, 191, 36, .1); }
+.jd-chip.gap { border-color: rgba(248, 113, 113, .45); color: #f87171; background: rgba(248, 113, 113, .1); }
+.jd-chip.unknown { color: var(--muted); border-style: dashed; }
+.jd-bar-row { display: flex; align-items: center; gap: 10px; font-size: 12px; margin: 8px 0; color: var(--muted); }
+.jd-bar-row .nm { width: 72px; flex: none; color: var(--ink); }
+.jd-bar { flex: 1; height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.jd-bar > span { display: block; height: 100%; border-radius: 4px; background: linear-gradient(90deg, #22d3ee, #a78bfa); }
+.jd-cover { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.jd-cover div { background: var(--bg3); border-radius: 8px; padding: 10px; text-align: center; font-size: 11px; color: var(--muted); }
+.jd-cover b { display: block; font-size: 18px; margin-bottom: 2px; color: var(--ink); }
+.job-chip { cursor: pointer; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--bg3); color: var(--ink); font-size: 12px; transition: .18s; }
+.job-chip:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.plan-status { padding: 4px 8px; border-radius: 6px; background: var(--bg3); border: 1px solid var(--rule); color: var(--ink); font-size: 12px; }
+.plan-del { border: none; background: transparent; color: var(--muted); cursor: pointer; font-size: 14px; }
+.plan-del:hover { color: #f87171; }
+.plan-toast { position: fixed; left: 50%; bottom: 36px; transform: translateX(-50%) translateY(20px); background: #1a2233; border: 1px solid var(--rule); color: var(--ink); padding: 10px 18px; border-radius: 10px; font-size: 13px; opacity: 0; pointer-events: none; transition: .25s; z-index: 400; }
+.plan-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 @media (max-width: 900px) {
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -245,7 +274,10 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
         </figure>
       </div>
       <div class="card">
-        <div class="card-title" id="ov-focus-name">重点技能：-</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div class="card-title" id="ov-focus-name">重点技能：-</div>
+          <button id="ov-plan-add" class="btn btn-ghost" style="padding:6px 12px;">加入学习计划</button>
+        </div>
         <div class="card-sub" id="ov-focus-sub">-</div>
         <figure class="chart-figure">
           <figcaption>单技能成长曲线</figcaption>
@@ -420,6 +452,30 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     </div>
   </section>
 
+  <section>
+    <div class="section-head">
+      <span class="section-num">03</span>
+      <h2>学习计划 · 行动看板</h2>
+      <span class="desc">缺口技能 → 可执行清单，状态自动保存在本地浏览器</span>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">行动清单</div>
+          <div class="card-sub">每个缺口技能一行：预计用时 / 前置技能 / 推荐资源 / 状态，可手动切换进度</div>
+        </div>
+        <button id="plan-add-btn" class="btn btn-ghost">加入当前缺口技能</button>
+      </div>
+      <div id="plan-summary" style="font-size:12px;color:var(--muted);margin:10px 0 4px;"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>技能</th><th>预计用时</th><th>前置技能</th><th>推荐资源</th><th>状态</th><th></th></tr></thead>
+          <tbody id="plan-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <div id="as-empty-hint" class="card empty" style="margin-top:16px;">
     <div class="empty-icon">📊</div>
     <div>填写技能数据并点击"生成分析与建议"后，结果将显示在这里。</div>
@@ -451,6 +507,8 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     </div>
     <div class="card">
       <div id="mk-chart-hot-jobs" class="chart-box tall"></div>
+      <div class="card-sub" style="margin-top:10px;">点击柱条或下方岗位标签，查看岗位详情与个人能力匹配情况</div>
+      <div id="mk-job-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
     </div>
   </section>
 
@@ -549,6 +607,14 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     </div>
   </section>
 
+  <!-- 岗位详情抽屉 -->
+  <div class="jd-overlay" id="jd-overlay">
+    <div class="jd-panel" role="dialog" aria-modal="true" aria-label="岗位详情">
+      <button class="jd-close" id="jd-close" aria-label="关闭">×</button>
+      <div id="jd-body"></div>
+    </div>
+  </div>
+
 </div>
 
 <footer>TalentAnalysis Platform · 学习资源来自公开数据（Coursera / B站 / 慕课网 / 官方文档等）· 2026-11-13</footer>
@@ -586,5 +652,6 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 <script src="./assets/charts.js"></script>
 <script src="./assets/assessment.js"></script>
 <script src="./assets/market_charts.js"></script>
+<script src="./assets/learning_plan.js"></script>
 </body>
 </html>

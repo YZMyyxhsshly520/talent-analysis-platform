@@ -690,6 +690,24 @@
     }
   }
 
+  // 供学习计划 / 岗位详情复用当前技能画像
+  window.getMySkillProfile = function () {
+    if (!state.profile) return [];
+    return state.profile.rows.map(function (r) {
+      return { name: r.name, current: r.current, target: r.target, months: r.months };
+    });
+  };
+
+  window.getMySkillLevels = function () {
+    var map = {};
+    if (state.profile) {
+      state.profile.rows.forEach(function (r) {
+        map[String(r.name).trim().toLowerCase()] = Math.round(r.current * 100);
+      });
+    }
+    return map;
+  };
+
   window.addEventListener('resize', function () {
     chartGrowth.resize();
     chartSingle.resize();

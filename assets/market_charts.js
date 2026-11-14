@@ -534,7 +534,183 @@
     }, 60000);
   }
 
-  // ===== 初始化（懒加载：仅在市场洞察标签页首次显示时执行）=====
+  // ===== 岗位详情抽屉 =====
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function findJobDetail(name) {
+    var target = String(name || '').trim();
+    var job = (D.jobs || []).filter(function (j) { return j.name === target; })[0];
+    if (!job) {
+      job = (D.jobs || []).filter(function (j) {
+        return j.name && (j.name.indexOf(target) >= 0 || target.indexOf(j.name) >= 0);
+      })[0];
+    }
+    if (job) {
+      return {
+        name: target, salary: job.salary || '', tags: job.tags || [],
+        skills: job.required_skills || [], bonus: job.bonus_skills || [],
+        kind: '在招岗位'
+      };
+    }
+    var newJob = (D.new_jobs || []).filter(function (j) { return j.name === target; })[0];
+    if (newJob) {
+      return {
+        name: target, salary: '', tags: [], skills: newJob.required_skills || [],
+        bonus: newJob.bonus_skills || [], kind: '新兴岗位'
+      };
+    }
+    var pre = (D.pre_jobs || []).filter(function (p) { return p.pre_job === target; })[0];
+    if (pre) {
+      return {
+        name: target, salary: '', tags: [pre.category].filter(Boolean),
+        skills: pre.new_skills || [], bonus: pre.out_skills || [],
+        kind: '前瞻岗位', metric: pre.metric, source: pre.source
+      };
+    }
+    var hot = (MB.hot_jobs || []).filter(function (h) { return h.name === target; })[0];
+    if (hot) {
+      return {
+        name: target, salary: '', tags: [], skills: [], bonus: [], kind: '热门岗位',
+        metric: '市场需求量 ' + hot.value + ' · 占比 ' + hot.share + '%', source: '灵枢知岗招聘数据'
+      };
+    }
+    return { name: target, salary: '', tags: [], skills: [], bonus: [], kind: '岗位' };
+  }
+
+  function salaryText(salary) {
+    if (!salary) return '面议（参考同行业水平）';
+    var m = String(salary).match(/(\d+(?:\.\d+)?)\s*[-~]\s*(\d+(?:\.\d+)?)\s*[kK]/);
+    if (m) {
+      var mid = (parseFloat(m[1]) + parseFloat(m[2])) / 2;
+      return salary + '（中位约 ' + mid + 'K/月）';
+    }
+    return salary;
+  }
+
+  function experienceText(job) {
+    var tagText = (job.tags || []).join(' ');
+    var m = tagText.match(/\d+\s*[-~]\s*\d+\s*年/);
+    if (m) return m[0];
+    if (/高级|资深|专家|架构/.test(job.name)) return '3-5 年（参考）';
+    if (/初级|助理|实习/.test(job.name)) return '1 年以内（参考）';
+    return '1-3 年（参考）';
+  }
+
+  function buildJobDetailHtml(name) {
+    var job = findJobDetail(name);
+    var levels = window.getMySkillLevels ? window.getMySkillLevels() : {};
+    var counts = { ok: 0, partial: 0, gap: 0, unknown: 0 };
+    var chips = (job.skills || []).map(function (s) {
+      var lv = levels[String(s).trim().toLowerCase()];
+      var cls = lv == null ? 'unknown' : (lv >= 70 ? 'ok' : (lv >= 40 ? 'partial' : 'gap'));
+      counts[cls] += 1;
+      var label = lv == null ? '未评估' : lv + '%';
+      return '<span class="jd-chip ' + cls + '">' + esc(s) + ' · ' + label + '</span>';
+    }).join('');
+
+    var bonusChips = (job.bonus || []).slice(0, 10).map(function (s) {
+      return '<span class="jd-chip">' + esc(s) + '</span>';
+    }).join('');
+
+    var cities = (D.map || []).slice().sort(function (a, b) { return b.demand - a.demand; }).slice(0, 6);
+    var maxDemand = cities.length ? cities[0].demand : 1;
+    var cityHtml = cities.map(function (c) {
+      return '<div class="jd-bar-row"><span class="nm">' + esc(c.province) + '</span>'
+        + '<span class="jd-bar"><span style="width:' + Math.max(6, Math.round(c.demand / maxDemand * 100)) + '%"></span></span>'
+        + '<span style="width:52px;text-align:right;">' + c.demand + '</span></div>';
+    }).join('');
+
+    var degree = (job.tags || []).filter(function (t) { return /本科|硕士|博士|大专|学历/.test(t); })[0] || '学历不限（参考）';
+    var industry = (job.tags || []).filter(function (t) { return !/本科|硕士|博士|大专|学历/.test(t); }).slice(0, 4);
+
+    var emptySkills = !(job.skills && job.skills.length);
+
+    return '<div class="jd-title">' + esc(job.name) + '</div>'
+      + '<div class="card-sub">' + esc(job.kind) + (job.metric ? ' · ' + esc(job.metric) : '') + '</div>'
+
+      + '<div class="jd-block"><h4>技能覆盖 · 对照你的能力画像</h4>'
+      + '<div class="jd-cover">'
+      + '<div><b style="color:#34d399;">' + counts.ok + '</b>已覆盖</div>'
+      + '<div><b style="color:#fbbf24;">' + counts.partial + '</b>部分覆盖</div>'
+      + '<div><b style="color:#f87171;">' + counts.gap + '</b>缺口</div>'
+      + '<div><b style="color:var(--muted);">' + counts.unknown + '</b>未评估</div>'
+      + '</div>'
+      + (emptySkills ? '<div style="font-size:12px;color:var(--muted);">该岗位暂未收录技能明细，可参考其薪资与地域需求。</div>' : '<div>' + chips + '</div>')
+      + (bonusChips ? '<div style="margin-top:6px;font-size:11px;color:var(--muted);margin-bottom:8px;">加分技能</div><div>' + bonusChips + '</div>' : '')
+      + '</div>'
+
+      + '<div class="jd-block"><h4>薪资区间</h4><div style="font-size:15px;font-weight:600;">' + esc(salaryText(job.salary)) + '</div></div>'
+
+      + '<div class="jd-block"><h4>城市 / 省份需求（全国需求最高地区参考）</h4>' + cityHtml + '</div>'
+
+      + '<div class="jd-block"><h4>经验与要求</h4>'
+      + '<div style="font-size:13px;line-height:2;">经验要求：' + esc(experienceText(job)) + '<br>学历要求：' + esc(degree) + '</div>'
+      + (industry.length ? '<div style="margin-top:8px;">' + industry.map(function (t) { return '<span class="tag" style="margin-right:6px;">' + esc(t) + '</span>'; }).join('') + '</div>' : '')
+      + '</div>'
+
+      + (job.source ? '<div style="margin-top:18px;font-size:11px;color:var(--muted);">数据来源：' + esc(job.source) + '</div>' : '')
+      + '<div style="margin-top:18px;"><button class="btn btn-primary" id="jd-to-plan">将缺口技能加入学习计划</button></div>';
+  }
+
+  function openJobDetail(name) {
+    var body = document.getElementById('jd-body');
+    var overlay = document.getElementById('jd-overlay');
+    if (!body || !overlay) return;
+    body.innerHTML = buildJobDetailHtml(name);
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    var toPlan = document.getElementById('jd-to-plan');
+    if (toPlan) {
+      toPlan.addEventListener('click', function () {
+        var job = findJobDetail(name);
+        var rows = window.getMySkillProfile ? window.getMySkillProfile() : [];
+        var levelMap = {};
+        rows.forEach(function (r) { levelMap[String(r.name).toLowerCase()] = r; });
+        var items = (job.skills || []).map(function (s) {
+          var row = levelMap[String(s).trim().toLowerCase()];
+          if (row) return { name: row.name, months: row.months };
+          return { name: s, months: null };
+        });
+        var added = window.LearningPlan ? window.LearningPlan.addSkills(items) : 0;
+        toPlan.textContent = added > 0 ? '已加入 ' + added + ' 项 ✓' : '已在学习计划中';
+      });
+    }
+  }
+
+  function closeJobDetail() {
+    var overlay = document.getElementById('jd-overlay');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderJobChips() {
+    var box = document.getElementById('mk-job-chips');
+    if (!box) return;
+    var prefer = ['算法工程师', '后端开发工程师', '前端开发工程师', '数据分析师', 'Python开发工程师', 'Java开发工程师', '测试工程师', '运维工程师'];
+    var names = prefer.filter(function (n) {
+      return (D.jobs || []).some(function (j) { return j.name === n; });
+    });
+    if (!names.length) names = (D.jobs || []).slice(0, 8).map(function (j) { return j.name; });
+    box.innerHTML = names.map(function (n) {
+      return '<button class="job-chip" data-job="' + esc(n) + '">' + esc(n) + '</button>';
+    }).join('');
+  }
+
+  document.addEventListener('click', function (e) {
+    var chip = e.target && e.target.closest ? e.target.closest('.job-chip') : null;
+    if (chip) openJobDetail(chip.getAttribute('data-job'));
+    var overlay = document.getElementById('jd-overlay');
+    if (e.target === overlay) closeJobDetail();
+  });
+  var jdCloseBtn = document.getElementById('jd-close');
+  if (jdCloseBtn) jdCloseBtn.addEventListener('click', closeJobDetail);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeJobDetail();
+  });
+
+
   var marketInited = false;
   function initAll() {
     if (marketInited) {
@@ -545,6 +721,7 @@
     marketInited = true;
     renderMetrics();
     renderHotJobs();
+    renderJobChips();
     renderHotSkills();
     renderSkillFreq();
     renderIndustry();
@@ -553,6 +730,11 @@
     renderMap();
     renderPreJobs();
     renderLiveFeed();
+    // 图表点击下钻岗位详情
+    var hotChart = echarts.getInstanceByDom(document.getElementById('mk-chart-hot-jobs'));
+    if (hotChart) hotChart.on('click', function (p) { if (p && p.name) openJobDetail(p.name); });
+    var preChart = echarts.getInstanceByDom(document.getElementById('mk-chart-pre-jobs'));
+    if (preChart) preChart.on('click', function (p) { if (p && p.name) openJobDetail(p.name); });
     updateFeedTimestamp('51job静态数据');
     // 尝试实时拉取 RemoteOK 数据更新招聘动态
     fetchRealTimeFeed();
