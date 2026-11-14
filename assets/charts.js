@@ -114,7 +114,7 @@
     names = names.slice(0, 12);
 
     var rows = names.map(function (name) {
-      var cur = clamp(0.15 + hash01(job.name + '|' + name + '|c') * 0.7, 0.1, 0.85);
+      var cur = clamp(0.45 + hash01(job.name + '|' + name + '|c') * 0.4, 0.4, 0.85);
       var target = 0.9;
       var rate = 0.5 + hash01(job.name + '|' + name + '|r') * 0.3;
       var difficulty = getDifficulty(name);
@@ -524,31 +524,70 @@
   }
 
   var analyzeBtn = document.getElementById('ov-pool-analyze');
+  var sampleBtn = document.getElementById('ov-pool-sample');
   var clearBtn = document.getElementById('ov-pool-clear');
   var poolInput = document.getElementById('ov-pool-input');
   var poolMsg = document.getElementById('ov-pool-msg');
 
-  if (analyzeBtn) {
-    analyzeBtn.addEventListener('click', function () {
-      var parsed = parsePool(poolInput ? poolInput.value : '');
-      if (!parsed.items.length) {
-        state.pool = [];
-        state.analyzed = false;
-        if (poolMsg) {
-          poolMsg.textContent = parsed.errors.length ? parsed.errors[0] : '请输入至少一位其他候选人的匹配总分';
-          poolMsg.style.color = C.bad;
-        }
-        renderAll();
-        return;
-      }
-      state.pool = parsed.items;
-      state.analyzed = true;
+  function runPoolAnalysis(okText) {
+    var parsed = parsePool(poolInput ? poolInput.value : '');
+    if (!parsed.items.length) {
+      state.pool = [];
+      state.analyzed = false;
       if (poolMsg) {
-        poolMsg.textContent = '已录入 ' + parsed.items.length + ' 位候选人'
-          + (parsed.errors.length ? '，另有 ' + parsed.errors.length + ' 行格式有误已跳过' : '');
-        poolMsg.style.color = C.good;
+        poolMsg.textContent = parsed.errors.length ? parsed.errors[0] : '请输入至少一位其他候选人的匹配总分';
+        poolMsg.style.color = C.bad;
       }
       renderAll();
+      return;
+    }
+    state.pool = parsed.items;
+    state.analyzed = true;
+    if (poolMsg) {
+      poolMsg.textContent = (okText || ('已录入 ' + parsed.items.length + ' 位候选人'))
+        + (parsed.errors.length ? '，另有 ' + parsed.errors.length + ' 行格式有误已跳过' : '');
+      poolMsg.style.color = C.good;
+    }
+    renderAll();
+  }
+
+  // 生成 20 位示例候选人（含五维分数），围绕当前岗位本人得分分布，便于演示
+  function buildSampleData() {
+    var names = ['陈晨', '李明', '王芳', '张伟', '刘洋', '赵敏', '周杰', '吴倩', '徐磊', '孙悦',
+      '马超', '朱婷', '胡军', '郭静', '何涛', '高雪', '林峰', '罗娜', '郑浩', '梁爽'];
+    var self = state.profile ? state.profile.match : 65;
+    var belowCount = 12, aboveCount = 8;
+    var lowStart = Math.max(12, round1(self - 40));
+    var highEnd = Math.min(99, round1(self + 52));
+    var scores = [];
+    for (var i = 0; i < belowCount; i++) {
+      scores.push(lowStart + (self - 1.5 - lowStart) * (i / (belowCount - 1)));
+    }
+    for (var j = 0; j < aboveCount; j++) {
+      scores.push(self + 2 + (highEnd - (self + 2)) * (j / (aboveCount - 1)));
+    }
+    return scores.map(function (score, idx) {
+      var name = names[idx % names.length];
+      var total = clamp(round1(score), 0, 100);
+      var dims = [
+        clamp(round1(total + (hash01(name + '|技能') - 0.5) * 12), 0, 100),
+        clamp(round1(total + (hash01(name + '|经验') - 0.5) * 16), 0, 100),
+        clamp(round1(total + (hash01(name + '|学历') - 0.5) * 10), 0, 100),
+        clamp(round1(total + (hash01(name + '|项目') - 0.5) * 14), 0, 100),
+        clamp(round1(total + (hash01(name + '|软技能') - 0.5) * 10), 0, 100),
+      ];
+      return name + ',' + total.toFixed(1) + ',' + dims.map(function (d) { return d.toFixed(1); }).join(',');
+    }).join('\n');
+  }
+
+  if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', function () { runPoolAnalysis(); });
+  }
+
+  if (sampleBtn) {
+    sampleBtn.addEventListener('click', function () {
+      if (poolInput) poolInput.value = buildSampleData();
+      runPoolAnalysis('已填入 20 位示例候选人并完成分析');
     });
   }
 
