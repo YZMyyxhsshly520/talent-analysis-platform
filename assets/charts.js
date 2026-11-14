@@ -760,6 +760,25 @@
     return map;
   };
 
+  // 应用「能力测评」结果：切换目标岗位并写入各技能当前掌握度
+  window.applyTestedLevels = function (jobName, levels) {
+    var job = catalog.filter(function (j) { return j.name === jobName; })[0];
+    if (!job) return { applied: 0, job: '' };
+    applyJob(jobName);
+    var applied = 0;
+    state.profile.rows.forEach(function (row) {
+      var v = levels && levels[row.name];
+      if (typeof v === 'number' && !isNaN(v)) {
+        setRowCurrent(row, clamp(v / 100, 0, 0.95));
+        applied += 1;
+      }
+    });
+    if (applied) refreshProfileAggregates();
+    renderAll();
+    if (selectEl) selectEl.value = jobName;
+    return { applied: applied, job: jobName };
+  };
+
   window.addEventListener('resize', function () {
     chartGrowth.resize();
     chartSingle.resize();

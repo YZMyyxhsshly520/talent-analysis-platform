@@ -250,6 +250,17 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
   .hm-value { font-size: 46px; }
 }
 
+/* ===== 能力测评 ===== */
+.test-q { padding: 14px 0; border-top: 1px solid var(--rule); }
+.test-q:first-child { border-top: none; }
+.test-q h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.test-opt { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--muted); }
+.test-opt:hover { background: var(--bg3); color: var(--ink); }
+.test-opt input { width: auto; flex: none; margin-top: 3px; accent-color: #8b9dff; }
+.test-group-title { display: flex; justify-content: space-between; margin: 20px 0 4px; font-size: 12px; color: var(--muted); }
+.test-group-title:first-child { margin-top: 4px; }
+.test-group-title b { color: var(--ink); font-size: 13px; }
+
 @media (max-width: 900px) {
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -267,6 +278,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <div class="brand"><span class="brand-dot"></span> TalentAnalysis Platform</div>
     <div class="tabs">
       <button class="tab-btn active" data-view="overview">数据总览</button>
+      <button class="tab-btn" data-view="testing">能力测评</button>
       <button class="tab-btn" data-view="assessment">能力评估</button>
       <button class="tab-btn" data-view="market">市场洞察</button>
     </div>
@@ -429,7 +441,44 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 </div>
 </div>
 
-<!-- ===================== VIEW 2: 能力评估 ===================== -->
+<!-- ===================== VIEW 2: 能力测评 ===================== -->
+<div class="view" id="view-testing">
+<div class="container">
+  <header class="hero">
+    <span class="tag">能力测评 · Skill Test</span>
+    <h1>目标岗位技能测评</h1>
+    <p>选择目标岗位，完成该岗位核心技能的测试题，系统将根据答题结果评估你在每项技能上的当前掌握度。</p>
+  </header>
+
+  <div class="card">
+    <div class="card-title">1. 选择目标岗位</div>
+    <div class="card-sub">测评范围覆盖在招岗位、新兴岗位与前瞻岗位的核心技能</div>
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px;">
+      <select id="test-job-select" class="job-select" style="max-width:460px;flex:1;"></select>
+      <button id="test-start" class="btn btn-primary">开始测评</button>
+      <button id="test-again" class="btn btn-ghost" style="display:none;">重新测评</button>
+    </div>
+    <div class="card-sub" id="test-hint" style="margin-top:10px;">请选择岗位后开始测评</div>
+  </div>
+
+  <div class="card" id="test-quiz-card" style="display:none;margin-top:16px;">
+    <div class="card-title">2. 完成技能测试</div>
+    <div class="card-sub" id="test-progress">已作答 0 / 0</div>
+    <div id="test-quiz" style="margin-top:8px;"></div>
+    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+      <button id="test-submit" class="btn btn-primary">提交并生成评估</button>
+      <button id="test-cancel" class="btn btn-ghost">取消</button>
+    </div>
+  </div>
+
+  <div class="card" id="test-result-card" style="display:none;margin-top:16px;">
+    <div class="card-title">3. 掌握度评估结果</div>
+    <div id="test-result"></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== VIEW 3: 能力评估 ===================== -->
 <div class="view" id="view-assessment">
 <div class="container">
 
@@ -673,7 +722,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 <script>
 (function () {
   var btns = document.querySelectorAll('.tab-btn');
-  var views = { overview: document.getElementById('view-overview'), assessment: document.getElementById('view-assessment'), market: document.getElementById('view-market') };
+  var views = { overview: document.getElementById('view-overview'), testing: document.getElementById('view-testing'), assessment: document.getElementById('view-assessment'), market: document.getElementById('view-market') };
   btns.forEach(function (b) {
     b.addEventListener('click', function () {
       btns.forEach(function (x) { x.classList.remove('active'); });
@@ -703,5 +752,6 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 <script src="./assets/assessment.js"></script>
 <script src="./assets/market_charts.js"></script>
 <script src="./assets/learning_plan.js"></script>
+<script src="./assets/testing.js"></script>
 </body>
 </html>
