@@ -1,59 +1,74 @@
 // 市场数据（热门岗位/技能/动态实时拉取自 RemoteOK API）
-// 生成时间: 2026-11-14 10:17:50
-// 数据来源: RemoteOK API + 脉脉/猎聘/智联招聘 + 人社部新职业目录
+// 生成时间: 2026-11-14 10:40:17
+// 数据来源: RemoteOK API + 51job前程无忧 + 脉脉/猎聘/智联招聘 + 人社部新职业目录
 window.MARKET_DATA = {
   "main_board": {
     "hot_jobs": [
       {
         "name": "产品经理",
-        "value": 6499,
-        "share": 16.7,
+        "value": 7166,
+        "share": 15.5,
         "meta": "热门产品经理岗位，市场需求量大"
       },
       {
-        "name": "运维工程师",
-        "value": 5350,
-        "share": 13.7,
-        "meta": "热门运维工程师岗位，市场需求量大"
+        "name": "Java开发工程师",
+        "value": 6981,
+        "share": 15.1,
+        "meta": "热门Java开发工程师岗位，市场需求量大"
       },
       {
-        "name": "安全工程师",
-        "value": 5150,
-        "share": 13.2,
-        "meta": "热门安全工程师岗位，市场需求量大"
-      },
-      {
-        "name": "RAG/Agent工程师",
-        "value": 5000,
-        "share": 12.8,
-        "meta": "热门RAG/Agent工程师岗位，市场需求量大"
-      },
-      {
-        "name": "AI/大模型算法工程师",
-        "value": 4750,
-        "share": 12.2,
-        "meta": "热门AI/大模型算法工程师岗位，市场需求量大"
+        "name": "测试工程师",
+        "value": 6453,
+        "share": 14.0,
+        "meta": "热门测试工程师岗位，市场需求量大"
       },
       {
         "name": "前端开发工程师",
-        "value": 4150,
-        "share": 10.6,
+        "value": 5805,
+        "share": 12.6,
         "meta": "热门前端开发工程师岗位，市场需求量大"
       },
       {
-        "name": "大数据工程师",
-        "value": 4050,
-        "share": 10.4,
-        "meta": "热门大数据工程师岗位，市场需求量大"
+        "name": "AI/大模型算法工程师",
+        "value": 5447,
+        "share": 11.8,
+        "meta": "热门AI/大模型算法工程师岗位，市场需求量大"
+      },
+      {
+        "name": "嵌入式工程师",
+        "value": 4888,
+        "share": 10.6,
+        "meta": "热门嵌入式工程师岗位，市场需求量大"
+      },
+      {
+        "name": "运维工程师",
+        "value": 4879,
+        "share": 10.6,
+        "meta": "热门运维工程师岗位，市场需求量大"
       },
       {
         "name": "全栈开发工程师",
-        "value": 4050,
-        "share": 10.4,
+        "value": 4510,
+        "share": 9.8,
         "meta": "热门全栈开发工程师岗位，市场需求量大"
       }
     ],
     "hot_skills": [
+      {
+        "name": "本科",
+        "value": 236,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "年终奖金",
+        "value": 150,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "专业培训",
+        "value": 104,
+        "growth_rate": 20.0
+      },
       {
         "name": "exec",
         "value": 90,
@@ -70,6 +85,16 @@ window.MARKET_DATA = {
         "growth_rate": 20.0
       },
       {
+        "name": "计算机",
+        "value": 78,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "3年及以上",
+        "value": 74,
+        "growth_rate": 20.0
+      },
+      {
         "name": "dev",
         "value": 72,
         "growth_rate": 20.0
@@ -78,83 +103,75 @@ window.MARKET_DATA = {
         "name": "customer support",
         "value": 70,
         "growth_rate": 20.0
-      },
-      {
-        "name": "marketing",
-        "value": 64,
-        "growth_rate": 20.0
-      },
-      {
-        "name": "design",
-        "value": 62,
-        "growth_rate": 20.0
-      },
-      {
-        "name": "ops",
-        "value": 62,
-        "growth_rate": 20.0
-      },
-      {
-        "name": "golang",
-        "value": 60,
-        "growth_rate": 20.0
-      },
-      {
-        "name": "technical",
-        "value": 54,
-        "growth_rate": 20.0
       }
     ],
     "industry_trend": [
       {
+        "name": "其他",
+        "value": 143,
+        "share": 59.8
+      },
+      {
         "name": "数字化",
         "value": 31,
-        "share": 40.3
+        "share": 13.0
       },
       {
         "name": "互联网企业",
-        "value": 17,
-        "share": 22.1
-      },
-      {
-        "name": "其他",
-        "value": 14,
-        "share": 18.2
+        "value": 27,
+        "share": 11.3
       },
       {
         "name": "AI应用",
-        "value": 10,
-        "share": 13.0
+        "value": 26,
+        "share": 10.9
+      },
+      {
+        "name": "云原生部署",
+        "value": 5,
+        "share": 2.1
       },
       {
         "name": "金融科技",
         "value": 3,
-        "share": 3.9
+        "share": 1.3
       },
       {
         "name": "数据驱动",
-        "value": 1,
-        "share": 1.3
+        "value": 2,
+        "share": 0.8
       },
       {
         "name": "系统集成",
-        "value": 1,
-        "share": 1.3
+        "value": 2,
+        "share": 0.8
       }
     ],
     "salary_trend": [
       {
-        "name": "Academic Dean for MiaPrep Online Academy of Ohio",
-        "salary": 44.0,
+        "name": "Oracle Fusion Cloud Lead â Logistics & Supply Chain Management",
+        "salary": 33.0,
         "count": 1
       },
       {
-        "name": "Oracle Fusion Cloud Lead â Logistics & Supply Chain Management",
-        "salary": 33.0,
+        "name": "Academic Dean for MiaPrep Online Academy of Ohio",
+        "salary": 44.0,
         "count": 1
       }
     ],
     "required_skills_freq": [
+      {
+        "name": "本科",
+        "value": 118
+      },
+      {
+        "name": "年终奖金",
+        "value": 75
+      },
+      {
+        "name": "专业培训",
+        "value": 52
+      },
       {
         "name": "exec",
         "value": 45
@@ -166,6 +183,14 @@ window.MARKET_DATA = {
       {
         "name": "digital nomad",
         "value": 42
+      },
+      {
+        "name": "计算机",
+        "value": 39
+      },
+      {
+        "name": "3年及以上",
+        "value": 37
       },
       {
         "name": "dev",
@@ -180,11 +205,11 @@ window.MARKET_DATA = {
         "value": 32
       },
       {
-        "name": "design",
+        "name": "ops",
         "value": 31
       },
       {
-        "name": "ops",
+        "name": "design",
         "value": 31
       },
       {
@@ -192,154 +217,130 @@ window.MARKET_DATA = {
         "value": 30
       },
       {
-        "name": "technical",
-        "value": 27
-      },
-      {
-        "name": "senior",
-        "value": 26
-      },
-      {
-        "name": "medical",
-        "value": 24
-      },
-      {
-        "name": "sys admin",
-        "value": 21
-      },
-      {
-        "name": "finance",
-        "value": 21
-      },
-      {
-        "name": "infosec",
-        "value": 19
+        "name": "2年及以上",
+        "value": 29
       }
     ],
     "live_feed": [
       {
-        "time": "10:17",
-        "text": "Supabase Remote 发布Software Engineer AI Tooling招聘"
+        "time": "10:40",
+        "text": "福建顶点软件股份有限公司 福州 发布高级Java开发工程师(AME01E04)招聘"
       },
       {
-        "time": "10:17",
-        "text": "Pragmatike Remote 发布Research Engineer Privacy and Anonymization招聘"
+        "time": "10:40",
+        "text": "京北方信息技术股份有限公司珠海分公司 福州 发布银行性能测试工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "AMBOSS New York 发布Freelance Question Reviewers招聘"
+        "time": "10:40",
+        "text": "福建华东船厂有限公司 福州·罗源县 发布财务副经理（数字化方向）招聘"
       },
       {
-        "time": "10:17",
-        "text": "Boston Scientific Remote 发布Patient Care Specialist I招聘"
+        "time": "10:40",
+        "text": "福州高意光学有限公司 福州·晋安区 发布NPI Engineer, Test Development/测试开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Addepto Remote 发布Data Engineer招聘"
+        "time": "10:40",
+        "text": "福州维理企业管理咨询有限公司 福州·仓山区 发布AI应用与自动化工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Buoyant Remote 发布Senior Software Engineer â Kubernetes Control Plane招聘"
+        "time": "10:40",
+        "text": "兴业数字金融服务（上海）股份有限公司 福州·台江区 发布Java开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Extend Your Team Remote 发布HIL Support Specialist招聘"
+        "time": "10:40",
+        "text": "福州高意光学有限公司 福州·晋安区 发布R&D Engineer, Software/自动化上位机软件工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "GT Warsaw 发布Senior Agentic AI Engineer NDA招聘"
+        "time": "10:40",
+        "text": "兴业数字金融服务（上海）股份有限公司 福州·台江区 发布java开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Pebl Remote 发布Recruiting Coordinator招聘"
+        "time": "10:40",
+        "text": "福建顶点软件股份有限公司 福州·鼓楼区 发布C++开发工程师(TLA01E01)招聘"
       },
       {
-        "time": "10:17",
-        "text": "CertiK Remote 发布Web3 Business Development招聘"
+        "time": "10:40",
+        "text": "中道合创（福州）财务管理有限公司 福州·鼓楼区 发布财务顾问bp招聘"
       },
       {
-        "time": "10:17",
-        "text": "Adaptive Innovations Houston 发布Revenue Cycle Manager招聘"
+        "time": "10:40",
+        "text": "深圳市长亮科技股份有限公司 福州 发布高级Java开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Pencil EMEA 发布Senior Product Manager招聘"
+        "time": "10:40",
+        "text": "福建大立科技有限公司 福州·仓山区 发布数据统计师招聘"
       },
       {
-        "time": "10:17",
-        "text": "RainFocus Any State 发布UI Developer招聘"
+        "time": "10:40",
+        "text": "闽都创新实验室 福州·闽侯县 发布高级嵌入式软件工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Harvey Remote 发布Account Executive Enterprise招聘"
+        "time": "10:40",
+        "text": "闽都创新实验室 福州·闽侯县 发布软件工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Salvo Software Remote 发布AI Developer招聘"
+        "time": "10:40",
+        "text": "正大天晴药业集团股份有限公司 福州 发布区域产品经理（福州-综合创新线）(J16216)招聘"
       },
       {
-        "time": "10:17",
-        "text": "Serve Robotics los angeles 发布Accountant招聘"
+        "time": "10:40",
+        "text": "福建大娱号信息科技股份有限公司 福州·鼓楼区 发布前端开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Toptal Anywhere in the World 发布Agile Program Manager招聘"
+        "time": "10:40",
+        "text": "福建顶点软件股份有限公司 福州 发布前端开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Silver.dev Remote 发布Feltsense AI Engineer招聘"
+        "time": "10:40",
+        "text": "北京清大高科系统控制有限公司 福州·鼓楼区 发布项目维护工程师-福州市招聘"
       },
       {
-        "time": "10:17",
-        "text": "Toptal Anywhere in the World 发布Operations Expert with Python for AI Supply Chain Task Design招聘"
+        "time": "10:40",
+        "text": "物产中大期货有限公司 福州·台江区 发布福州营业部产品经理招聘"
       },
       {
-        "time": "10:17",
-        "text": "Toptal Anywhere in the World 发布ML Inference Engineer â Terminal-Bench Task Designer (vLLM / SGLang / TensorRT-LLM)招聘"
+        "time": "10:40",
+        "text": "福建顶点软件股份有限公司 福州·鼓楼区 发布大客户销售代表(26届)招聘"
       },
       {
-        "time": "10:17",
-        "text": "Lemon.io Remote 发布Senior Vue Developer招聘"
+        "time": "10:40",
+        "text": "兴业数字金融服务（上海）股份有限公司 福州·台江区 发布前端开发工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "CivilGrid Boston 发布Senior Staff Infrastructure & Security Engineer招聘"
+        "time": "10:40",
+        "text": "腾景科技股份有限公司 福州·马尾区 发布测试工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "iMerit Remote 发布AI Content Reviewer Video Annotation招聘"
+        "time": "10:40",
+        "text": "兴业数字金融服务（上海）股份有限公司 福州·台江区 发布Java工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Claims Remote 发布Software Engineer招聘"
+        "time": "10:40",
+        "text": "华润电力投资有限公司 福州·台江区 发布人工智能应用工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Kyra US 发布Paid Media Manager US招聘"
+        "time": "10:40",
+        "text": "福耀玻璃工业集团股份有限公司 福州 发布AI数据治理招聘"
       },
       {
-        "time": "10:17",
-        "text": "Ringbook Limited Remote 发布Tech lead招聘"
+        "time": "10:40",
+        "text": "京北方信息技术股份有限公司 福州·台江区 发布测试工程师招聘"
       },
       {
-        "time": "10:17",
-        "text": "Docusketch Remote 发布AI ML Engineer招聘"
+        "time": "10:40",
+        "text": "福建星云电子股份有限公司 福州·马尾区 发布锂电池测试设备产品经理（海外）招聘"
       },
       {
-        "time": "10:17",
-        "text": "Sodalis, Inc. Palo Alto 发布Software Engineer Infrastructure招聘"
+        "time": "10:40",
+        "text": "上海世浦泰膜科技有限公司 福州·鼓楼区 发布运维工程师（水处理）招聘"
       },
       {
-        "time": "10:17",
-        "text": "Capmo Remote 发布Team Lead Account Executive招聘"
-      },
-      {
-        "time": "10:17",
-        "text": "Mecka Remote 发布Partner Operations Manager招聘"
+        "time": "10:40",
+        "text": "腾景科技股份有限公司 福州·马尾区 发布自动化工程师招聘"
       }
     ],
-    "update_time": "2026-11-14 10:17:50",
-    "data_source": "RemoteOK API + 脉脉/猎聘/智联招聘 + 人社部新职业目录"
+    "update_time": "2026-11-14 10:40:17",
+    "data_source": "RemoteOK API + 51job前程无忧 + 脉脉/猎聘/智联招聘 + 人社部新职业目录"
   },
   "jobs": [
     {
@@ -5051,11 +5052,11 @@ window.MARKET_DATA = {
     ]
   ],
   "summary": {
-    "job_count": 77,
-    "skill_count": 142,
-    "industry_count": 7,
+    "job_count": 240,
+    "skill_count": 826,
+    "industry_count": 8,
     "region_count": 32,
     "pre_job_count": 15,
-    "update_time": "2026-11-14 10:17:50"
+    "update_time": "2026-11-14 10:40:17"
   }
 };
