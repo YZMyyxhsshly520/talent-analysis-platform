@@ -343,79 +343,183 @@
     liveScrollRaf = requestAnimationFrame(step);
   }
 
-  // ===== 实时拉取 RemoteOK 招聘数据 =====
+  // ===== 实时拉取招聘数据（Remotive / RemoteOK 多源，60 秒自动刷新）=====
   var autoRefreshTimer = null;
+  var liveFeedRealJobs = [];
+  var liveFeedRotation = 0;
+  var liveFeedFetching = false;
+  var lastFeedFetchAt = 0;
+
+  var TECH_RE = /python|java\b|javascript|typescript|react|vue|node|golang|go\b|rust|c\+\+|docker|kubernetes|aws|devops|machine learning|deep learning|\bai\b|\bml\b|data engineer|data scientist|data analyst|backend|frontend|full ?stack|sql|security|blockchain|embedded|nlp|rag|agent|engineer|developer|programmer|architect/i;
 
   function updateFeedTimestamp(source) {
     var sub = document.getElementById('mk-live-feed-sub');
     if (sub) {
       var now = new Date();
       var timeStr = now.toLocaleString('zh-CN', { hour12: false });
-      sub.textContent = '数据来源：51job前程无忧 + RemoteOK · 上次更新：' + timeStr + '（' + source + '）';
+      sub.textContent = '数据来源：' + source + ' · 上次更新：' + timeStr + '（每 60 秒自动刷新）';
     }
   }
 
-  function fetchRealTimeFeed() {
-    var proxyUrls = [
-      'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://remoteok.com/api'),
-      'https://corsproxy.io/?url=' + encodeURIComponent('https://remoteok.com/api'),
-    ];
-    var tryFetch = function (idx) {
-      if (idx >= proxyUrls.length) {
-        // 所有代理失败，保留原有 51job 数据
-        updateFeedTimestamp('51job静态数据');
-        return;
+  function fetchJSON(url) {
+    return new Promise(function (resolve, reject) {
+      var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var timer = setTimeout(function () {
+        if (ctrl) ctrl.abort();
+        reject(new Error('请求超时'));
+      }, 12000);
+      var opt = { cache: 'no-store' };
+      if (ctrl) opt.signal = ctrl.signal;
+      fetch(url, opt)
+        .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function (d) { clearTimeout(timer); resolve(d); })
+        .catch(function (e) { clearTimeout(timer); reject(e); });
+    });
+  }
+
+  function relativeTime(input) {
+    var t = new Date(input).getTime();
+    if (!t || isNaN(t)) return '';
+    var mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+    if (mins < 60) return mins + '分钟前';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 24) return hrs + '小时前';
+    return Math.round(hrs / 24) + '天前';
+  }
+
+  function mapRemoteOKList(payload) {
+    if (!Array.isArray(payload)) throw new Error('非列表');
+    return payload.filter(function (x) {
+      return x && typeof x === 'object' && x.id && (x.position || x.title);
+    }).map(function (j) {
+      var salary = '';
+      if (j.salary_min && j.salary_max) {
+        salary = '$' + Math.round(j.salary_min / 1000) + 'k-$' + Math.round(j.salary_max / 1000) + 'k';
       }
-      fetch(proxyUrls[idx])
-        .then(function (r) { return r.ok ? r.json() : Promise.reject('HTTP ' + r.status); })
-        .then(function (payload) {
-          if (!Array.isArray(payload)) throw new Error('非列表');
-          var rawJobs = payload.filter(function (x) { return x && typeof x === 'object' && x.id; });
-          var techJobs = rawJobs.filter(function (job) {
-            var title = (job.position || job.title || '').toLowerCase();
-            var desc = (job.description || '').toLowerCase();
-            var tags = Array.isArray(job.tags) ? job.tags.join(' ').toLowerCase() : '';
-            var text = title + ' ' + desc + ' ' + tags;
-            return /python|java|javascript|typescript|react|vue|node|golang|rust|c\+\+|docker|kubernetes|aws|devops|machine learning|deep learning|ai|ml|data|backend|frontend|full ?stack|sql|security|blockchain|embedded|nlp|cv|rag|agent/.test(text);
-          }).slice(0, 20);
+      return {
+        id: 'remoteok-' + j.id,
+        title: (j.position || j.title || '').trim(),
+        company: (j.company || '').trim(),
+        location: (j.location || 'Remote').trim(),
+        salary: salary,
+        date: j.date,
+        tags: j.tags || [],
+        source: 'RemoteOK'
+      };
+    });
+  }
 
-          if (techJobs.length === 0) {
-            updateFeedTimestamp('51job静态数据');
-            return;
-          }
+  function fetchRemotive() {
+    return fetchJSON('https://remotive.com/api/remote-jobs?category=software-dev&limit=40').then(function (d) {
+      var list = (d && d.jobs) || [];
+      if (!list.length) throw new Error('无数据');
+      return list.map(function (j) {
+        return {
+          id: 'remotive-' + j.id,
+          title: (j.title || '').trim(),
+          company: (j.company_name || '').trim(),
+          location: (j.candidate_required_location || 'Remote').trim(),
+          salary: (j.salary || '').trim(),
+          date: j.publication_date,
+          tags: j.tags || [],
+          source: 'Remotive'
+        };
+      });
+    });
+  }
 
-          // 保存原有的 51job 静态数据
-          var staticFeed = (MB.live_feed || []).filter(function (f) {
-            // 判断是否为中文岗位（51job数据）
-            return /[\u4e00-\u9fa5]/.test(f.text || '');
-          });
+  function fetchRemoteOKDirect() {
+    return fetchJSON('https://remoteok.com/api').then(mapRemoteOKList);
+  }
 
-          var now = new Date();
-          var remoteFeed = techJobs.map(function (job, i) {
-            var company = (job.company || '').trim();
-            var location = (job.location || 'Remote').trim();
-            var title = (job.position || job.title || '未知岗位').trim();
-            var minsAgo = i * 2;
-            var d = new Date(now.getTime() - minsAgo * 60000);
-            var time = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
-            var parts = [];
-            if (company) parts.push(company);
-            if (location) parts.push(location);
-            parts.push('发布' + title + '招聘');
-            return { time: time, text: parts.join(' ').slice(0, 120), source: 'RemoteOK' };
-          });
-
-          // 合并：远程岗位在前，51job 静态数据在后
-          MB.live_feed = remoteFeed.concat(staticFeed).slice(0, 30);
-          renderLiveFeed();
-          updateFeedTimestamp('RemoteOK实时 + 51job');
-        })
-        .catch(function (err) {
-          console.warn('[实时拉取] 代理 ' + idx + ' 失败:', err);
-          tryFetch(idx + 1);
+  function fetchRemoteOKViaProxy() {
+    var proxies = [
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://remoteok.com/api'),
+      'https://corsproxy.io/?url=' + encodeURIComponent('https://remoteok.com/api')
+    ];
+    return new Promise(function (resolve, reject) {
+      var idx = 0;
+      (function tryNext() {
+        if (idx >= proxies.length) { reject(new Error('代理均不可用')); return; }
+        fetchJSON(proxies[idx]).then(function (payload) {
+          resolve(mapRemoteOKList(payload));
+        }).catch(function (e) {
+          console.warn('[实时拉取] 代理 ' + idx + ' 失败:', e);
+          idx += 1;
+          tryNext();
         });
-    };
-    tryFetch(0);
+      })();
+    });
+  }
+
+  // 应用实时岗位：优先技术岗，按发布时间倒序，每次刷新轮换展示位置
+  function applyRealJobs(jobs, sourceLabel) {
+    var techJobs = jobs.filter(function (j) {
+      var text = (j.title + ' ' + (j.tags || []).join(' ')).toLowerCase();
+      return TECH_RE.test(text);
+    });
+    var pool = techJobs.length >= 10 ? techJobs : jobs;
+    var seen = {};
+    var uniq = [];
+    pool.forEach(function (j) {
+      if (!j.id || seen[j.id]) return;
+      seen[j.id] = 1;
+      uniq.push(j);
+    });
+    uniq.sort(function (a, b) { return new Date(b.date).getTime() - new Date(a.date).getTime(); });
+    if (!uniq.length) throw new Error('无匹配岗位');
+
+    liveFeedRealJobs = uniq.slice(0, 80);
+    var take = 10;
+    var start = (liveFeedRotation * take) % liveFeedRealJobs.length;
+    liveFeedRotation += 1;
+
+    var realItems = [];
+    for (var i = 0; i < Math.min(take, liveFeedRealJobs.length); i++) {
+      var j = liveFeedRealJobs[(start + i) % liveFeedRealJobs.length];
+      var parts = [];
+      if (j.company) parts.push(j.company);
+      if (j.location) parts.push(j.location);
+      parts.push('发布 ' + j.title + ' 招聘');
+      if (j.salary) parts.push(j.salary);
+      realItems.push({ time: relativeTime(j.date), text: parts.join(' ').slice(0, 120), source: j.source });
+    }
+
+    var staticFeed = (MB.live_feed || []).filter(function (f) {
+      return /[\u4e00-\u9fa5]/.test(f.text || '');
+    });
+    MB.live_feed = realItems.concat(staticFeed).slice(0, 30);
+    renderLiveFeed();
+    updateFeedTimestamp(sourceLabel + ' 实时 + 51job');
+  }
+
+  function fetchRealTimeFeed() {
+    if (liveFeedFetching) return;
+    liveFeedFetching = true;
+    lastFeedFetchAt = Date.now();
+    var sub = document.getElementById('mk-live-feed-sub');
+    if (sub) sub.textContent = '正在获取实时招聘信息…';
+
+    fetchRemotive()
+      .then(function (jobs) { applyRealJobs(jobs, 'Remotive'); })
+      .catch(function (e1) {
+        console.warn('[实时拉取] Remotive 失败:', e1);
+        return fetchRemoteOKDirect()
+          .then(function (jobs) { applyRealJobs(jobs, 'RemoteOK'); })
+          .catch(function (e2) {
+            console.warn('[实时拉取] RemoteOK 直连失败:', e2);
+            return fetchRemoteOKViaProxy().then(function (jobs) { applyRealJobs(jobs, 'RemoteOK'); });
+          });
+      })
+      .catch(function (e3) {
+        console.warn('[实时拉取] 全部数据源不可用:', e3);
+        if (liveFeedRealJobs.length) {
+          updateFeedTimestamp('沿用最近一次实时数据 + 51job');
+        } else {
+          updateFeedTimestamp('51job静态数据（实时源暂不可用）');
+        }
+      })
+      .then(function () { liveFeedFetching = false; });
   }
 
   // 启动自动刷新（每60秒）
@@ -433,7 +537,11 @@
   // ===== 初始化（懒加载：仅在市场洞察标签页首次显示时执行）=====
   var marketInited = false;
   function initAll() {
-    if (marketInited) return;
+    if (marketInited) {
+      // 再次进入市场洞察时，距上次拉取超过 30 秒则刷新实时招聘信息
+      if (Date.now() - lastFeedFetchAt > 30000) fetchRealTimeFeed();
+      return;
+    }
     marketInited = true;
     renderMetrics();
     renderHotJobs();
