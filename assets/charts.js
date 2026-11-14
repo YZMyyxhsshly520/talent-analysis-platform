@@ -258,31 +258,86 @@
   }
 
   // =====================================================================
-  // 成长明细表
+  // 成长明细表（「当前」列可编辑）
   // =====================================================================
+  function statusOf(r) {
+    if (r.p12 >= 0.85) return { text: '领先', cls: 'tag-good' };
+    if (r.p12 >= 0.6) return { text: '可达', cls: 'tag-warn' };
+    return { text: '待补', cls: 'tag-bad' };
+  }
+
   function renderTable() {
     var tbody = document.getElementById('ov-growth-table');
     if (!tbody) return;
-    var rows = state.profile.rows.slice().sort(function (a, b) {
-      return (b.months || 0) - (a.months || 0);
+    var rows = state.profile.rows.map(function (r, i) { return { r: r, i: i }; }).sort(function (a, b) {
+      return (b.r.months || 0) - (a.r.months || 0);
     });
-    tbody.innerHTML = rows.map(function (r) {
-      var status, statusCls;
-      if (r.p12 >= 0.85) { status = '领先'; statusCls = 'tag-good'; }
-      else if (r.p12 >= 0.6) { status = '可达'; statusCls = 'tag-warn'; }
-      else { status = '待补'; statusCls = 'tag-bad'; }
+    tbody.innerHTML = rows.map(function (item) {
+      var r = item.r;
+      var st = statusOf(r);
       var gapBadge = (r.target - r.current) >= 0.15
         ? '<span style="font-size:10px;color:' + C.bad + ';margin-left:4px;">缺口</span>' : '';
       return '<tr>'
         + '<td style="font-family:InstrumentSans;">' + r.name + gapBadge + '</td>'
-        + '<td>' + r.current.toFixed(2) + '</td>'
-        + '<td>' + r.p3.toFixed(2) + '</td>'
-        + '<td>' + r.p6.toFixed(2) + '</td>'
-        + '<td>' + r.p12.toFixed(2) + '</td>'
+        + '<td><input class="growth-input" type="number" min="0" max="95" step="1" data-idx="' + item.i
+        + '" value="' + Math.round(r.current * 100) + '" title="可编辑当前掌握度（0-95）"></td>'
+        + '<td>' + Math.round(r.p3 * 100) + '%</td>'
+        + '<td>' + Math.round(r.p6 * 100) + '%</td>'
+        + '<td>' + Math.round(r.p12 * 100) + '%</td>'
         + '<td>' + (r.months != null ? r.months + ' 月' : '已达标') + '</td>'
-        + '<td class="' + statusCls + '">' + status + '</td>'
+        + '<td class="' + st.cls + '">' + st.text + '</td>'
         + '</tr>';
     }).join('');
+  }
+
+  // 根据「当前」掌握度重算 3/6/12 个月预测与达标用时
+  function setRowCurrent(row, cur) {
+    var target = row.target;
+    var k = 0.15 * row.rate / row.difficulty;
+    cur = clamp(cur, 0, 0.95);
+    function at(t) { return Math.min(target, target - (target - cur) * Math.exp(-k * t)); }
+    row.current = round2(cur);
+    row.p3 = round2(at(3));
+    row.p6 = round2(at(6));
+    row.p12 = round2(at(12));
+    row.months = null;
+    if (cur < target) {
+      var ratio = (target * 0.01) / (target - cur);
+      if (ratio > 0 && ratio < 1) row.months = Math.round(-Math.log(ratio) / k * 10) / 10;
+    }
+  }
+
+  // 汇总：匹配总分、缺口技能、重点技能、技能维度得分
+  function refreshProfileAggregates() {
+    var p = state.profile;
+    var avg = p.rows.reduce(function (s, r) { return s + r.current; }, 0) / p.rows.length;
+    p.match = round1(avg * 100);
+    p.gapCount = p.rows.filter(function (r) { return r.target - r.current >= 0.15; }).length;
+    p.focus = p.rows.slice().sort(function (a, b) {
+      var ga = a.target - a.current, gb = b.target - b.current;
+      if (Math.abs(gb - ga) > 0.001) return gb - ga;
+      return b.difficulty - a.difficulty;
+    })[0];
+    p.dims[0].score = round1(avg * 100);
+  }
+
+  function applySkillCurrent(idx, pct) {
+    var row = state.profile.rows[idx];
+    if (!row) return;
+    setRowCurrent(row, pct / 100);
+    refreshProfileAggregates();
+    renderAll();
+  }
+
+  // 成长明细示例数据（按技能顺序填充当前掌握度，单位 %）
+  var GROWTH_SAMPLE = [72, 58, 81, 46, 67, 88, 54, 76, 63, 49, 71, 84];
+
+  function fillGrowthSample() {
+    state.profile.rows.forEach(function (row, i) {
+      setRowCurrent(row, GROWTH_SAMPLE[i % GROWTH_SAMPLE.length] / 100);
+    });
+    refreshProfileAggregates();
+    renderAll();
   }
 
   // =====================================================================
@@ -521,6 +576,29 @@
   // =====================================================================
   if (selectEl) {
     selectEl.addEventListener('change', function () { applyJob(selectEl.value); });
+  }
+
+  // 成长明细：编辑「当前」列 / 填入示例数据
+  var growthTbody = document.getElementById('ov-growth-table');
+  if (growthTbody) {
+    growthTbody.addEventListener('change', function (e) {
+      var input = e.target;
+      if (!input || !input.classList || !input.classList.contains('growth-input')) return;
+      var idx = parseInt(input.getAttribute('data-idx'), 10);
+      var val = parseFloat(input.value);
+      if (isNaN(val)) { renderTable(); return; }
+      applySkillCurrent(idx, clamp(val, 0, 95));
+    });
+    growthTbody.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target && e.target.classList && e.target.classList.contains('growth-input')) {
+        e.target.blur();
+      }
+    });
+  }
+
+  var growthSampleBtn = document.getElementById('ov-growth-sample');
+  if (growthSampleBtn) {
+    growthSampleBtn.addEventListener('click', fillGrowthSample);
   }
 
   var analyzeBtn = document.getElementById('ov-pool-analyze');

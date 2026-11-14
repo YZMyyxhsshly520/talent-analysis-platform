@@ -108,6 +108,8 @@ thead th { text-align: left; padding: 10px 12px; color: var(--muted); font-weigh
 tbody td { padding: 10px 12px; border-bottom: 1px solid var(--rule); font-family: 'JetBrainsMono', monospace; }
 tbody tr:hover { background: var(--bg3); }
 .tag-good { color: var(--good); } .tag-warn { color: var(--warn); } .tag-bad { color: var(--bad); }
+.growth-input { width: 66px; padding: 5px 6px; background: var(--bg3); border: 1px solid var(--rule); border-radius: 6px; color: var(--ink); font-family: 'JetBrainsMono', monospace; font-size: 12px; text-align: right; }
+.growth-input:focus { outline: none; border-color: var(--accent); }
 
 /* Rank hero */
 .rank-hero { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
@@ -255,8 +257,13 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       </div>
     </div>
     <div class="card" style="margin-top:16px;">
-      <div class="card-title">全技能成长预测明细</div>
-      <div class="card-sub">当前掌握度 → 3/6/12 个月预测 → 达标用时</div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div class="card-title">全技能成长预测明细</div>
+          <div class="card-sub">「当前」列可直接编辑，修改后自动重算 3/6/12 个月预测与达标用时</div>
+        </div>
+        <button id="ov-growth-sample" class="btn btn-ghost">填入示例数据</button>
+      </div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>技能</th><th>当前</th><th>3个月</th><th>6个月</th><th>12个月</th><th>达标用时</th><th>状态</th></tr></thead>
