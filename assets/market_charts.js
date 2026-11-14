@@ -232,6 +232,57 @@
     }).join('');
   }
 
+  // ===== 实时拉取 RemoteOK 招聘数据 =====
+  function fetchRealTimeFeed() {
+    const proxyUrls = [
+      'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://remoteok.com/api'),
+      'https://corsproxy.io/?url=' + encodeURIComponent('https://remoteok.com/api'),
+    ];
+    const tryFetch = (idx) => {
+      if (idx >= proxyUrls.length) return;
+      fetch(proxyUrls[idx])
+        .then(r => r.ok ? r.json() : Promise.reject('HTTP ' + r.status))
+        .then(payload => {
+          if (!Array.isArray(payload)) throw new Error('非列表');
+          const rawJobs = payload.filter(x => x && typeof x === 'object' && x.id);
+          const techJobs = rawJobs.filter(job => {
+            const title = (job.position || job.title || '').toLowerCase();
+            const desc = (job.description || '').toLowerCase();
+            const tags = Array.isArray(job.tags) ? job.tags.join(' ').toLowerCase() : '';
+            const text = title + ' ' + desc + ' ' + tags;
+            return /python|java|javascript|typescript|react|vue|node|golang|rust|c\+\+|docker|kubernetes|aws|devops|machine learning|deep learning|ai|ml|data|backend|frontend|full ?stack|sql|security|blockchain|embedded|nlp|cv|rag|agent/.test(text);
+          }).slice(0, 30);
+
+          const now = new Date();
+          const feed = techJobs.map((job, i) => {
+            const company = (job.company || '').trim();
+            const location = (job.location || 'Remote').trim();
+            const title = (job.position || job.title || '未知岗位').trim();
+            const minsAgo = i * 2;
+            const d = new Date(now.getTime() - minsAgo * 60000);
+            const time = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+            const parts = [];
+            if (company) parts.push(company);
+            if (location) parts.push(location);
+            parts.push('发布' + title + '招聘');
+            return { time, text: parts.join(' ').slice(0, 120) };
+          });
+
+          if (feed.length > 0) {
+            MB.live_feed = feed;
+            renderLiveFeed();
+            const el = document.getElementById('mk-live-feed-title');
+            if (el) el.textContent = '实时招聘动态（来自 RemoteOK · ' + now.toLocaleTimeString('zh-CN') + ' 刷新）';
+          }
+        })
+        .catch(err => {
+          console.warn('[实时拉取] 代理 ' + idx + ' 失败:', err);
+          tryFetch(idx + 1);
+        });
+    };
+    tryFetch(0);
+  }
+
   // ===== 初始化 =====
   function initAll() {
     renderMetrics();
@@ -244,6 +295,8 @@
     renderMap();
     renderPreJobs();
     renderLiveFeed();
+    // 尝试实时拉取 RemoteOK 数据更新招聘动态
+    fetchRealTimeFeed();
   }
 
   if (document.readyState === 'loading') {

@@ -1,274 +1,345 @@
-// 市场数据（从灵枢知岗 SQL 解析生成）
-// 生成时间: 2026-11-14
-// 数据来源: 01_fix_main_board.sql + 02_board_source_tables.sql
+// 市场数据（热门岗位/技能/动态实时拉取自 RemoteOK API）
+// 生成时间: 2026-11-14 09:47:51
+// 数据来源: RemoteOK API (实时拉取)
 window.MARKET_DATA = {
   "main_board": {
     "hot_jobs": [
       {
-        "meta": "热门后端开发工程师岗位，国内市场需求量大",
-        "name": "后端开发工程师",
-        "share": 14.0,
-        "value": 8809
+        "name": "产品经理",
+        "value": 6499,
+        "share": 16.7,
+        "meta": "热门产品经理岗位，市场需求量大"
       },
       {
-        "meta": "热门Java开发工程师岗位，国内市场需求量大",
-        "name": "Java开发工程师",
-        "share": 13.8,
-        "value": 8660
+        "name": "运维工程师",
+        "value": 5350,
+        "share": 13.7,
+        "meta": "热门运维工程师岗位，市场需求量大"
       },
       {
-        "meta": "热门全栈开发工程师岗位，国内市场需求量大",
+        "name": "安全工程师",
+        "value": 5150,
+        "share": 13.2,
+        "meta": "热门安全工程师岗位，市场需求量大"
+      },
+      {
+        "name": "RAG/Agent工程师",
+        "value": 5000,
+        "share": 12.8,
+        "meta": "热门RAG/Agent工程师岗位，市场需求量大"
+      },
+      {
+        "name": "AI/大模型算法工程师",
+        "value": 4750,
+        "share": 12.2,
+        "meta": "热门AI/大模型算法工程师岗位，市场需求量大"
+      },
+      {
+        "name": "前端开发工程师",
+        "value": 4150,
+        "share": 10.6,
+        "meta": "热门前端开发工程师岗位，市场需求量大"
+      },
+      {
+        "name": "大数据工程师",
+        "value": 4050,
+        "share": 10.4,
+        "meta": "热门大数据工程师岗位，市场需求量大"
+      },
+      {
         "name": "全栈开发工程师",
-        "share": 13.1,
-        "value": 8210
-      },
-      {
-        "meta": "热门软件开发工程师岗位，国内市场需求量大",
-        "name": "软件开发工程师",
-        "share": 12.1,
-        "value": 7610
-      },
-      {
-        "meta": "热门算法工程师岗位，国内市场需求量大",
-        "name": "算法工程师",
-        "share": 12.1,
-        "value": 7610
-      },
-      {
-        "meta": "热门测试工程师岗位，国内市场需求量大",
-        "name": "测试工程师",
-        "share": 12.1,
-        "value": 7610
-      },
-      {
-        "meta": "热门系统运维工程师岗位，国内市场需求量大",
-        "name": "系统运维工程师",
-        "share": 11.6,
-        "value": 7310
-      },
-      {
-        "meta": "热门AI系统工程师岗位，国内市场需求量大",
-        "name": "AI系统工程师",
-        "share": 11.2,
-        "value": 7010
+        "value": 4050,
+        "share": 10.4,
+        "meta": "热门全栈开发工程师岗位，市场需求量大"
       }
     ],
     "hot_skills": [
       {
-        "name": "Python",
-        "value": 142,
-        "growth_rate": 12.0
-      },
-      {
-        "name": "Go",
-        "value": 136,
-        "growth_rate": 12.0
-      },
-      {
-        "name": "AI",
-        "value": 120,
-        "growth_rate": 12.0
-      },
-      {
-        "name": "Git",
-        "value": 120,
-        "growth_rate": 12.0
-      },
-      {
-        "name": "TypeScript",
-        "value": 112,
-        "growth_rate": 12.0
-      },
-      {
-        "name": "Java",
-        "value": 94,
-        "growth_rate": 12.0
-      },
-      {
-        "name": "Linux",
+        "name": "exec",
         "value": 90,
-        "growth_rate": 12.0
+        "growth_rate": 20.0
       },
       {
-        "name": "RAG",
-        "value": 88,
-        "growth_rate": 12.0
+        "name": "engineer",
+        "value": 86,
+        "growth_rate": 20.0
       },
       {
-        "name": "深度学习",
-        "value": 80,
-        "growth_rate": 12.0
+        "name": "digital nomad",
+        "value": 84,
+        "growth_rate": 20.0
       },
       {
-        "name": "SQL",
-        "value": 76,
-        "growth_rate": 12.0
+        "name": "dev",
+        "value": 72,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "customer support",
+        "value": 70,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "marketing",
+        "value": 64,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "design",
+        "value": 62,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "ops",
+        "value": 62,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "golang",
+        "value": 60,
+        "growth_rate": 20.0
+      },
+      {
+        "name": "technical",
+        "value": 54,
+        "growth_rate": 20.0
       }
     ],
     "industry_trend": [
       {
-        "count": 29,
-        "industry": "互联网",
-        "percentage": 23.8
+        "name": "数字化",
+        "value": 31,
+        "share": 40.3
       },
       {
-        "count": 16,
-        "industry": "企业数字化",
-        "percentage": 13.1
+        "name": "互联网企业",
+        "value": 17,
+        "share": 22.1
       },
       {
-        "count": 15,
-        "industry": "系统集成",
-        "percentage": 12.3
+        "name": "其他",
+        "value": 14,
+        "share": 18.2
       },
       {
-        "count": 14,
-        "industry": "数据驱动",
-        "percentage": 11.5
+        "name": "AI应用",
+        "value": 10,
+        "share": 13.0
       },
       {
-        "count": 13,
-        "industry": "AI应用",
-        "percentage": 10.7
+        "name": "金融科技",
+        "value": 3,
+        "share": 3.9
       },
       {
-        "count": 12,
-        "industry": "人工智能",
-        "percentage": 9.8
+        "name": "数据驱动",
+        "value": 1,
+        "share": 1.3
       },
       {
-        "count": 12,
-        "industry": "金融科技",
-        "percentage": 9.8
+        "name": "系统集成",
+        "value": 1,
+        "share": 1.3
+      }
+    ],
+    "salary_trend": [
+      {
+        "name": "Academic Dean for MiaPrep Online Academy of Ohio",
+        "salary": 44.0,
+        "count": 1
       },
       {
-        "count": 11,
-        "industry": "云原生部署",
-        "percentage": 9.0
+        "name": "Oracle Fusion Cloud Lead â Logistics & Supply Chain Management",
+        "salary": 33.0,
+        "count": 1
+      }
+    ],
+    "required_skills_freq": [
+      {
+        "name": "exec",
+        "value": 45
+      },
+      {
+        "name": "engineer",
+        "value": 43
+      },
+      {
+        "name": "digital nomad",
+        "value": 42
+      },
+      {
+        "name": "dev",
+        "value": 36
+      },
+      {
+        "name": "customer support",
+        "value": 35
+      },
+      {
+        "name": "marketing",
+        "value": 32
+      },
+      {
+        "name": "design",
+        "value": 31
+      },
+      {
+        "name": "ops",
+        "value": 31
+      },
+      {
+        "name": "golang",
+        "value": 30
+      },
+      {
+        "name": "technical",
+        "value": 27
+      },
+      {
+        "name": "senior",
+        "value": 26
+      },
+      {
+        "name": "medical",
+        "value": 24
+      },
+      {
+        "name": "sys admin",
+        "value": 21
+      },
+      {
+        "name": "finance",
+        "value": 21
+      },
+      {
+        "name": "infosec",
+        "value": 19
       }
     ],
     "live_feed": [
       {
-        "text": "国内企业 合肥 发布高级Python开发招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Supabase Remote 发布Software Engineer AI Tooling招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布C/C++/JAVA/Python/大数据/AI/开发（一二线城市均有岗位需求）招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Pragmatike Remote 发布Research Engineer Privacy and Anonymization招聘"
       },
       {
-        "text": "国内企业 合肥 发布高级Python后端工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "AMBOSS New York 发布Freelance Question Reviewers招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布C/C++/JAVA/Python/大数据/AI/开发招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Boston Scientific Remote 发布Patient Care Specialist I招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布JAVA/C++/C/Python14薪双休应届生可投招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Addepto Remote 发布Data Engineer招聘"
       },
       {
-        "text": "华为技术有限公司 芜湖 发布初中高级（Java/Python/JS/GO/C/C++）工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Buoyant Remote 发布Senior Software Engineer â Kubernetes Control Plane招聘"
       },
       {
-        "text": "华为技术有限公司 芜湖 发布初中高级工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Extend Your Team Remote 发布HIL Support Specialist招聘"
       },
       {
-        "text": "国内企业 合肥 发布Python互联网数据采集（爬虫）开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "GT Warsaw 发布Senior Agentic AI Engineer NDA招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布软件开发（Java、C++、嵌入式、Python、前端、go、算法等）招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Pebl Remote 发布Recruiting Coordinator招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布java/c++/C/Python/前端开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "CertiK Remote 发布Web3 Business Development招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布AI应用开发（Agent/大模型 /python/c++/java/C等）招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Adaptive Innovations Houston 发布Revenue Cycle Manager招聘"
       },
       {
-        "text": "国内企业 合肥 发布全栈工程师（java，go，python，js，re）招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Pencil EMEA 发布Senior Product Manager招聘"
       },
       {
-        "text": "国内企业 合肥 发布Python后端工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "RainFocus Any State 发布UI Developer招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布前端开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Harvey Remote 发布Account Executive Enterprise招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布AI应用开发招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Salvo Software Remote 发布AI Developer招聘"
       },
       {
-        "text": "国内企业 合肥 发布全栈开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Serve Robotics los angeles 发布Accountant招聘"
       },
       {
-        "text": "国内企业 合肥 发布python开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Toptal Anywhere in the World 发布Agile Program Manager招聘"
       },
       {
-        "text": "国内企业 合肥 发布Python 初级工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Silver.dev Remote 发布Feltsense AI Engineer招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布Java/C++/python/c/算法岗位招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Toptal Anywhere in the World 发布Operations Expert with Python for AI Supply Chain Task Design招聘"
       },
       {
-        "text": "国内企业 合肥 发布（Java/Python）开发工程师AI-全额五险一金招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Toptal Anywhere in the World 发布ML Inference Engineer â Terminal-Bench Task Designer (vLLM / SGLang / TensorRT-LLM)招聘"
       },
       {
-        "text": "国内企业 合肥 发布python工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Lemon.io Remote 发布Senior Vue Developer招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布月薪15-35k/java/c++/python后端开发/算法/测试招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "CivilGrid Boston 发布Senior Staff Infrastructure & Security Engineer招聘"
       },
       {
-        "text": "北京三快在线科技有限公司 合肥 发布前端初级 Python开发工程师 五险一金 周末双休 临近地铁招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "iMerit Remote 发布AI Content Reviewer Video Annotation招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布Java/C/C++/Python/JS 软件开发测试招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Claims Remote 发布Software Engineer招聘"
       },
       {
-        "text": "国内企业 合肥 发布Python开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Kyra US 发布Paid Media Manager US招聘"
       },
       {
-        "text": "国内企业 合肥 发布DV验证(CDC,会Python/Perl最好)招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Ringbook Limited Remote 发布Tech lead招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布C/C++/Java/Python//JS无经验可投递-双休五险一金年终奖招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Docusketch Remote 发布AI ML Engineer招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布算法工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Sodalis, Inc. Palo Alto 发布Software Engineer Infrastructure招聘"
       },
       {
-        "text": "国内企业 合肥 发布开发工程师AI-全额五险一金招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Capmo Remote 发布Team Lead Account Executive招聘"
       },
       {
-        "text": "华为技术有限公司 合肥 发布后端开发工程师招聘",
-        "time": "08-29 16:33"
+        "time": "09:47",
+        "text": "Mecka Remote 发布Partner Operations Manager招聘"
       }
-    ]
+    ],
+    "update_time": "2026-11-14 09:47:51",
+    "data_source": "RemoteOK API (实时拉取)"
   },
   "jobs": [
     {
@@ -5501,5 +5572,11 @@ window.MARKET_DATA = {
       "财务",
       1
     ]
-  ]
+  ],
+  "summary": {
+    "job_count": 77,
+    "skill_count": 142,
+    "industry_count": 7,
+    "update_time": "2026-11-14 09:47:51"
+  }
 };
