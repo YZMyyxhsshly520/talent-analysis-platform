@@ -1,4 +1,4 @@
-// 能力测评：按目标岗位抽取核心技能，通过知识题 + 自评题评估当前掌握度
+// 能力测评：按岗位技能抽题测评，含题库管理（自定义题目保存在本地）
 (function () {
   'use strict';
 
@@ -6,94 +6,151 @@
   var SELF_LABELS = ['完全不了解', '了解概念，未实操', '能独立完成项目', '能设计优化并指导他人'];
   var SELF_SCORES = [15, 40, 72, 92];
   var MAX_SKILLS = 6;
+  var KNOWLEDGE_PER_SKILL = 3;
+  var CUSTOM_KEY = 'ta_question_bank_v1';
 
-  // 技能题库：每个分类 2 道知识题，正确答案固定放在第 1 位，渲染时打乱
+  // 内置题库：正确答案统一放在第 1 位，抽题时打乱
   var BANK = [
-    { re: /python/i, qs: [
+    { id: 'python', label: 'Python', re: /python/i, qs: [
       { q: 'Python 中定义函数使用哪个关键字？', opts: ['def', 'func', 'function', 'lambda'] },
-      { q: '下列哪个表达式会创建一个列表？', opts: ['[x for x in range(3)]', '(x for x in range(3))', '{x for x in range(3)}', 'range(3)'] }
+      { q: '下列哪个表达式会创建一个列表？', opts: ['[x for x in range(3)]', '(x for x in range(3))', '{x for x in range(3)}', 'range(3)'] },
+      { q: '字典取值时key不存在、希望返回默认值，应使用？', opts: ['d.get(key, default)', 'd[key]', 'd.pop(key)', 'd.items(key)'] },
+      { q: 'with 语句的主要作用是？', opts: ['自动管理资源释放', '提升运行速度', '实现多线程', '定义类'] }
     ] },
-    { re: /java\b(?!script)/i, qs: [
+    { id: 'java', label: 'Java', re: /java\b(?!script)/i, qs: [
       { q: 'Java 源代码编译后的字节码由什么执行？', opts: ['JVM', '浏览器', '操作系统内核', '数据库'] },
-      { q: 'Java 中 String 对象具有什么特性？', opts: ['不可变', '只能存数字', '自动转小写', '必须用 new 创建'] }
+      { q: 'Java 中 String 对象具有什么特性？', opts: ['不可变', '只能存数字', '自动转小写', '必须用 new 创建'] },
+      { q: 'Java 中实现接口使用的关键字是？', opts: ['implements', 'extends', 'interface', 'abstract'] },
+      { q: 'HashMap 在 JDK8 中的底层结构是？', opts: ['数组 + 链表/红黑树', '纯链表', 'B+ 树', '跳表'] }
     ] },
-    { re: /javascript|typescript|node|前端|web/i, qs: [
-      { q: 'JavaScript 中 === 与 == 的主要区别是？', opts: ['=== 同时比较类型和值', '=== 只比较值', '== 会转换类型且更严格', '两者完全相同'] },
-      { q: 'TypeScript 相比 JavaScript 的核心增强是？', opts: ['静态类型检查', '自带数据库', '可以替代 HTML', '只能在服务端运行'] }
+    { id: 'web', label: '前端 / JavaScript / TypeScript', re: /javascript|typescript|node|前端|web/i, qs: [
+      { q: 'JavaScript 中 === 与 == 的主要区别是？', opts: ['=== 同时比较类型和值', '=== 只比较值', '== 更严格', '两者完全相同'] },
+      { q: 'TypeScript 相比 JavaScript 的核心增强是？', opts: ['静态类型检查', '自带数据库', '替代 HTML', '只能服务端运行'] },
+      { q: 'Promise 的状态一旦从 pending 变为 fulfilled 后？', opts: ['不可再改变', '可以回到 pending', '可以变为 rejected', '自动重置'] },
+      { q: '浏览器事件循环中，微任务与宏任务的执行顺序是？', opts: ['微任务先于宏任务', '宏任务先于微任务', '随机执行', '同时执行'] }
     ] },
-    { re: /vue/i, qs: [
+    { id: 'vue', label: 'Vue', re: /vue/i, qs: [
       { q: 'Vue 3 组合式 API 中 ref 定义的响应式数据通过什么访问？', opts: ['.value', '.data', '.state', '直接使用变量名'] },
-      { q: 'v-model 指令实现的是？', opts: ['双向数据绑定', '条件渲染', '列表循环', '事件阻止'] }
+      { q: 'v-model 指令实现的是？', opts: ['双向数据绑定', '条件渲染', '列表循环', '事件阻止'] },
+      { q: 'v-if 与 v-show 的主要区别是？', opts: ['v-show 通过 display 控制显隐', 'v-show 会销毁节点', 'v-if 不会重新渲染', '两者完全一致'] },
+      { q: 'Vue 3 中组件挂载完成后触发的生命周期钩子是？', opts: ['onMounted', 'onCreated', 'onBeforeMount', 'onUpdated'] }
     ] },
-    { re: /react/i, qs: [
+    { id: 'react', label: 'React', re: /react/i, qs: [
       { q: 'React 中用于管理函数组件状态的 Hook 是？', opts: ['useState', 'useFetch', 'useRoute', 'useStyle'] },
-      { q: 'React 列表渲染时 key 的主要作用是？', opts: ['帮助 diff 识别节点', '设置样式', '绑定事件', '声明类型'] }
+      { q: 'React 列表渲染时 key 的主要作用是？', opts: ['帮助 diff 识别节点', '设置样式', '绑定事件', '声明类型'] },
+      { q: 'useEffect 依赖数组为空时，副作用函数会？', opts: ['仅挂载时执行一次', '每次渲染都执行', '永不执行', '卸载时执行'] },
+      { q: 'React 中 props 的正确使用方式是？', opts: ['只读，不可直接修改', '可以随意赋值', '只能传字符串', '必须用 state 接收'] }
     ] },
-    { re: /golang|go\b/i, qs: [
+    { id: 'go', label: 'Go', re: /golang|go\b/i, qs: [
       { q: 'Go 中启动一个协程使用哪个关键字？', opts: ['go', 'async', 'thread', 'spawn'] },
-      { q: 'Go 中错误处理的常见约定是？', opts: ['函数返回 error 作为最后一个值', '统一抛异常', '使用全局错误码', '只打印日志'] }
+      { q: 'Go 中错误处理的常见约定是？', opts: ['函数返回 error 作为最后一个值', '统一抛异常', '使用全局错误码', '只打印日志'] },
+      { q: 'Go 中多个协程之间推荐使用什么通信？', opts: ['channel', '全局变量', '共享内存加锁', '文件'] },
+      { q: 'defer 语句的执行时机是？', opts: ['函数返回前', '函数开始时', '编译时', '手动调用时'] }
     ] },
-    { re: /sql|mysql|redis|数据库/i, qs: [
+    { id: 'sql', label: 'SQL / 数据库', re: /sql|mysql|redis|数据库/i, qs: [
       { q: 'SQL 中对分组结果进行过滤应使用？', opts: ['HAVING', 'WHERE', 'ORDER BY', 'LIMIT'] },
-      { q: '数据库索引最主要的作用是？', opts: ['加速查询', '压缩数据', '加密存储', '自动备份'] }
+      { q: '数据库索引最主要的作用是？', opts: ['加速查询', '压缩数据', '加密存储', '自动备份'] },
+      { q: '事务 ACID 中的 A 指的是？', opts: ['原子性', '一致性', '隔离性', '持久性'] },
+      { q: 'Redis 主要被用作？', opts: ['内存缓存', '关系型数据库', '文件系统', '消息队列代理'] }
     ] },
-    { re: /docker/i, qs: [
+    { id: 'docker', label: 'Docker', re: /docker/i, qs: [
       { q: 'Dockerfile 中指定基础镜像的指令是？', opts: ['FROM', 'BASE', 'IMAGE', 'RUN'] },
-      { q: 'Docker 镜像分层的主要好处是？', opts: ['复用层、减少存储与分发体积', '提高 CPU 主频', '自动扩缩容', '自动加密镜像'] }
+      { q: 'Docker 镜像分层的主要好处是？', opts: ['复用层、减少存储与分发体积', '提高 CPU 主频', '自动扩缩容', '自动加密镜像'] },
+      { q: '镜像与容器的关系是？', opts: ['镜像是模板，容器是运行实例', '容器是模板，镜像是实例', '两者完全相同', '容器存储在镜像仓库'] },
+      { q: 'docker-compose 主要用于？', opts: ['多容器编排', '编译源码', '管理数据库索引', '前端打包'] }
     ] },
-    { re: /kubernetes|k8s|云原生/i, qs: [
+    { id: 'k8s', label: 'Kubernetes / 云原生', re: /kubernetes|k8s|云原生/i, qs: [
       { q: 'Kubernetes 中最小的可调度单元是？', opts: ['Pod', 'Node', 'Service', 'Namespace'] },
-      { q: 'Kubernetes 中为一组 Pod 提供稳定访问入口的对象是？', opts: ['Service', 'ConfigMap', 'Secret', 'Job'] }
+      { q: 'Kubernetes 中为一组 Pod 提供稳定访问入口的对象是？', opts: ['Service', 'ConfigMap', 'Secret', 'Job'] },
+      { q: 'Deployment 主要用于管理？', opts: ['无状态应用的副本', '持久化存储', '网络策略', '集群证书'] },
+      { q: 'ConfigMap 的作用是？', opts: ['存放配置数据', '存放镜像', '调度 Pod', '暴露端口'] }
     ] },
-    { re: /机器学习|深度学习|pytorch|tensorflow|模型/i, qs: [
+    { id: 'ml', label: '机器学习 / 深度学习', re: /机器学习|深度学习|pytorch|tensorflow|模型/i, qs: [
       { q: '模型在训练集表现好、测试集明显变差，通常称为？', opts: ['过拟合', '欠拟合', '梯度消失', '数据泄漏'] },
-      { q: '深度学习中反向传播主要用于？', opts: ['计算梯度并更新参数', '加载数据集', '保存模型', '可视化网络'] }
+      { q: '深度学习中反向传播主要用于？', opts: ['计算梯度并更新参数', '加载数据集', '保存模型', '可视化网络'] },
+      { q: '交叉验证的主要目的是？', opts: ['评估模型泛化能力', '加速训练', '增加数据量', '压缩模型'] },
+      { q: '学习率设置过大通常会导致？', opts: ['训练震荡、难以收敛', '训练过慢', '模型欠拟合', '梯度为零'] }
     ] },
-    { re: /nlp|大模型|agent|rag|自然语言/i, qs: [
+    { id: 'llm', label: 'NLP / 大模型 / Agent', re: /nlp|大模型|agent|rag|自然语言/i, qs: [
       { q: 'Transformer 中建模序列依赖的核心机制是？', opts: ['自注意力机制', '卷积池化', '循环门控', '哈希索引'] },
-      { q: 'RAG 的核心思路是？', opts: ['检索外部知识增强生成', '只依赖模型记忆', '压缩模型体积', '替换分词器'] }
+      { q: 'RAG 的核心思路是？', opts: ['检索外部知识增强生成', '只依赖模型记忆', '压缩模型体积', '替换分词器'] },
+      { q: '微调（Fine-tuning）与提示工程的主要区别是？', opts: ['微调会更新模型参数', '微调不需要数据', '提示工程会更新参数', '两者等价'] },
+      { q: 'Agent 相比普通对话模型的核心能力是？', opts: ['工具调用与任务规划', '更快的推理速度', '更大的上下文', '更好的中文能力'] }
     ] },
-    { re: /算法|数据结构/i, qs: [
+    { id: 'algo', label: '算法 / 数据结构', re: /算法|数据结构/i, qs: [
       { q: '有序数组上二分查找的时间复杂度是？', opts: ['O(log n)', 'O(n)', 'O(n log n)', 'O(1)'] },
-      { q: '哈希表平均情况下的查找复杂度是？', opts: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'] }
+      { q: '哈希表平均情况下的查找复杂度是？', opts: ['O(1)', 'O(n)', 'O(log n)', 'O(n²)'] },
+      { q: '下列哪种排序算法是稳定的？', opts: ['归并排序', '快速排序', '堆排序', '选择排序'] },
+      { q: '栈的特点是？', opts: ['后进先出', '先进先出', '随机访问', '双端进出'] }
     ] },
-    { re: /测试|自动化|qa/i, qs: [
+    { id: 'test', label: '测试 / 自动化', re: /测试|自动化|qa/i, qs: [
       { q: '单元测试主要验证什么？', opts: ['最小可测试单元的行为', '整体部署流程', '网络带宽', '数据库容量'] },
-      { q: '边界值分析主要用于发现哪类缺陷？', opts: ['边界条件处理错误', '界面配色问题', '文档缺失', '沟通问题'] }
+      { q: '边界值分析主要用于发现哪类缺陷？', opts: ['边界条件处理错误', '界面配色问题', '文档缺失', '沟通问题'] },
+      { q: '回归测试的主要目的是？', opts: ['确认修改未引入新问题', '提升代码覆盖率到100%', '替代单元测试', '测试硬件性能'] },
+      { q: '测试金字塔的底层通常是？', opts: ['单元测试', 'UI 测试', '手工测试', '性能测试'] }
     ] },
-    { re: /linux|运维|shell/i, qs: [
+    { id: 'linux', label: 'Linux / 运维', re: /linux|运维|shell/i, qs: [
       { q: 'Linux 中查看当前目录文件列表的命令是？', opts: ['ls', 'cd', 'cp', 'mv'] },
-      { q: 'chmod 755 中的 7 表示什么权限组合？', opts: ['读 + 写 + 执行', '只读', '只写', '只执行'] }
+      { q: 'chmod 755 中的 7 表示什么权限组合？', opts: ['读 + 写 + 执行', '只读', '只写', '只执行'] },
+      { q: '查看当前进程的命令是？', opts: ['ps', 'df', 'du', 'tar'] },
+      { q: '查看磁盘使用情况的命令是？', opts: ['df -h', 'ps -ef', 'top', 'free -m'] }
     ] },
-    { re: /数据可视化|echarts|bi|图表/i, qs: [
+    { id: 'viz', label: '数据可视化 / BI', re: /数据可视化|echarts|bi|图表/i, qs: [
       { q: 'ECharts 中更新图表配置使用的方法是？', opts: ['setOption', 'render', 'update', 'draw'] },
-      { q: '可视化中表达数值大小最常用的映射通道是？', opts: ['位置与长度', '字体名称', '文件格式', '代码注释'] }
+      { q: '可视化中表达数值大小最常用的映射通道是？', opts: ['位置与长度', '字体名称', '文件格式', '代码注释'] },
+      { q: '用颜色区分不同类别时，最适合的是？', opts: ['分类色板', '同一颜色的深浅', '随机颜色', '灰度渐变'] },
+      { q: '仪表盘图最适合展示？', opts: ['单个指标的完成进度', '时间序列趋势', '地域分布', '多维关系'] }
     ] },
-    { re: /产品|运营/i, qs: [
+    { id: 'arch', label: '系统设计 / 架构', re: /系统|架构|微服务|设计模式/i, qs: [
+      { q: '微服务架构中，服务间通信常用的协议是？', opts: ['HTTP / RPC', 'FTP', 'SMTP', 'SNMP'] },
+      { q: '缓存击穿通常指？', opts: ['热点 key 失效瞬间大量请求打到数据库', '缓存整体过期', '网络分区', '磁盘写满'] },
+      { q: '消息队列的主要作用是？', opts: ['异步解耦与削峰填谷', '提升显卡性能', '替代数据库', '加密数据'] },
+      { q: 'CAP 理论中，分布式系统无法同时满足？', opts: ['一致性、可用性、分区容错性', '安全、性能、成本', '读、写、存储', '水平、垂直、混合扩展'] }
+    ] },
+    { id: 'product', label: '产品 / 运营', re: /产品|运营/i, qs: [
       { q: 'MVP 的核心含义是？', opts: ['最小可行产品', '最大价值产品', '多版本计划', '市场验证报告'] },
-      { q: '需求优先级排序通常围绕哪两个维度？', opts: ['价值与成本', '颜色与字体', '服务器型号', '代码行数'] }
+      { q: '需求优先级排序通常围绕哪两个维度？', opts: ['价值与成本', '颜色与字体', '服务器型号', '代码行数'] },
+      { q: '衡量用户留存通常关注？', opts: ['次日 / 7 日留存率', '页面颜色数量', '服务器数量', '代码提交次数'] },
+      { q: 'A/B 测试的主要目的是？', opts: ['对比不同方案的效果', '提升服务器性能', '压缩图片体积', '统一代码风格'] }
     ] },
-    { re: /设计|figma|交互|ui|ux/i, qs: [
+    { id: 'design', label: '设计 / 交互', re: /figma|交互|ui|ux|平面设计|视觉设计|设计规范/i, qs: [
       { q: '平面设计四大原则不包括？', opts: ['随机性', '对比', '对齐', '亲密性'] },
-      { q: 'Figma 中复用同一套界面元素应使用？', opts: ['Component 组件', '图层锁定', '画板导出', '原型连线'] }
+      { q: 'Figma 中复用同一套界面元素应使用？', opts: ['Component 组件', '图层锁定', '画板导出', '原型连线'] },
+      { q: '「对比」原则的主要作用是？', opts: ['突出重点、建立层级', '让页面更花哨', '减少留白', '统一所有字号'] },
+      { q: '8pt 栅格系统的核心价值是？', opts: ['统一间距与尺寸节奏', '限制颜色数量', '提升图片清晰度', '减少字体数量'] }
     ] },
-    { re: /大数据|hadoop|spark|hive/i, qs: [
+    { id: 'bigdata', label: '大数据 / Spark', re: /大数据|hadoop|spark|hive/i, qs: [
       { q: 'Spark 相比 MapReduce 的核心优势之一是？', opts: ['内存计算', '只能处理小数据', '不支持分布式', '无需集群'] },
-      { q: 'HDFS 默认多副本策略主要为了？', opts: ['容错与高可用', '提升显卡性能', '自动加密', '压缩日志'] }
+      { q: 'HDFS 默认多副本策略主要为了？', opts: ['容错与高可用', '提升显卡性能', '自动加密', '压缩日志'] },
+      { q: '数据倾斜通常会导致？', opts: ['部分任务耗时异常长', '所有任务均匀加速', '存储成本归零', '自动扩容'] },
+      { q: '数仓分层中 ODS 层通常存放？', opts: ['原始数据', '汇总指标', '应用报表', '临时缓存'] }
     ] },
-    { re: /安全|渗透|等保/i, qs: [
+    { id: 'data', label: '数据分析 / 数据处理', re: /数据分析|数据处理|数据工程|数据挖掘|数据治理|数据/i, qs: [
+      { q: '描述性统计中，衡量数据离散程度的指标是？', opts: ['标准差', '均值', '中位数', '众数'] },
+      { q: '处理缺失值时，较稳妥的第一步是？', opts: ['先分析缺失比例再选择策略', '直接删除整列', '全部填 0', '忽略缺失值'] },
+      { q: 'SQL 中统计每个分组的行数应使用？', opts: ['COUNT(*) 配合 GROUP BY', 'SUM(*)', 'AVG(*)', 'DISTINCT *'] },
+      { q: '相关系数接近 0 通常表示？', opts: ['线性相关性弱', '完全正相关', '完全负相关', '一定存在因果关系'] }
+    ] },
+    { id: 'security', label: '安全', re: /安全|渗透|等保/i, qs: [
       { q: '防止 SQL 注入最有效的做法是？', opts: ['使用参数化查询', '前端隐藏输入框', '关闭数据库', '增加验证码'] },
-      { q: 'XSS 攻击的核心是利用？', opts: ['页面注入恶意脚本', '物理入侵机房', '暴力破解密码', 'DDoS 流量'] }
+      { q: 'XSS 攻击的核心是利用？', opts: ['页面注入恶意脚本', '物理入侵机房', '暴力破解密码', 'DDoS 流量'] },
+      { q: '密码在数据库中应如何存储？', opts: ['加盐哈希', '明文', 'Base64 编码', '对称加密后明文可解'] },
+      { q: 'HTTPS 主要保障的是？', opts: ['传输过程加密与身份认证', '数据库备份', '服务器防病毒', '代码加密'] }
     ] },
-    { re: /网络|tcp|http|通信/i, qs: [
+    { id: 'network', label: '网络 / HTTP', re: /网络|tcp|http|通信/i, qs: [
       { q: 'HTTP 状态码 404 表示？', opts: ['资源未找到', '服务器内部错误', '请求成功', '永久重定向'] },
-      { q: 'TCP 建立连接需要几次握手？', opts: ['3 次', '1 次', '2 次', '4 次'] }
+      { q: 'TCP 建立连接需要几次握手？', opts: ['3 次', '1 次', '2 次', '4 次'] },
+      { q: 'DNS 的主要作用是？', opts: ['域名解析为 IP', '加密流量', '负载均衡', '压缩数据'] },
+      { q: 'HTTP/2 相比 HTTP/1.1 的关键特性是？', opts: ['多路复用', '明文传输', '长连接首次引入', '不再使用 TCP'] }
     ] }
   ];
+
+  var COMMON_CAT = { id: 'common', label: '通用 / 其他', re: /^$/, qs: [] };
 
   var currentJob = '';
   var currentGroups = [];
   var lastLevels = null;
+  var editingId = null;
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -108,11 +165,61 @@
     return a;
   }
 
-  function bankFor(skill) {
+  function loadCustom() {
+    try {
+      var list = JSON.parse(localStorage.getItem(CUSTOM_KEY) || '[]');
+      return Array.isArray(list) ? list : [];
+    } catch (e) { return []; }
+  }
+
+  function saveCustom(list) {
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(list)); } catch (e) { /* 忽略 */ }
+  }
+
+  function categoryOf(skill) {
     for (var i = 0; i < BANK.length; i++) {
-      if (BANK[i].re.test(skill)) return BANK[i].qs;
+      if (BANK[i].re.test(skill)) return BANK[i];
     }
-    return [];
+    return null;
+  }
+
+  // 某技能可用的全部知识题（内置 + 自定义）
+  function questionsForSkill(skill) {
+    var cat = categoryOf(skill);
+    var builtin = cat ? cat.qs.map(function (q) { return { q: q.q, opts: q.opts, correct: q.opts[0], cat: cat.id }; }) : [];
+    var custom = loadCustom().filter(function (q) {
+      return (cat && q.cat === cat.id) || (!cat && q.cat === 'common');
+    }).map(function (q) {
+      return { q: q.q, opts: q.opts, correct: q.opts[q.correct], cat: q.cat };
+    });
+    return builtin.concat(custom);
+  }
+
+  function bankCount() {
+    var n = BANK.reduce(function (s, c) { return s + c.qs.length; }, 0);
+    return n + loadCustom().length;
+  }
+
+  function buildGroups(job) {
+    var seen = {};
+    var skills = [];
+    (job.required_skills || []).forEach(function (s) {
+      var k = String(s).trim();
+      if (!k || seen[k]) return;
+      seen[k] = 1;
+      skills.push(k);
+    });
+
+    return skills.slice(0, MAX_SKILLS).map(function (skill) {
+      var pool = questionsForSkill(skill);
+      var picked = shuffle(pool).slice(0, KNOWLEDGE_PER_SKILL);
+      var qs = picked.map(function (item) {
+        var opts = shuffle(item.opts);
+        return { type: 'k', q: item.q, opts: opts, correct: item.correct };
+      });
+      qs.push({ type: 's', q: '你目前对「' + skill + '」的掌握程度更接近？', opts: SELF_LABELS.slice() });
+      return { skill: skill, qs: qs };
+    });
   }
 
   function collectJobs() {
@@ -131,29 +238,6 @@
     var all = [];
     collectJobs().forEach(function (g) { all = all.concat(g.items); });
     return all.filter(function (j) { return j.name === name; })[0];
-  }
-
-  function skillsOf(job) {
-    var seen = {};
-    var list = [];
-    (job.required_skills || []).forEach(function (s) {
-      var k = String(s).trim();
-      if (!k || seen[k]) return;
-      seen[k] = 1;
-      list.push(k);
-    });
-    return list.slice(0, MAX_SKILLS);
-  }
-
-  function buildGroups(job) {
-    return skillsOf(job).map(function (skill) {
-      var qs = bankFor(skill).slice(0, 2).map(function (item) {
-        var opts = shuffle(item.opts);
-        return { type: 'k', q: item.q, opts: opts, correct: item.opts[0] };
-      });
-      qs.push({ type: 's', q: '你目前对「' + skill + '」的掌握程度更接近？', opts: SELF_LABELS.slice() });
-      return { skill: skill, qs: qs };
-    });
   }
 
   function totalQuestions(groups) {
@@ -194,7 +278,7 @@
     var job = jobByName(sel.value);
     if (!job) { hint.textContent = '该岗位暂无技能明细，请选择其他岗位'; return; }
     var groups = buildGroups(job);
-    hint.textContent = '共 ' + groups.length + ' 项核心技能 · ' + totalQuestions(groups) + ' 道题（约 3 分钟完成）';
+    hint.textContent = '共 ' + groups.length + ' 项核心技能 · ' + totalQuestions(groups) + ' 道题（约 4 分钟完成） · 题库共 ' + bankCount() + ' 题';
   }
 
   function levelOf(v) {
@@ -214,8 +298,6 @@
   function renderResult(job, results) {
     var overall = Math.round(results.reduce(function (s, r) { return s + r.mastery; }, 0) / results.length);
     var lv = levelOf(overall);
-    var levels = {};
-    results.forEach(function (r) { levels[r.skill] = r.mastery; });
 
     var rows = results.map(function (r) {
       var l = levelOf(r.mastery);
@@ -285,7 +367,7 @@
 
     try {
       localStorage.setItem('ta_skill_test_v1', JSON.stringify({ job: currentJob, at: Date.now(), levels: lastLevels }));
-    } catch (e) { /* 忽略存储异常 */ }
+    } catch (e) { /* 忽略 */ }
 
     var applyBtn = document.getElementById('test-apply');
     if (applyBtn) {
@@ -312,14 +394,140 @@
     currentJob = job.name;
     currentGroups = buildGroups(job);
 
-    var card = document.getElementById('test-quiz-card');
-    var quiz = document.getElementById('test-quiz');
-    var resultCard = document.getElementById('test-result-card');
-    quiz.innerHTML = renderQuiz(currentGroups);
-    card.style.display = '';
-    resultCard.style.display = 'none';
+    document.getElementById('test-quiz').innerHTML = renderQuiz(currentGroups);
+    document.getElementById('test-quiz-card').style.display = '';
+    document.getElementById('test-result-card').style.display = 'none';
     updateProgress();
-    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('test-quiz-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ===== 题库管理 =====
+  function catLabel(id) {
+    var cat = BANK.filter(function (c) { return c.id === id; })[0];
+    return cat ? cat.label : (id === 'common' ? COMMON_CAT.label : id);
+  }
+
+  function renderBank() {
+    var tbody = document.getElementById('qb-body');
+    var total = document.getElementById('qb-total');
+    if (!tbody) return;
+
+    var custom = loadCustom();
+    if (total) total.textContent = bankCount();
+
+    var kw = (document.getElementById('qb-search') || {}).value || '';
+    kw = kw.trim().toLowerCase();
+
+    var rows = [];
+    BANK.forEach(function (cat) {
+      cat.qs.forEach(function (q) {
+        rows.push({ id: '', cat: cat.id, q: q.q, opts: q.opts, correct: q.opts[0], custom: false });
+      });
+    });
+    custom.forEach(function (q) {
+      rows.push({ id: q.id, cat: q.cat, q: q.q, opts: q.opts, correct: q.opts[q.correct], custom: true });
+    });
+
+    if (kw) {
+      rows = rows.filter(function (r) {
+        return (r.q + ' ' + catLabel(r.cat)).toLowerCase().indexOf(kw) >= 0;
+      });
+    }
+
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:22px 0;">没有匹配的题目</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows.slice(0, 200).map(function (r) {
+      return '<tr>'
+        + '<td style="font-size:12px;color:var(--muted);white-space:nowrap;">' + esc(catLabel(r.cat)) + '</td>'
+        + '<td style="font-size:12px;">' + esc(r.q) + '</td>'
+        + '<td style="font-size:12px;color:#34d399;">' + esc(r.correct) + '</td>'
+        + '<td style="font-size:12px;">' + (r.custom ? '<span style="color:#a5b4fc;">自定义</span>' : '<span style="color:var(--muted);">内置</span>') + '</td>'
+        + '<td>' + (r.custom
+          ? '<button class="plan-del" data-qb-edit="' + r.id + '" title="编辑" style="margin-right:6px;">✎</button><button class="plan-del" data-qb-del="' + r.id + '" title="删除">×</button>'
+          : '<span style="font-size:11px;color:var(--muted);">—</span>') + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  function fillCategorySelect() {
+    var sel = document.getElementById('qb-category');
+    if (!sel) return;
+    var opts = BANK.map(function (c) { return '<option value="' + c.id + '">' + esc(c.label) + '</option>'; });
+    opts.push('<option value="common">' + esc(COMMON_CAT.label) + '</option>');
+    sel.innerHTML = opts.join('');
+  }
+
+  function openForm(item) {
+    editingId = item ? item.id : null;
+    document.getElementById('qb-form-wrap').style.display = '';
+    document.getElementById('qb-category').value = item ? item.cat : BANK[0].id;
+    document.getElementById('qb-question').value = item ? item.q : '';
+    for (var i = 0; i < 4; i++) document.getElementById('qb-opt' + i).value = item ? item.opts[i] : '';
+    document.getElementById('qb-correct').value = item ? String(item.correct) : '0';
+    document.getElementById('qb-form-title').textContent = item ? '编辑自定义题目' : '新增自定义题目';
+  }
+
+  function closeForm() {
+    editingId = null;
+    document.getElementById('qb-form-wrap').style.display = 'none';
+  }
+
+  function saveQuestion() {
+    var cat = document.getElementById('qb-category').value;
+    var q = document.getElementById('qb-question').value.trim();
+    var opts = [0, 1, 2, 3].map(function (i) { return document.getElementById('qb-opt' + i).value.trim(); });
+    var correct = parseInt(document.getElementById('qb-correct').value, 10) || 0;
+
+    if (!q) { alert('请填写题目内容'); return; }
+    if (opts.some(function (o) { return !o; })) { alert('请填写 4 个选项'); return; }
+
+    var list = loadCustom();
+    if (editingId) {
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) if (list[i].id === editingId) { idx = i; break; }
+      if (idx >= 0) list[idx] = { id: editingId, cat: cat, q: q, opts: opts, correct: correct, ts: Date.now() };
+    } else {
+      list.push({ id: 'c_' + Date.now() + '_' + Math.floor(Math.random() * 999), cat: cat, q: q, opts: opts, correct: correct, ts: Date.now() });
+    }
+    saveCustom(list);
+    closeForm();
+    renderBank();
+    updateHint();
+  }
+
+  function initBankUI() {
+    var addBtn = document.getElementById('qb-add');
+    if (!addBtn) return;
+    fillCategorySelect();
+
+    addBtn.addEventListener('click', function () { openForm(null); });
+    document.getElementById('qb-save').addEventListener('click', saveQuestion);
+    document.getElementById('qb-cancel').addEventListener('click', closeForm);
+
+    var search = document.getElementById('qb-search');
+    if (search) search.addEventListener('input', renderBank);
+
+    var tbody = document.getElementById('qb-body');
+    tbody.addEventListener('click', function (e) {
+      var del = e.target.getAttribute && e.target.getAttribute('data-qb-del');
+      var edit = e.target.getAttribute && e.target.getAttribute('data-qb-edit');
+      if (del) {
+        if (!confirm('确定删除这道自定义题目？')) return;
+        saveCustom(loadCustom().filter(function (q) { return q.id !== del; }));
+        renderBank();
+        updateHint();
+        return;
+      }
+      if (edit) {
+        var item = loadCustom().filter(function (q) { return q.id === edit; })[0];
+        if (item) openForm(item);
+      }
+    });
+
+    renderBank();
   }
 
   function init() {
@@ -345,22 +553,15 @@
       if (qc) qc.style.display = 'none';
     });
 
-    var startBtn = document.getElementById('test-start');
-    if (startBtn) startBtn.addEventListener('click', start);
-    var againBtn = document.getElementById('test-again');
-    if (againBtn) againBtn.addEventListener('click', start);
+    document.getElementById('test-start').addEventListener('click', start);
+    document.getElementById('test-again').addEventListener('click', start);
+    document.getElementById('test-submit').addEventListener('click', submit);
+    document.getElementById('test-cancel').addEventListener('click', function () {
+      document.getElementById('test-quiz-card').style.display = 'none';
+    });
+    document.getElementById('test-quiz').addEventListener('change', updateProgress);
 
-    var submitBtn = document.getElementById('test-submit');
-    if (submitBtn) submitBtn.addEventListener('click', submit);
-    var cancelBtn = document.getElementById('test-cancel');
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', function () {
-        document.getElementById('test-quiz-card').style.display = 'none';
-      });
-    }
-
-    var quiz = document.getElementById('test-quiz');
-    if (quiz) quiz.addEventListener('change', updateProgress);
+    initBankUI();
   }
 
   init();

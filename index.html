@@ -475,6 +475,45 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <div class="card-title">3. 掌握度评估结果</div>
     <div id="test-result"></div>
   </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div>
+        <div class="card-title">题库管理</div>
+        <div class="card-sub">内置题库 <b id="qb-total">0</b> 题，支持新增 / 编辑 / 删除自定义题目；自定义题目会参与测评抽题</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input id="qb-search" class="growth-input" style="width:210px;text-align:left;" placeholder="搜索题目或分类">
+        <button id="qb-add" class="btn btn-ghost">新增题目</button>
+      </div>
+    </div>
+
+    <div id="qb-form-wrap" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--rule);border-radius:10px;">
+      <div class="card-sub" id="qb-form-title" style="margin-bottom:10px;">新增自定义题目</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <label style="font-size:11px;color:var(--muted);">所属分类<select id="qb-category" class="job-select" style="margin-top:6px;width:100%;"></select></label>
+        <label style="font-size:11px;color:var(--muted);">正确答案<select id="qb-correct" class="job-select" style="margin-top:6px;width:100%;"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></label>
+      </div>
+      <label style="display:block;font-size:11px;color:var(--muted);margin-top:10px;">题目<input id="qb-question" class="growth-input" style="width:100%;box-sizing:border-box;text-align:left;margin-top:6px;" placeholder="请输入题干"></label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+        <input id="qb-opt0" class="growth-input" style="width:100%;box-sizing:border-box;text-align:left;" placeholder="选项 A">
+        <input id="qb-opt1" class="growth-input" style="width:100%;box-sizing:border-box;text-align:left;" placeholder="选项 B">
+        <input id="qb-opt2" class="growth-input" style="width:100%;box-sizing:border-box;text-align:left;" placeholder="选项 C">
+        <input id="qb-opt3" class="growth-input" style="width:100%;box-sizing:border-box;text-align:left;" placeholder="选项 D">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button id="qb-save" class="btn btn-primary">保存题目</button>
+        <button id="qb-cancel" class="btn btn-ghost">取消</button>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-top:14px;max-height:420px;overflow:auto;">
+      <table>
+        <thead><tr><th>分类</th><th>题目</th><th>正确答案</th><th>来源</th><th>操作</th></tr></thead>
+        <tbody id="qb-body"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 </div>
 
