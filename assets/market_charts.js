@@ -33,10 +33,10 @@
       xAxis: { type: 'value', ...AXIS, name: '需求量', nameTextStyle: { color: '#8b95a7' } },
       yAxis: { type: 'category', data: jobs.map(j => j.name), ...AXIS },
       series: [{
-        type: 'bar', data: jobs.map(j => ({ value: j.value, share: j.share })),
+        type: 'bar', barWidth: '42%', data: jobs.map(j => ({ value: j.value, share: j.share })),
         itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-          { offset: 0, color: '#6366f1' }, { offset: 1, color: '#a855f7' }
-        ]), borderRadius: [0, 6, 6, 0] },
+          { offset: 0, color: 'rgba(129,140,248,.85)' }, { offset: 1, color: 'rgba(192,132,252,.85)' }
+        ]), borderRadius: [0, 6, 6, 0], borderColor: 'rgba(255,255,255,.16)', borderWidth: 1 },
         label: { show: true, position: 'right', color: '#8b95a7', fontSize: 11,
           formatter: p => `${p.value}  (${p.data.share}%)`
         }
@@ -150,14 +150,14 @@
     const otherJobs = salaries.filter(s => !hotNames.includes(s.name));
 
     const series = defaultJobs.map((s, idx) => ({
-      name: s.name, type: 'line', smooth: true, data: s.values,
-      lineStyle: { width: 2 }, itemStyle: { color: COLORS[idx % COLORS.length] },
+      name: s.name, type: 'line', smooth: true, symbol: 'none', data: s.values,
+      lineStyle: { width: 1.6 }, itemStyle: { color: COLORS[idx % COLORS.length] },
       emphasis: { focus: 'series' }
     }));
     // 其余岗位默认隐藏
     otherJobs.slice(0, 20).forEach((s, idx) => {
       series.push({
-        name: s.name, type: 'line', smooth: true, data: s.values,
+        name: s.name, type: 'line', smooth: true, symbol: 'none', data: s.values,
         lineStyle: { width: 1, type: 'dashed' }, itemStyle: { color: COLORS[(idx + 8) % COLORS.length] },
         emphasis: { focus: 'series' }
       });
@@ -206,9 +206,9 @@
       },
       series: [{
         type: 'bar', data: values,
-        itemStyle: { borderRadius: [0, 4, 4, 0] },
+        itemStyle: { borderRadius: [0, 4, 4, 0], opacity: .7, borderColor: 'rgba(255,255,255,.18)', borderWidth: 1 },
         label: { show: true, position: 'right', color: '#8b95a7', fontSize: 10, formatter: '{c}' },
-        barWidth: '60%'
+        barWidth: '42%'
       }]
     });
   }
@@ -262,9 +262,9 @@
       },
       series: [{
         type: 'bar', data: values,
-        itemStyle: { borderRadius: [0, 4, 4, 0] },
+        itemStyle: { borderRadius: [0, 4, 4, 0], opacity: .7, borderColor: 'rgba(255,255,255,.18)', borderWidth: 1 },
         label: { show: true, position: 'right', color: '#8b95a7', fontSize: 10, formatter: '{c}' },
-        barWidth: '60%'
+        barWidth: '42%'
       }]
     });
   }

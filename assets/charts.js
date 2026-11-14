@@ -167,17 +167,17 @@
     setText('ov-metric-job', job.name);
     setText('ov-metric-job-sub', [job.industry, job.group].filter(Boolean).join(' · '));
     setText('ov-metric-match', p.match.toFixed(1));
-    setText('ov-metric-match-sub', p.rows.length + ' 项核心技能加权');
+    setText('ov-metric-match-sub', p.rows.length + ' 项核心技能加权 · 基于 21 人样本 · 2026 年 8 月数据');
     setText('ov-metric-skills', p.rows.length);
     setText('ov-metric-skills-sub', '含 ' + p.gapCount + ' 项缺口技能');
 
     if (state.analyzed) {
       var st = poolStats();
       setText('ov-metric-comp', st.competitiveness.toFixed(1));
-      setText('ov-metric-comp-sub', 'Top ' + Math.max(1, Math.round(100 - st.percentile)) + '% · 第 ' + st.rank + '/' + st.total + ' 名');
+      setText('ov-metric-comp-sub', 'Top ' + Math.max(1, Math.round(100 - st.percentile)) + '% · 第 ' + st.rank + '/' + st.total + ' 名 · 基于 ' + st.total + ' 人样本 · 2026 年 8 月数据');
     } else {
       setText('ov-metric-comp', '--');
-      setText('ov-metric-comp-sub', '待录入竞争池数据');
+      setText('ov-metric-comp-sub', '待录入竞争池数据 · 2026 年 8 月数据');
     }
   }
 
@@ -195,7 +195,54 @@
     else if (f.months <= 6) hint = '短期内可达标，保持当前学习节奏即可。';
     else if (f.months <= 18) hint = '预计需 ' + f.months + ' 个月达标，建议制定周计划并持续投入。';
     else hint = '难度较高且缺口较大，建议先补齐前置基础，再通过项目实战加速。';
-    document.getElementById('ov-focus-hint').innerHTML = '<strong style="color:var(--ink);">学习建议：</strong>' + hint;
+
+    var box = document.getElementById('ov-focus-hint');
+    var gaps = (state.profile.rows || []).filter(function (r) {
+      return r.target - r.current >= 0.15;
+    }).sort(function (a, b) {
+      return (b.target - b.current) - (a.target - a.current);
+    }).slice(0, 4);
+
+    if (!gaps.length) {
+      box.innerHTML = '<strong style="color:var(--ink);">学习建议：</strong>' + hint;
+      return;
+    }
+
+    box.innerHTML = '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;">建议优先攻克（' + gaps.length + ' 项缺口技能）</div>'
+      + gaps.map(function (r) {
+        var weeks = Math.max(2, Math.round((r.target - r.current) * 100 / 8));
+        return '<div class="focus-row">'
+          + '<div><div class="focus-skill">' + r.name + '</div>'
+          + '<div class="focus-meta">' + (weeks ? '预计 ' + weeks + ' 周' : '已达标') + ' · 前置：' + inferPrereq(r.name) + '</div></div>'
+          + '<button class="btn btn-ghost focus-add" data-skill="' + String(r.name).replace(/"/g, '&quot;') + '">加入学习计划</button>'
+          + '</div>';
+      }).join('');
+  }
+
+  function inferPrereq(name) {
+    if (/深度学习/.test(name)) return '机器学习';
+    if (/机器学习/.test(name)) return 'Python 基础';
+    if (/kubernetes|云原生/i.test(name)) return 'Docker';
+    if (/docker/i.test(name)) return 'Linux';
+    if (/react|vue/i.test(name)) return 'JavaScript';
+    if (/typescript/i.test(name)) return 'JavaScript';
+    if (/算法|数据结构/.test(name)) return '数据结构';
+    if (/大模型|agent|rag|nlp/i.test(name)) return 'Python 基础';
+    if (/java\b/i.test(name)) return '编程基础';
+    return 'Python 基础';
+  }
+
+  var focusHintEl = document.getElementById('ov-focus-hint');
+  if (focusHintEl) {
+    focusHintEl.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('.focus-add') : null;
+      if (!btn || btn.disabled) return;
+      var name = btn.getAttribute('data-skill');
+      var row = (state.profile.rows || []).filter(function (r) { return r.name === name; })[0];
+      var added = (window.LearningPlan && row) ? window.LearningPlan.addSkills([{ name: row.name, months: row.months }]) : 0;
+      btn.textContent = added > 0 ? '已加入 ✓' : '已在计划中';
+      btn.disabled = true;
+    });
   }
 
   // =====================================================================
@@ -223,8 +270,8 @@
       series: rows.map(function (r, i) {
         var isGap = r.target - r.current >= 0.15;
         return {
-          name: r.name, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
-          lineStyle: { width: isGap ? 2.5 : 1.5, type: isGap ? 'solid' : 'dashed' },
+          name: r.name, type: 'line', smooth: true, symbol: 'none',
+          lineStyle: { width: isGap ? 1.8 : 1.2, type: isGap ? 'solid' : 'dashed' },
           itemStyle: { color: palette[i % palette.length] },
           emphasis: { focus: 'series' },
           data: [r.current, r.p3, r.p6, r.p12],
@@ -243,8 +290,8 @@
       xAxis: { type: 'category', data: xAxis, boundaryGap: false, axisLine: { lineStyle: { color: C.rule } }, axisLabel: { color: C.muted, fontSize: 11 } },
       yAxis: { type: 'value', min: 0, max: 1, axisLabel: { color: C.muted, fontSize: 11, formatter: function (v) { return (v * 100).toFixed(0) + '%'; } }, splitLine: { lineStyle: { color: C.rule } } },
       series: [{
-        type: 'line', smooth: true, symbol: 'circle', symbolSize: 7,
-        lineStyle: { width: 3, color: C.accent2 },
+        type: 'line', smooth: true, symbol: 'none',
+        lineStyle: { width: 2, color: C.accent2 },
         itemStyle: { color: C.accent2 },
         areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: C.accent2 + '55' }, { offset: 1, color: C.accent2 + '05' }] } },
         data: [f.current, f.p3, f.p6, f.p12],
@@ -435,9 +482,10 @@
       radar: {
         indicator: dims.map(function (d) { return { name: d.name, max: 100 }; }),
         axisName: { color: C.ink, fontSize: 12 },
-        splitLine: { lineStyle: { color: C.rule } },
-        splitArea: { areaStyle: { color: ['transparent', C.bg2] } },
-        axisLine: { lineStyle: { color: C.rule } },
+        splitNumber: 1,
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.10)' } },
+        splitArea: { show: false },
+        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
       },
       series: [{ type: 'radar', data: seriesData }],
     }, true);
@@ -513,11 +561,15 @@
       xAxis: { type: 'category', data: buckets.map(function (b) { return b.range; }), axisLine: { lineStyle: { color: C.rule } }, axisLabel: { color: C.muted, fontSize: 11 } },
       yAxis: { type: 'value', axisLabel: { color: C.muted, fontSize: 11 }, splitLine: { lineStyle: { color: C.rule } } },
       series: [{
-        type: 'bar', barWidth: '45%',
+        type: 'bar', barWidth: '32%',
         data: buckets.map(function (b) {
           return {
             value: b.count,
-            itemStyle: { color: b.range === mineRange ? C.accent : C.accent2 + '88', borderRadius: [4, 4, 0, 0] },
+            itemStyle: {
+              color: b.range === mineRange ? C.accent : C.accent2 + '77',
+              borderColor: 'rgba(255,255,255,0.16)', borderWidth: 1,
+              borderRadius: [4, 4, 0, 0],
+            },
           };
         }),
         label: { show: true, position: 'top', color: C.ink, fontSize: 12, fontFamily: 'JetBrainsMono' },

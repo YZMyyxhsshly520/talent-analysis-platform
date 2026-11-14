@@ -216,6 +216,40 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
 .plan-toast { position: fixed; left: 50%; bottom: 36px; transform: translateX(-50%) translateY(20px); background: #1a2233; border: 1px solid var(--rule); color: var(--ink); padding: 10px 18px; border-radius: 10px; font-size: 13px; opacity: 0; pointer-events: none; transition: .25s; z-index: 400; }
 .plan-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* 数据总览：核心数字突出 */
+.hero-metrics { display: grid; grid-template-columns: 1fr 1fr .85fr; gap: 18px; margin: 30px 0 44px; }
+.hero-metric { background: #eef1f6; border-radius: 18px; padding: 32px 30px 28px; min-height: 184px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 18px 50px rgba(0, 0, 0, .35); }
+.hm-label { font-size: 12px; letter-spacing: .14em; color: #5f6877; }
+.hm-value { font-family: 'JetBrainsMono', monospace; font-size: 58px; font-weight: 800; line-height: 1; margin: 12px 0 14px; color: #0b1020; }
+.hm-sub { font-size: 11px; color: #77808f; }
+.metrics.metrics-side { margin: 0; grid-template-columns: 1fr; gap: 12px; }
+.metrics-side .metric { padding: 16px 18px; }
+.metrics-side .metric .value { font-size: 20px; }
+
+/* 重点技能：可点击加入计划 */
+.focus-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--rule); }
+.focus-row:first-of-type { border-top: none; }
+.focus-skill { font-size: 13px; font-weight: 600; color: var(--ink); }
+.focus-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.focus-add { padding: 5px 10px; font-size: 11px; white-space: nowrap; }
+.focus-add[disabled] { opacity: .55; cursor: default; }
+
+/* 算法说明折叠 */
+.algo-details summary { cursor: pointer; list-style: none; font-size: 12px; color: var(--muted); padding: 8px 0; }
+.algo-details summary::-webkit-details-marker { display: none; }
+.algo-details summary::before { content: '▸  '; }
+.algo-details[open] summary::before { content: '▾  '; }
+.algo-details summary:hover { color: var(--ink); }
+
+/* 次要信息弱化 */
+.section-head .desc { font-size: 11px; color: rgba(139, 149, 167, .6); }
+#mk-live-feed-sub { font-size: 11px; color: rgba(139, 149, 167, .6); }
+
+@media (max-width: 980px) {
+  .hero-metrics { grid-template-columns: 1fr; }
+  .hm-value { font-size: 46px; }
+}
+
 @media (max-width: 900px) {
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
@@ -255,11 +289,21 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <select id="ov-job-select" class="job-select"></select>
   </div>
 
-  <div class="metrics">
-    <div class="metric"><div class="label">目标岗位</div><div class="value" id="ov-metric-job" style="font-size:22px;">-</div><div class="sub" id="ov-metric-job-sub">-</div></div>
-    <div class="metric"><div class="label">匹配总分</div><div class="value" id="ov-metric-match">-</div><div class="sub" id="ov-metric-match-sub">五维加权合成</div></div>
-    <div class="metric"><div class="label">竞争力指数</div><div class="value" id="ov-metric-comp">-</div><div class="sub" id="ov-metric-comp-sub">待录入竞争池数据</div></div>
-    <div class="metric"><div class="label">分析技能数</div><div class="value" id="ov-metric-skills">-</div><div class="sub" id="ov-metric-skills-sub">-</div></div>
+  <div class="hero-metrics">
+    <div class="hero-metric">
+      <div class="hm-label">匹配总分</div>
+      <div class="hm-value" id="ov-metric-match">-</div>
+      <div class="hm-sub" id="ov-metric-match-sub">五维加权合成 · 基于 21 人样本 · 2026 年 8 月数据</div>
+    </div>
+    <div class="hero-metric">
+      <div class="hm-label">竞争力指数</div>
+      <div class="hm-value" id="ov-metric-comp">-</div>
+      <div class="hm-sub" id="ov-metric-comp-sub">待录入竞争池数据 · 2026 年 8 月数据</div>
+    </div>
+    <div class="metrics metrics-side">
+      <div class="metric"><div class="label">目标岗位</div><div class="value" id="ov-metric-job" style="font-size:18px;">-</div><div class="sub" id="ov-metric-job-sub">-</div></div>
+      <div class="metric"><div class="label">分析技能数</div><div class="value" id="ov-metric-skills">-</div><div class="sub" id="ov-metric-skills-sub">-</div></div>
+    </div>
   </div>
 
   <section>
@@ -361,22 +405,25 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       <span class="section-num">03</span>
       <h2>算法说明</h2>
     </div>
-    <div class="grid-2">
-      <div class="algo-note">
-        <h3>个人成长曲线预测</h3>
-        采用 Nelson 指数学习曲线模型：<br>
-        <code>level(t) = target − (target − current) · e^(−k·t)</code><br>
-        其中学习速率系数 <code>k = base_k · learning_rate / difficulty</code>。<br>
-        技能难度系数由内置字典标定，达标用时通过反解指数函数得到。
+    <details class="algo-details">
+      <summary>查看说明</summary>
+      <div class="grid-2">
+        <div class="algo-note">
+          <h3>个人成长曲线预测</h3>
+          采用 Nelson 指数学习曲线模型：<br>
+          <code>level(t) = target − (target − current) · e^(−k·t)</code><br>
+          其中学习速率系数 <code>k = base_k · learning_rate / difficulty</code>。<br>
+          技能难度系数由内置字典标定，达标用时通过反解指数函数得到。
+        </div>
+        <div class="algo-note">
+          <h3>竞争力排名</h3>
+          基于百分位排名法，可纯内存计算：<br>
+          <code>percentile = count(score &lt; mine) / total × 100</code><br>
+          <code>competitiveness = 100 − percentile</code><br>
+          增强：五维分别计算百分位、样本量置信度、分数段分布直方图。
+        </div>
       </div>
-      <div class="algo-note">
-        <h3>竞争力排名</h3>
-        基于百分位排名法，可纯内存计算：<br>
-        <code>percentile = count(score &lt; mine) / total × 100</code><br>
-        <code>competitiveness = 100 − percentile</code><br>
-        增强：五维分别计算百分位、样本量置信度、分数段分布直方图。
-      </div>
-    </div>
+    </details>
   </section>
 
 </div>
@@ -498,8 +545,9 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <div class="metric"><div class="label">岗位总数</div><div class="value" id="mk-metric-jobs">-</div><div class="sub">在招 + 新增 + 前瞻</div></div>
     <div class="metric"><div class="label">热门技能</div><div class="value" id="mk-metric-skills">-</div><div class="sub">市场需求量 Top10</div></div>
     <div class="metric"><div class="label">行业分布</div><div class="value" id="mk-metric-industries">-</div><div class="sub">覆盖主要行业</div></div>
-    <div class="metric"><div class="label">覆盖省份</div><div class="value" id="mk-metric-provinces">-</div><div class="sub">全国地域需求</div></div>
-  </div>
+      <div class="metric"><div class="label">覆盖省份</div><div class="value" id="mk-metric-provinces">-</div><div class="sub">全国地域需求</div></div>
+    </div>
+    <div style="font-size:11px;color:rgba(139,149,167,.62);margin:-22px 0 34px;">数据来源：灵枢知岗招聘数据 · 基于 21 人样本 / 72 个岗位 · 2026 年 8 月</div>
 
   <section>
     <div class="section-head">
