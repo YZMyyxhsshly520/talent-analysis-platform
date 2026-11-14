@@ -1,0 +1,1 @@
+# 关闭 GitHub Pages 的 Jekyll 处理，确保 _shared 等以下划线开头的目录可被访问
