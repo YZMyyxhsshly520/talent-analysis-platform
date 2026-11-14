@@ -2446,7 +2446,11 @@ window.MARKET_DATA = {
           "out_skill": "传统PLC编程"
         }
       ],
-      "category": "人工智能"
+      "category": "人工智能",
+      "gap": 100,
+      "growth": 75.26,
+      "metric": "人才缺口约100万，机器人领域新发职位同比+75.26%",
+      "source": "北京理工大学调研 / 猎聘"
     },
     {
       "pre_job": "数字孪生工程技术人员",
@@ -2466,7 +2470,10 @@ window.MARKET_DATA = {
           "out_skill": "二维CAD制图"
         }
       ],
-      "category": "数字化"
+      "category": "数字化",
+      "gap": 47,
+      "metric": "数字孪生人才缺口约47万",
+      "source": "中国信通院《数字孪生城市研究报告（2026年）》"
     },
     {
       "pre_job": "智能体开发工程师",
@@ -2486,7 +2493,11 @@ window.MARKET_DATA = {
           "out_skill": "传统规则引擎"
         }
       ],
-      "category": "人工智能"
+      "category": "人工智能",
+      "gap": 47,
+      "growth": 455,
+      "metric": "AI应用与智能体开发岗位同比+455%，大模型相关岗位缺口47万",
+      "source": "脉脉2026春招数据 / 工业和信息化部"
     },
     {
       "pre_job": "生成式人工智能系统应用员",
@@ -2506,7 +2517,11 @@ window.MARKET_DATA = {
           "out_skill": "传统搜索优化"
         }
       ],
-      "category": "人工智能"
+      "category": "人工智能",
+      "gap": 47,
+      "growth": 543,
+      "metric": "新发AI岗位量同比+543%，大模型相关岗位缺口47万",
+      "source": "脉脉年度人才报告 / 工业和信息化部"
     },
     {
       "pre_job": "低空物流员",
@@ -2526,7 +2541,10 @@ window.MARKET_DATA = {
           "out_skill": "传统物流分拣"
         }
       ],
-      "category": "新能源"
+      "category": "新能源",
+      "gap": 182,
+      "metric": "低空经济核心岗位缺口182万（未来5年）",
+      "source": "《中国低空经济教育与产业人才发展报告（2026）》"
     },
     {
       "pre_job": "工业产品数字建模师",
@@ -2546,7 +2564,10 @@ window.MARKET_DATA = {
           "out_skill": "手工制图"
         }
       ],
-      "category": "先进制造"
+      "category": "先进制造",
+      "gap": 450,
+      "metric": "智能制造领域人才缺口450万",
+      "source": "人力资源和社会保障部"
     },
     {
       "pre_job": "云网智能运维员",
@@ -2566,7 +2587,10 @@ window.MARKET_DATA = {
           "out_skill": "人工巡检"
         }
       ],
-      "category": "云计算"
+      "category": "云计算",
+      "gap": 150,
+      "metric": "云计算产业人才缺口150万",
+      "source": "人力资源和社会保障部"
     },
     {
       "pre_job": "运动数据分析师",
@@ -2586,7 +2610,10 @@ window.MARKET_DATA = {
           "out_skill": "人工体能测试"
         }
       ],
-      "category": "大健康"
+      "category": "大健康",
+      "gap": 8,
+      "metric": "体育数据分析人才缺口约8万（2030年）",
+      "source": "前瞻产业研究院"
     },
     {
       "pre_job": "AI产品经理",
@@ -2606,7 +2633,11 @@ window.MARKET_DATA = {
           "out_skill": "传统功能设计"
         }
       ],
-      "category": "人工智能"
+      "category": "人工智能",
+      "gap": 47,
+      "growth": 369.36,
+      "metric": "AI产品经理岗位量同比+369.36%，大模型相关岗位缺口47万",
+      "source": "脉脉年度人才报告 / 工业和信息化部"
     },
     {
       "pre_job": "微电网管理员",
@@ -2626,7 +2657,10 @@ window.MARKET_DATA = {
           "out_skill": "传统电力调度"
         }
       ],
-      "category": "新能源"
+      "category": "新能源",
+      "gap": 50.54,
+      "metric": "2020-2030年储能产业人才缺口50.54万",
+      "source": "中科院院士何雅玲（储能国际峰会）"
     },
     {
       "pre_job": "数据标注工程师",
@@ -2646,7 +2680,11 @@ window.MARKET_DATA = {
           "out_skill": "简单文本标注"
         }
       ],
-      "category": "人工智能"
+      "category": "人工智能",
+      "gap": 50,
+      "growth": 50,
+      "metric": "专业标注师缺口约50万，岗位招聘需求同比+50%",
+      "source": "中国信通院 / 光明网"
     },
     {
       "pre_job": "前端部署工程师(FDE)",
@@ -2666,7 +2704,10 @@ window.MARKET_DATA = {
           "out_skill": "传统应用部署"
         }
       ],
-      "category": "人工智能"
+      "category": "人工智能",
+      "gap": 47,
+      "metric": "大模型相关岗位缺口47万",
+      "source": "工业和信息化部"
     },
     {
       "pre_job": "新能源汽车检测员",
@@ -2686,7 +2727,10 @@ window.MARKET_DATA = {
           "out_skill": "燃油车检测"
         }
       ],
-      "category": "新能源"
+      "category": "新能源",
+      "gap": 82.4,
+      "metric": "新能源汽车售后服务人才缺口82.4万",
+      "source": "工信部《制造业人才发展规划指南》/中国汽车维修行业协会"
     },
     {
       "pre_job": "企业可持续发展规划师",
@@ -2706,7 +2750,10 @@ window.MARKET_DATA = {
           "out_skill": "传统环境管理"
         }
       ],
-      "category": "绿色经济"
+      "category": "绿色经济",
+      "gap": 55,
+      "metric": "双碳领域人才缺口55万~100万",
+      "source": "中国石油和化学工业联合会"
     },
     {
       "pre_job": "卫星导航设备装调工",
@@ -2726,7 +2773,11 @@ window.MARKET_DATA = {
           "out_skill": "GPS设备调试"
         }
       ],
-      "category": "航空航天"
+      "category": "航空航天",
+      "gap_rate": 70,
+      "growth": 9.24,
+      "metric": "北斗产业人才缺口约70%~80%，产业产值同比+9.24%",
+      "source": "中国卫星导航定位协会 / 中国经济网"
     }
   ],
   "salaries": [

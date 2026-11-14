@@ -213,32 +213,58 @@
     });
   }
 
-  // ===== 06 前瞻岗位新兴技能 =====
+  // ===== 06 前瞻岗位需求热度 =====
+  // 需求热度指数 = 供需缺口分(0-70) + 招聘增速分(0-30)
+  // 缺口分：人才缺口(万人)/200 封顶；仅有缺口率时按缺口率折算
+  // 增速分：招聘同比增速(%)/500 封顶
+  function computeDemandIndex(job) {
+    let gapScore = 0;
+    if (typeof job.gap === 'number') gapScore = Math.min(job.gap / 200, 1) * 70;
+    else if (typeof job.gap_rate === 'number') gapScore = Math.min(job.gap_rate / 100, 1) * 70;
+    const growthScore = typeof job.growth === 'number' ? Math.min(job.growth / 500, 1) * 30 : 0;
+    return Math.max(1, Math.round(gapScore + growthScore));
+  }
+
   function renderPreJobs() {
     const chart = init('mk-chart-pre-jobs');
     if (!chart) return;
-    const preJobs = D.pre_jobs || [];
-    // 统计所有新兴技能频次
-    const skillCount = {};
-    preJobs.forEach(p => {
-      (p.new_skills || []).forEach(s => {
-        const name = s.new_skill || s;
-        skillCount[name] = (skillCount[name] || 0) + 1;
-      });
+    const preJobs = (D.pre_jobs || []).map(p => {
+      const skills = (p.new_skills || []).map(s => s.new_skill || s);
+      const outSkills = (p.out_skills || []).map(s => s.out_skill || s);
+      return Object.assign({}, p, { index: computeDemandIndex(p), skills, outSkills });
     });
-    const topSkills = Object.entries(skillCount).sort((a, b) => b[1] - a[1]).slice(0, 15).reverse();
+    // 按需求热度指数升序，条形图从下往上递增
+    const sorted = preJobs.sort((a, b) => a.index - b.index);
+    const names = sorted.map(p => p.pre_job);
+    const values = sorted.map(p => p.index);
 
     chart.setOption({
-      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => `${p[0].name}<br/>关联前瞻岗位：${p[0].value} 个` },
-      grid: { left: 130, right: 50, top: 20, bottom: 30 },
-      xAxis: { type: 'value', ...AXIS },
-      yAxis: { type: 'category', data: topSkills.map(s => s[0]), ...AXIS, axisLabel: { color: '#8b95a7', fontSize: 11 } },
+      tooltip: {
+        trigger: 'axis', axisPointer: { type: 'shadow' },
+        formatter: params => {
+          const item = sorted[params[0].dataIndex];
+          return `<div style="max-width:320px;white-space:normal;line-height:1.7;">
+            <b>${item.pre_job}</b>（${item.category || '-'}）<br/>
+            需求热度指数：<b>${item.index}</b><br/>
+            真实指标：${item.metric || '-'}<br/>
+            数据来源：${item.source || '-'}<br/>
+            新兴技能：${item.skills.join('、') || '-'}<br/>
+            被替代技能：${item.outSkills.join('、') || '-'}
+          </div>`;
+        }
+      },
+      grid: { left: 165, right: 90, top: 15, bottom: 25 },
+      xAxis: { type: 'value', max: 100, ...AXIS, name: '需求热度指数', nameTextStyle: { color: '#8b95a7' } },
+      yAxis: { type: 'category', data: names, ...AXIS, axisLabel: { color: '#8b95a7', fontSize: 10 } },
+      visualMap: {
+        show: false, min: Math.min(...values), max: Math.max(...values),
+        inRange: { color: ['#22d3ee', '#6366f1', '#a855f7', '#ec4899'] }
+      },
       series: [{
-        type: 'bar', data: topSkills.map(s => s[1]),
-        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-          { offset: 0, color: '#f59e0b' }, { offset: 1, color: '#ef4444' }
-        ]), borderRadius: [0, 5, 5, 0] },
-        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 11 }
+        type: 'bar', data: values,
+        itemStyle: { borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: 'right', color: '#8b95a7', fontSize: 10, formatter: '{c}' },
+        barWidth: '60%'
       }]
     });
   }
