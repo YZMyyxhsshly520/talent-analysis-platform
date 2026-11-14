@@ -176,8 +176,9 @@
       setText('ov-metric-comp', st.competitiveness.toFixed(1));
       setText('ov-metric-comp-sub', 'Top ' + Math.max(1, Math.round(100 - st.percentile)) + '% · 第 ' + st.rank + '/' + st.total + ' 名 · 基于 ' + st.total + ' 人样本 · 2026 年 8 月数据');
     } else {
-      setText('ov-metric-comp', '--');
-      setText('ov-metric-comp-sub', '待录入竞争池数据 · 2026 年 8 月数据');
+      var bm = benchmarkStats();
+      setText('ov-metric-comp', bm.beat.toFixed(1));
+      setText('ov-metric-comp-sub', '超过 ' + Math.round(bm.beat) + '% 从业者 · 公开数据估算 · 2026 年 8 月数据');
     }
   }
 
@@ -611,21 +612,30 @@
     return z > 0 ? 1 - p : p;
   }
 
-  function renderBenchmark() {
-    var el = document.getElementById('bm-chart');
-    if (!el || !state.profile) return;
-
-    var score = state.profile.match;
+  // 基于公开岗位数据的行业基准：返回市场均值与估算百分位
+  function benchmarkStats() {
+    var score = state.profile ? state.profile.match : 0;
     var salaryMid = 15;
     var salary = state.job ? String(state.job.salary || state.job.note || '') : '';
     var m = salary.match(/(\d+(?:\.\d+)?)\s*[-~]\s*(\d+(?:\.\d+)?)\s*[kK]/);
     if (m) salaryMid = (parseFloat(m[1]) + parseFloat(m[2])) / 2;
 
-    // 市场均值按薪资中位校准，限制在合理区间
     var mu = Math.min(74, Math.max(55, 56 + (salaryMid - 15) * 0.5));
     var sigma = 13;
-    var beat = Math.round(normalCdf((score - mu) / sigma) * 100);
+    var beat = round1(normalCdf((score - mu) / sigma) * 100);
     beat = Math.max(1, Math.min(99, beat));
+    return { score: score, mu: mu, sigma: sigma, beat: beat };
+  }
+
+  function renderBenchmark() {
+    var el = document.getElementById('bm-chart');
+    if (!el || !state.profile) return;
+
+    var bm = benchmarkStats();
+    var score = bm.score;
+    var mu = bm.mu;
+    var sigma = bm.sigma;
+    var beat = Math.round(bm.beat);
 
     var levelText = beat >= 85 ? '领先 · 前 15%' : (beat >= 65 ? '中上 · 前 35%' : (beat >= 40 ? '中等 · 前 60%' : '待提升'));
     var levelColor = beat >= 85 ? '#34d399' : (beat >= 65 ? '#22d3ee' : (beat >= 40 ? '#fbbf24' : '#f87171'));
