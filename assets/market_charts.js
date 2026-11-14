@@ -307,26 +307,36 @@
     }
 
     // 内容超出可视高度时复制一份，实现无缝循环
-    if (!liveFeedCloned) {
-      if (container.scrollHeight <= container.clientHeight + 4) return;
+    function ensureLoop() {
+      if (liveFeedCloned) return true;
+      if (container.scrollHeight <= container.clientHeight + 4) return false;
       Array.prototype.slice.call(container.children).forEach(function (node) {
         var clone = node.cloneNode(true);
         clone.setAttribute('aria-hidden', 'true');
         container.appendChild(clone);
       });
       liveFeedCloned = true;
+      return true;
     }
 
-    var loopHeight = container.scrollHeight / 2;
     var lastTs = 0;
+    var acc = 0; // 累计小数像素，避免部分浏览器将 scrollTop 取整导致无法滚动
     function step(ts) {
       if (!lastTs) lastTs = ts;
       var dt = Math.min(ts - lastTs, 100);
       lastTs = ts;
       // 标签页隐藏或容器不可见时不滚动
-      if (!liveScrollPaused && container.offsetParent !== null) {
-        container.scrollTop += 0.4 * (dt / 16.67); // 约 24px/s
+      if (!liveScrollPaused && container.offsetParent !== null && ensureLoop()) {
+        var loopHeight = container.scrollHeight / 2;
+        acc += 30 * (dt / 1000); // 约 30px/s
+        var px = Math.floor(acc);
+        if (px > 0) {
+          acc -= px;
+          container.scrollTop += px;
+        }
         if (container.scrollTop >= loopHeight - 1) container.scrollTop -= loopHeight;
+      } else {
+        acc = 0;
       }
       liveScrollRaf = requestAnimationFrame(step);
     }
