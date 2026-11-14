@@ -148,6 +148,12 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 .btn-danger:hover { border-color: var(--bad); }
 .btn-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
 
+/* ===== Overview 目标岗位选择 / 竞争池录入 ===== */
+.job-select { max-width: 480px; }
+.job-select option { background: #0e1420; color: var(--ink); }
+.pool-input { width: 100%; min-height: 96px; padding: 10px 12px; background: var(--bg3); border: 1px solid var(--rule); border-radius: 8px; color: var(--ink); font-size: 13px; font-family: 'JetBrainsMono', monospace; line-height: 1.7; resize: vertical; }
+.pool-input:focus { outline: none; border-color: var(--accent); }
+
 .suggestion-list { display: flex; flex-direction: column; gap: 12px; }
 .suggestion-card { background: var(--bg3); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; transition: border-color .2s; }
 .suggestion-card:hover { border-color: rgba(99,102,241,0.3); }
@@ -210,11 +216,17 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <p>基于指数学习曲线模型与百分位排名算法，为候选人提供技能成长预测与岗位竞争力全景分析。</p>
   </header>
 
+  <div class="card" style="margin:0 0 16px;">
+    <div class="card-title">选择目标岗位</div>
+    <div class="card-sub">市场上有需求的岗位均可选择：热门岗位 / 在招岗位 / 新兴岗位 / 前瞻岗位</div>
+    <select id="ov-job-select" class="job-select"></select>
+  </div>
+
   <div class="metrics">
-    <div class="metric"><div class="label">目标岗位</div><div class="value" style="font-size:22px;">算法工程师</div><div class="sub">北京 · 互联网行业</div></div>
-    <div class="metric"><div class="label">匹配总分</div><div class="value">78.5</div><div class="sub">五维加权合成</div></div>
-    <div class="metric"><div class="label">竞争力指数</div><div class="value">38.1</div><div class="sub">Top 50% · 第 8/21 名</div></div>
-    <div class="metric"><div class="label">分析技能数</div><div class="value">9</div><div class="sub">含 4 项缺口技能</div></div>
+    <div class="metric"><div class="label">目标岗位</div><div class="value" id="ov-metric-job" style="font-size:22px;">-</div><div class="sub" id="ov-metric-job-sub">-</div></div>
+    <div class="metric"><div class="label">匹配总分</div><div class="value" id="ov-metric-match">-</div><div class="sub" id="ov-metric-match-sub">五维加权合成</div></div>
+    <div class="metric"><div class="label">竞争力指数</div><div class="value" id="ov-metric-comp">-</div><div class="sub" id="ov-metric-comp-sub">待录入竞争池数据</div></div>
+    <div class="metric"><div class="label">分析技能数</div><div class="value" id="ov-metric-skills">-</div><div class="sub" id="ov-metric-skills-sub">-</div></div>
   </div>
 
   <section>
@@ -231,14 +243,14 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
         </figure>
       </div>
       <div class="card">
-        <div class="card-title">重点技能：深度学习</div>
-        <div class="card-sub">缺口技能 · 难度系数 1.5 · 预计达标用时</div>
+        <div class="card-title" id="ov-focus-name">重点技能：-</div>
+        <div class="card-sub" id="ov-focus-sub">-</div>
         <figure class="chart-figure">
           <figcaption>单技能成长曲线</figcaption>
           <div id="ov-chart-growth-single" class="chart-box" style="min-height:220px;"></div>
         </figure>
-        <div style="margin-top:16px; padding:14px; background:var(--bg3); border-radius:10px; font-size:13px; color:var(--muted);">
-          <strong style="color:var(--ink);">学习建议：</strong>深度学习难度较高，预计需 64 个月达到目标掌握度，建议优先攻克机器学习基础后再进阶。
+        <div id="ov-focus-hint" style="margin-top:16px; padding:14px; background:var(--bg3); border-radius:10px; font-size:13px; color:var(--muted);">
+          <strong style="color:var(--ink);">学习建议：</strong>-
         </div>
       </div>
     </div>
@@ -261,30 +273,42 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       <span class="desc">百分位排名：percentile = 低于本人分数人数 / 总人数 × 100</span>
     </div>
     <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">竞争池数据录入</div>
+      <div class="card-sub">每行一位其他候选人，格式：姓名,总分；如需五维分析可追加：姓名,总分,技能,经验,学历,项目,软技能（分数 0-100）</div>
+      <textarea id="ov-pool-input" class="pool-input" rows="4" placeholder="张三,76.5
+李四,82,80,70,75,78,85
+王五,68"></textarea>
+      <div style="display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap;">
+        <button id="ov-pool-analyze" class="btn btn-primary">开始分析</button>
+        <button id="ov-pool-clear" class="btn btn-ghost">清空</button>
+        <span id="ov-pool-msg" style="font-size:12px;color:var(--muted);">尚未录入数据，排名与分数段分布需录入后生成</span>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
       <div class="rank-hero">
-        <div class="rank-circle"><div class="inner"><div class="pct">61.9<span style="font-size:16px;">%</span></div><div class="lbl">总体百分位</div></div></div>
+        <div class="rank-circle"><div class="inner"><div class="pct" id="ov-rank-pct">--</div><div class="lbl">总体百分位</div></div></div>
         <div class="rank-info">
-          <div class="rank-title">竞争力中等 · Top 50%</div>
-          <div class="rank-meta">排名：<strong>第 8 / 21 名</strong>　|　置信度：<strong>0.782</strong><br>建议：竞争力中等，建议针对性提升薄弱维度（经验、项目）后再投递。</div>
+          <div class="rank-title" id="ov-rank-title">待分析</div>
+          <div class="rank-meta" id="ov-rank-meta">请先录入其他候选人的匹配总分，再生成竞争力排名。</div>
         </div>
       </div>
     </div>
     <div class="grid-2">
       <div class="card">
         <figure class="chart-figure">
-          <figcaption>五维竞争力雷达（得分 vs 百分位）</figcaption>
+          <figcaption>五维竞争力雷达（本人得分 vs 竞争池平均）</figcaption>
           <div id="ov-chart-radar" class="chart-box tall"></div>
         </figure>
       </div>
       <div class="card">
         <div class="card-title">五维竞争力明细</div>
-        <div class="card-sub">各维度得分与在竞争池中的百分位</div>
+        <div class="card-sub" id="ov-dim-sub">各维度得分与在竞争池中的百分位</div>
         <div class="dim-list" id="ov-dim-list"></div>
       </div>
     </div>
     <div class="card" style="margin-top:16px;">
       <figure class="chart-figure">
-        <figcaption>竞争池分数段分布（共 21 位候选人）</figcaption>
+        <figcaption id="ov-dist-caption">竞争池分数段分布（待录入数据）</figcaption>
         <div id="ov-chart-distribution" class="chart-box" style="min-height:280px;"></div>
       </figure>
     </div>

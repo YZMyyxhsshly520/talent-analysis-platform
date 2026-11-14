@@ -1,216 +1,583 @@
-// TalentAnalysis Platform — ECharts 图表脚本
-// 所有数据来自 growth_curve.py 与 competitiveness.py 的实际运行输出
+// TalentAnalysis Platform — 数据总览
+// 目标岗位可自主选择（市场上有需求的岗位均可选），成长曲线/匹配度/技能分析随岗位联动
+// 竞争力排名与竞争池分数段分布需先录入其他候选人数据后才能分析
 (function () {
-  var style = getComputedStyle(document.documentElement);
-  var accent = style.getPropertyValue('--accent').trim() || '#6366f1';
-  var accent2 = style.getPropertyValue('--accent2').trim() || '#a855f7';
-  var accent3 = style.getPropertyValue('--accent3').trim() || '#22d3ee';
-  var ink = style.getPropertyValue('--ink').trim() || '#e8ecf4';
-  var muted = style.getPropertyValue('--muted').trim() || '#8b95a7';
-  var rule = style.getPropertyValue('--rule').trim() || 'rgba(255,255,255,0.08)';
-  var bg2 = style.getPropertyValue('--bg2').trim() || 'rgba(255,255,255,0.04)';
-  var good = style.getPropertyValue('--good').trim() || '#22c55e';
-  var warn = style.getPropertyValue('--warn').trim() || '#f59e0b';
-  var bad = style.getPropertyValue('--bad').trim() || '#ef4444';
+  'use strict';
 
-  var palette = [accent, accent2, accent3, '#f472b6', '#34d399', '#fbbf24', '#60a5fa', '#f87171', '#a78bfa'];
+  var D = window.MARKET_DATA || {};
+  var MB = D.main_board || {};
 
-  // =====================================================================
-  // 数据（与 Python 模块输出一致）
-  // =====================================================================
-  var xAxis = ['当前', '3个月', '6个月', '12个月'];
+  var C = {
+    accent: '#6366f1', accent2: '#a855f7', accent3: '#22d3ee',
+    ink: '#e8ecf4', muted: '#8b95a7', rule: 'rgba(255,255,255,0.08)',
+    bg2: 'rgba(255,255,255,0.04)', good: '#22c55e', warn: '#f59e0b', bad: '#ef4444',
+  };
+  var palette = ['#6366f1', '#a855f7', '#22d3ee', '#f472b6', '#34d399', '#fbbf24', '#60a5fa', '#f87171', '#a78bfa', '#2dd4bf', '#fb923c', '#4ade80'];
 
-  // 成长曲线数据：[name, current, 3m, 6m, 12m, months_to_target, is_gap]
-  var growthData = [
-    ['Python',       0.75, 0.80, 0.83, 0.87, 21.4, false],
-    ['MySQL',        0.60, 0.71, 0.78, 0.85, 23.4, false],
-    ['Git',          0.70, 0.75, 0.79, 0.84, 29.5, false],
-    ['Linux',        0.50, 0.62, 0.70, 0.80, 32.5, false],
-    ['机器学习',     0.55, 0.62, 0.68, 0.76, 48.8, false],
-    ['PyTorch',      0.10, 0.32, 0.47, 0.67, 42.7, true],
-    ['算法',         0.10, 0.28, 0.43, 0.62, 51.3, true],
-    ['大数据',       0.10, 0.27, 0.41, 0.60, 55.6, true],
-    ['深度学习',     0.10, 0.25, 0.37, 0.55, 64.1, true],
-  ];
-
-  // 竞争力五维数据
-  var dimData = [
-    { name: '技能', score: 82.0, percentile: 71.4, level: '中上', levelColor: warn },
-    { name: '经验', score: 70.0, percentile: 52.4, level: '中等', levelColor: accent3 },
-    { name: '学历', score: 75.0, percentile: 66.7, level: '中等', levelColor: accent3 },
-    { name: '项目', score: 76.0, percentile: 52.4, level: '中等', levelColor: accent3 },
-    { name: '软技能', score: 80.0, percentile: 76.2, level: '中上', levelColor: warn },
-  ];
-
-  // 分数段分布
-  var distData = [
-    { range: '90-100', count: 1 },
-    { range: '80-89',  count: 5 },
-    { range: '70-79',  count: 6 },
-    { range: '60-69',  count: 4 },
-    { range: '0-59',   count: 5 },
-  ];
+  // 技能难度系数（与能力评估页知识库一致，未收录默认 1.0）
+  var DIFFICULTY = {
+    'python': 0.8, 'java': 1.0, 'javascript': 0.8, 'typescript': 0.9, 'vue': 0.7, 'react': 0.9,
+    'springboot': 0.9, 'mysql': 0.7, 'redis': 0.8, 'docker': 0.8, 'kubernetes': 1.3, 'linux': 0.9,
+    '算法': 1.2, '机器学习': 1.4, '深度学习': 1.5, 'pytorch': 1.1, 'tensorflow': 1.1, '大数据': 1.3,
+    'go': 1.1, 'rust': 1.4, 'c++': 1.3, 'git': 0.5, 'node': 0.8, 'css': 0.6, 'html': 0.4,
+    'mongodb': 0.8, 'nginx': 0.8, 'sql': 0.9, 'ai': 1.2, '云原生技术': 1.2, '系统架构设计': 1.3,
+  };
 
   // =====================================================================
-  // 图1：多技能成长曲线折线图
+  // 工具函数
+  // =====================================================================
+  function hash01(str) {
+    var h = 2166136261;
+    for (var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return (h >>> 0) / 4294967295;
+  }
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function round1(v) { return Math.round(v * 10) / 10; }
+  function round2(v) { return Math.round(v * 100) / 100; }
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+  function getDifficulty(name) {
+    return DIFFICULTY[(name || '').toLowerCase().trim()] || 1.0;
+  }
+
+  // =====================================================================
+  // 岗位目录：热门 / 在招 / 新兴 / 前瞻（市场上有需求的岗位）
+  // =====================================================================
+  var catalog = [];
+  var seenJob = {};
+
+  function addJob(item) {
+    if (!item.name || seenJob[item.name]) return;
+    seenJob[item.name] = true;
+    catalog.push(item);
+  }
+
+  var jobSkills = {};
+  (D.jobs || []).forEach(function (j) { jobSkills[j.name] = (j.required_skills || []).slice(); });
+  (D.new_jobs || []).forEach(function (j) { jobSkills[j.name] = (j.required_skills || []).slice(); });
+
+  var hotSkillNames = (MB.hot_skills || []).map(function (s) { return s.name; }).slice(0, 9);
+
+  (MB.hot_jobs || []).forEach(function (h) {
+    var skills = jobSkills[h.name] && jobSkills[h.name].length ? jobSkills[h.name] : hotSkillNames;
+    addJob({ name: h.name, group: '热门岗位', industry: '热门需求', skills: skills, note: h.share ? '市场占比 ' + h.share + '%' : '' });
+  });
+  (D.jobs || []).forEach(function (j) {
+    addJob({
+      name: j.name, group: '在招岗位', industry: (j.tags || [])[0] || '技术开发',
+      skills: j.required_skills || [], note: j.salary ? '薪资 ' + j.salary : '',
+    });
+  });
+  (D.new_jobs || []).forEach(function (j) {
+    addJob({ name: j.name, group: '新兴岗位', industry: '新兴职业', skills: j.required_skills || [], note: '' });
+  });
+  (D.pre_jobs || []).forEach(function (p) {
+    addJob({
+      name: p.pre_job, group: '前瞻岗位', industry: p.category || '前瞻方向',
+      skills: (p.new_skills || []).map(function (s) { return s.new_skill || s; }),
+      note: p.metric || '',
+    });
+  });
+
+  var selectEl = document.getElementById('ov-job-select');
+  ['热门岗位', '在招岗位', '新兴岗位', '前瞻岗位'].forEach(function (group) {
+    var items = catalog.filter(function (j) { return j.group === group; });
+    if (!items.length) return;
+    var og = document.createElement('optgroup');
+    og.label = group + '（' + items.length + '）';
+    items.forEach(function (j) {
+      var opt = document.createElement('option');
+      opt.value = j.name;
+      opt.textContent = j.name + (j.industry ? ' · ' + j.industry : '');
+      og.appendChild(opt);
+    });
+    if (selectEl) selectEl.appendChild(og);
+  });
+
+  // =====================================================================
+  // 岗位画像：技能成长 / 匹配度 / 五维得分
+  // =====================================================================
+  var state = { job: null, profile: null, pool: [], analyzed: false };
+
+  function buildProfile(job) {
+    var names = [];
+    (job.skills || []).forEach(function (n) {
+      n = (n || '').trim();
+      if (n && names.indexOf(n) === -1) names.push(n);
+    });
+    if (!names.length) names = hotSkillNames.slice();
+    names = names.slice(0, 12);
+
+    var rows = names.map(function (name) {
+      var cur = clamp(0.15 + hash01(job.name + '|' + name + '|c') * 0.7, 0.1, 0.85);
+      var target = 0.9;
+      var rate = 0.5 + hash01(job.name + '|' + name + '|r') * 0.3;
+      var difficulty = getDifficulty(name);
+      var k = 0.15 * rate / difficulty;
+      function at(t) { return Math.min(target, target - (target - cur) * Math.exp(-k * t)); }
+      var months = null;
+      if (cur < target) {
+        var ratio = (target * 0.01) / (target - cur);
+        if (ratio > 0 && ratio < 1) months = Math.round(-Math.log(ratio) / k * 10) / 10;
+      }
+      return {
+        name: name, current: round2(cur), target: target, rate: round2(rate), difficulty: difficulty,
+        p3: round2(at(3)), p6: round2(at(6)), p12: round2(at(12)), months: months,
+      };
+    });
+
+    var avg = rows.reduce(function (s, r) { return s + r.current; }, 0) / rows.length;
+    var gapCount = rows.filter(function (r) { return r.target - r.current >= 0.15; }).length;
+
+    var focus = rows.slice().sort(function (a, b) {
+      var ga = a.target - a.current, gb = b.target - b.current;
+      if (Math.abs(gb - ga) > 0.001) return gb - ga;
+      return b.difficulty - a.difficulty;
+    })[0];
+
+    var dims = [
+      { name: '技能', score: round1(avg * 100) },
+      { name: '经验', score: round1(55 + hash01(job.name + '|exp') * 35) },
+      { name: '学历', score: round1(65 + hash01(job.name + '|edu') * 30) },
+      { name: '项目', score: round1(50 + hash01(job.name + '|proj') * 40) },
+      { name: '软技能', score: round1(65 + hash01(job.name + '|soft') * 30) },
+    ];
+
+    return { rows: rows, match: round1(avg * 100), gapCount: gapCount, focus: focus, dims: dims };
+  }
+
+  // =====================================================================
+  // 图表实例
   // =====================================================================
   var chartGrowth = echarts.init(document.getElementById('ov-chart-growth'), null, { renderer: 'svg' });
-  var series = growthData.map(function (row, i) {
-    return {
-      name: row[0],
-      type: 'line',
-      smooth: true,
-      symbol: 'circle',
-      symbolSize: 6,
-      lineStyle: { width: row[6] ? 2.5 : 1.5, type: row[6] ? 'solid' : 'dashed' },
-      itemStyle: { color: palette[i % palette.length] },
-      emphasis: { focus: 'series' },
-      data: [row[1], row[2], row[3], row[4]],
-    };
-  });
-
-  chartGrowth.setOption({
-    animation: false,
-    tooltip: {
-      trigger: 'axis', appendToBody: true,
-      backgroundColor: 'rgba(10,14,26,0.92)', borderColor: rule,
-      textStyle: { color: ink, fontSize: 12 },
-      valueFormatter: function (v) { return (v * 100).toFixed(0) + '%'; },
-    },
-    legend: {
-      type: 'scroll', bottom: 0, textStyle: { color: muted, fontSize: 11 },
-      itemWidth: 14, itemHeight: 8,
-    },
-    grid: { left: 50, right: 20, top: 20, bottom: 60 },
-    xAxis: {
-      type: 'category', data: xAxis, boundaryGap: false,
-      axisLine: { lineStyle: { color: rule } },
-      axisLabel: { color: muted, fontSize: 11 },
-    },
-    yAxis: {
-      type: 'value', min: 0, max: 1,
-      axisLabel: { color: muted, fontSize: 11, formatter: function (v) { return (v * 100).toFixed(0) + '%'; } },
-      splitLine: { lineStyle: { color: rule } },
-    },
-    series: series,
-  });
-  window.addEventListener('resize', function () { chartGrowth.resize(); });
-
-  // =====================================================================
-  // 图2：单技能（深度学习）成长曲线
-  // =====================================================================
-  var dl = growthData[8]; // 深度学习
   var chartSingle = echarts.init(document.getElementById('ov-chart-growth-single'), null, { renderer: 'svg' });
-  chartSingle.setOption({
-    animation: false,
-    tooltip: { trigger: 'axis', appendToBody: true, backgroundColor: 'rgba(10,14,26,0.92)', borderColor: rule, textStyle: { color: ink, fontSize: 12 }, valueFormatter: function (v) { return (v * 100).toFixed(0) + '%'; } },
-    grid: { left: 45, right: 16, top: 16, bottom: 30 },
-    xAxis: { type: 'category', data: xAxis, boundaryGap: false, axisLine: { lineStyle: { color: rule } }, axisLabel: { color: muted, fontSize: 11 } },
-    yAxis: { type: 'value', min: 0, max: 1, axisLabel: { color: muted, fontSize: 11, formatter: function (v) { return (v * 100).toFixed(0) + '%'; } }, splitLine: { lineStyle: { color: rule } } },
-    series: [{
-      type: 'line', smooth: true, symbol: 'circle', symbolSize: 7,
-      lineStyle: { width: 3, color: accent2 },
-      itemStyle: { color: accent2 },
-      areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: accent2 + '55' }, { offset: 1, color: accent2 + '05' }] } },
-      data: [dl[1], dl[2], dl[3], dl[4]],
-      markLine: {
-        silent: true, symbol: 'none',
-        lineStyle: { color: muted, type: 'dashed', width: 1 },
-        data: [{ yAxis: 0.9, label: { formatter: '目标 90%', color: muted, fontSize: 10, position: 'insideEndTop' } }],
-      },
-    }],
-  });
-  window.addEventListener('resize', function () { chartSingle.resize(); });
-
-  // =====================================================================
-  // 图3：五维竞争力雷达图
-  // =====================================================================
   var chartRadar = echarts.init(document.getElementById('ov-chart-radar'), null, { renderer: 'svg' });
-  chartRadar.setOption({
-    animation: false,
-    tooltip: { appendToBody: true, backgroundColor: 'rgba(10,14,26,0.92)', borderColor: rule, textStyle: { color: ink, fontSize: 12 } },
-    legend: { bottom: 0, textStyle: { color: muted, fontSize: 11 } },
-    radar: {
-      indicator: dimData.map(function (d) { return { name: d.name, max: 100 }; }),
-      axisName: { color: ink, fontSize: 12 },
-      splitLine: { lineStyle: { color: rule } },
-      splitArea: { areaStyle: { color: ['transparent', bg2] } },
-      axisLine: { lineStyle: { color: rule } },
-    },
-    series: [{
-      type: 'radar',
-      data: [
-        { value: dimData.map(function (d) { return d.score; }), name: '维度得分',
-          areaStyle: { color: accent + '33' }, lineStyle: { color: accent, width: 2 }, itemStyle: { color: accent } },
-        { value: dimData.map(function (d) { return d.percentile; }), name: '百分位',
-          areaStyle: { color: accent2 + '22' }, lineStyle: { color: accent2, width: 2, type: 'dashed' }, itemStyle: { color: accent2 } },
-      ],
-    }],
-  });
-  window.addEventListener('resize', function () { chartRadar.resize(); });
+  var chartDist = echarts.init(document.getElementById('ov-chart-distribution'), null, { renderer: 'svg' });
 
   // =====================================================================
-  // 图4：分数段分布柱状图
+  // 指标卡
   // =====================================================================
-  var chartDist = echarts.init(document.getElementById('ov-chart-distribution'), null, { renderer: 'svg' });
-  var mineRange = '70-79'; // 本人 78.5 落在 70-79 段
-  chartDist.setOption({
-    animation: false,
-    tooltip: { trigger: 'axis', appendToBody: true, backgroundColor: 'rgba(10,14,26,0.92)', borderColor: rule, textStyle: { color: ink, fontSize: 12 } },
-    grid: { left: 50, right: 20, top: 20, bottom: 30 },
-    xAxis: { type: 'category', data: distData.map(function (d) { return d.range; }), axisLine: { lineStyle: { color: rule } }, axisLabel: { color: muted, fontSize: 11 } },
-    yAxis: { type: 'value', axisLabel: { color: muted, fontSize: 11 }, splitLine: { lineStyle: { color: rule } } },
-    series: [{
-      type: 'bar', barWidth: '45%',
-      data: distData.map(function (d) {
+  function renderMetrics() {
+    var job = state.job, p = state.profile;
+    setText('ov-metric-job', job.name);
+    setText('ov-metric-job-sub', [job.industry, job.group].filter(Boolean).join(' · '));
+    setText('ov-metric-match', p.match.toFixed(1));
+    setText('ov-metric-match-sub', p.rows.length + ' 项核心技能加权');
+    setText('ov-metric-skills', p.rows.length);
+    setText('ov-metric-skills-sub', '含 ' + p.gapCount + ' 项缺口技能');
+
+    if (state.analyzed) {
+      var st = poolStats();
+      setText('ov-metric-comp', st.competitiveness.toFixed(1));
+      setText('ov-metric-comp-sub', 'Top ' + Math.max(1, Math.round(100 - st.percentile)) + '% · 第 ' + st.rank + '/' + st.total + ' 名');
+    } else {
+      setText('ov-metric-comp', '--');
+      setText('ov-metric-comp-sub', '待录入竞争池数据');
+    }
+  }
+
+  // =====================================================================
+  // 重点技能
+  // =====================================================================
+  function renderFocus() {
+    var f = state.profile.focus;
+    var monthsText = f.months ? '预计 ' + f.months + ' 个月达标' : '已达标';
+    setText('ov-focus-name', '重点技能：' + f.name);
+    setText('ov-focus-sub', '缺口 ' + Math.round((f.target - f.current) * 100) + '% · 难度系数 ' + f.difficulty.toFixed(1) + ' · ' + monthsText);
+
+    var hint;
+    if (!f.months) hint = '该技能已达标，可向更深层次或相关技能拓展。';
+    else if (f.months <= 6) hint = '短期内可达标，保持当前学习节奏即可。';
+    else if (f.months <= 18) hint = '预计需 ' + f.months + ' 个月达标，建议制定周计划并持续投入。';
+    else hint = '难度较高且缺口较大，建议先补齐前置基础，再通过项目实战加速。';
+    document.getElementById('ov-focus-hint').innerHTML = '<strong style="color:var(--ink);">学习建议：</strong>' + hint;
+  }
+
+  // =====================================================================
+  // 成长曲线（Nelson 指数学习曲线）
+  // =====================================================================
+  function tooltipBase(valueFormatter) {
+    return {
+      trigger: 'axis', appendToBody: true,
+      backgroundColor: 'rgba(10,14,26,0.92)', borderColor: C.rule,
+      textStyle: { color: C.ink, fontSize: 12 },
+      valueFormatter: valueFormatter || function (v) { return (v * 100).toFixed(0) + '%'; },
+    };
+  }
+
+  function renderGrowth() {
+    var rows = state.profile.rows;
+    var xAxis = ['当前', '3个月', '6个月', '12个月'];
+    chartGrowth.setOption({
+      animation: false,
+      tooltip: tooltipBase(),
+      legend: { type: 'scroll', bottom: 0, textStyle: { color: C.muted, fontSize: 11 }, itemWidth: 14, itemHeight: 8 },
+      grid: { left: 50, right: 20, top: 20, bottom: 60 },
+      xAxis: { type: 'category', data: xAxis, boundaryGap: false, axisLine: { lineStyle: { color: C.rule } }, axisLabel: { color: C.muted, fontSize: 11 } },
+      yAxis: { type: 'value', min: 0, max: 1, axisLabel: { color: C.muted, fontSize: 11, formatter: function (v) { return (v * 100).toFixed(0) + '%'; } }, splitLine: { lineStyle: { color: C.rule } } },
+      series: rows.map(function (r, i) {
+        var isGap = r.target - r.current >= 0.15;
         return {
-          value: d.count,
-          itemStyle: { color: d.range === mineRange ? accent : accent2 + '88', borderRadius: [4, 4, 0, 0] },
+          name: r.name, type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+          lineStyle: { width: isGap ? 2.5 : 1.5, type: isGap ? 'solid' : 'dashed' },
+          itemStyle: { color: palette[i % palette.length] },
+          emphasis: { focus: 'series' },
+          data: [r.current, r.p3, r.p6, r.p12],
         };
       }),
-      label: { show: true, position: 'top', color: ink, fontSize: 12, fontFamily: 'JetBrainsMono' },
-    }],
-  });
-  window.addEventListener('resize', function () { chartDist.resize(); });
+    }, true);
+  }
+
+  function renderSingle() {
+    var f = state.profile.focus;
+    var xAxis = ['当前', '3个月', '6个月', '12个月'];
+    chartSingle.setOption({
+      animation: false,
+      tooltip: tooltipBase(),
+      grid: { left: 45, right: 16, top: 16, bottom: 30 },
+      xAxis: { type: 'category', data: xAxis, boundaryGap: false, axisLine: { lineStyle: { color: C.rule } }, axisLabel: { color: C.muted, fontSize: 11 } },
+      yAxis: { type: 'value', min: 0, max: 1, axisLabel: { color: C.muted, fontSize: 11, formatter: function (v) { return (v * 100).toFixed(0) + '%'; } }, splitLine: { lineStyle: { color: C.rule } } },
+      series: [{
+        type: 'line', smooth: true, symbol: 'circle', symbolSize: 7,
+        lineStyle: { width: 3, color: C.accent2 },
+        itemStyle: { color: C.accent2 },
+        areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: C.accent2 + '55' }, { offset: 1, color: C.accent2 + '05' }] } },
+        data: [f.current, f.p3, f.p6, f.p12],
+        markLine: {
+          silent: true, symbol: 'none',
+          lineStyle: { color: C.muted, type: 'dashed', width: 1 },
+          data: [{ yAxis: 0.9, label: { formatter: '目标 90%', color: C.muted, fontSize: 10, position: 'insideEndTop' } }],
+        },
+      }],
+    }, true);
+  }
 
   // =====================================================================
-  // 渲染成长预测明细表
+  // 成长明细表
   // =====================================================================
-  var tbody = document.getElementById('ov-growth-table');
-  if (tbody) {
-    var rows = growthData.slice().sort(function (a, b) { return b[4] - a[4]; });
+  function renderTable() {
+    var tbody = document.getElementById('ov-growth-table');
+    if (!tbody) return;
+    var rows = state.profile.rows.slice().sort(function (a, b) {
+      return (b.months || 0) - (a.months || 0);
+    });
     tbody.innerHTML = rows.map(function (r) {
-      var name = r[0];
-      var isGap = r[6];
       var status, statusCls;
-      if (r[4] >= 0.85) { status = '领先'; statusCls = 'tag-good'; }
-      else if (r[4] >= 0.6) { status = '可达'; statusCls = 'tag-warn'; }
+      if (r.p12 >= 0.85) { status = '领先'; statusCls = 'tag-good'; }
+      else if (r.p12 >= 0.6) { status = '可达'; statusCls = 'tag-warn'; }
       else { status = '待补'; statusCls = 'tag-bad'; }
-      var gapBadge = isGap ? '<span style="font-size:10px;color:' + bad + ';margin-left:4px;">缺口</span>' : '';
+      var gapBadge = (r.target - r.current) >= 0.15
+        ? '<span style="font-size:10px;color:' + C.bad + ';margin-left:4px;">缺口</span>' : '';
       return '<tr>'
-        + '<td style="font-family:InstrumentSans;">' + name + gapBadge + '</td>'
-        + '<td>' + r[1].toFixed(2) + '</td>'
-        + '<td>' + r[2].toFixed(2) + '</td>'
-        + '<td>' + r[3].toFixed(2) + '</td>'
-        + '<td>' + r[4].toFixed(2) + '</td>'
-        + '<td>' + r[5] + ' 月</td>'
+        + '<td style="font-family:InstrumentSans;">' + r.name + gapBadge + '</td>'
+        + '<td>' + r.current.toFixed(2) + '</td>'
+        + '<td>' + r.p3.toFixed(2) + '</td>'
+        + '<td>' + r.p6.toFixed(2) + '</td>'
+        + '<td>' + r.p12.toFixed(2) + '</td>'
+        + '<td>' + (r.months != null ? r.months + ' 月' : '已达标') + '</td>'
         + '<td class="' + statusCls + '">' + status + '</td>'
         + '</tr>';
     }).join('');
   }
 
   // =====================================================================
-  // 渲染五维竞争力进度条列表
+  // 竞争池统计
   // =====================================================================
-  var dimList = document.getElementById('ov-dim-list');
-  if (dimList) {
-    dimList.innerHTML = dimData.map(function (d) {
+  function poolStats() {
+    var self = state.profile.match;
+    var others = state.pool;
+    var total = others.length + 1;
+    var below = others.filter(function (o) { return o.total < self; }).length;
+    var percentile = round1(below / total * 100);
+    var rank = 1 + others.filter(function (o) { return o.total > self; }).length;
+    var competitiveness = round1(100 - percentile);
+    var confidence = round2(1 - 1 / Math.sqrt(total + 1));
+    return { self: self, total: total, percentile: percentile, rank: rank, competitiveness: competitiveness, confidence: confidence };
+  }
+
+  function dimSamples() {
+    return state.pool.filter(function (o) { return o.dims && o.dims.length === 5; });
+  }
+
+  function dimPercentiles() {
+    if (!state.analyzed) return null;
+    var samples = dimSamples();
+    if (!samples.length) return null;
+    return state.profile.dims.map(function (d, i) {
+      var below = samples.filter(function (o) { return o.dims[i] < d.score; }).length;
+      return round1(below / samples.length * 100);
+    });
+  }
+
+  function rankLevel(p) {
+    if (p >= 90) return { title: '竞争力领先 · Top 10%', advice: '竞争力领先，可优先投递头部企业核心岗位。' };
+    if (p >= 75) return { title: '竞争力较强 · Top 25%', advice: '竞争力较强，建议继续强化项目与经验。' };
+    if (p >= 50) return { title: '竞争力中等 · Top 50%', advice: '竞争力中等，建议针对性提升薄弱维度后再投递。' };
+    if (p >= 25) return { title: '竞争力偏弱 · Top 75%', advice: '竞争力偏弱，建议先补齐核心技能与项目经历。' };
+    return { title: '竞争力待提升 · 后 25%', advice: '竞争力待提升，建议系统学习核心技能并积累项目经验。' };
+  }
+
+  // =====================================================================
+  // 排名区
+  // =====================================================================
+  function renderRank() {
+    var pctEl = document.getElementById('ov-rank-pct');
+    var circle = document.querySelector('.rank-circle');
+    if (!state.analyzed) {
+      if (pctEl) pctEl.textContent = '--';
+      if (circle) circle.style.background = 'conic-gradient(from -90deg, var(--bg3) 0deg, var(--bg3) 360deg)';
+      setText('ov-rank-title', '待分析');
+      var meta = document.getElementById('ov-rank-meta');
+      if (meta) meta.textContent = '请先录入其他候选人的匹配总分，再生成竞争力排名。';
+      return;
+    }
+    var st = poolStats();
+    if (pctEl) pctEl.innerHTML = st.percentile.toFixed(1) + '<span style="font-size:16px;">%</span>';
+    if (circle) {
+      var deg = Math.max(0, Math.min(360, st.percentile * 3.6));
+      circle.style.background = 'conic-gradient(from -90deg, var(--accent) 0deg, var(--accent2) ' + deg + 'deg, var(--bg3) ' + deg + 'deg)';
+    }
+    var lv = rankLevel(st.percentile);
+    setText('ov-rank-title', lv.title);
+
+    var weakest = state.profile.dims.slice().sort(function (a, b) { return a.score - b.score; })[0];
+    var metaEl = document.getElementById('ov-rank-meta');
+    if (metaEl) {
+      metaEl.innerHTML = '排名：<strong>第 ' + st.rank + ' / ' + st.total + ' 名</strong>　|　置信度：<strong>'
+        + st.confidence.toFixed(3) + '</strong><br>建议：' + lv.advice
+        + '当前最薄弱维度为 <strong>' + weakest.name + '</strong>（' + weakest.score.toFixed(1) + ' 分）。';
+    }
+  }
+
+  // =====================================================================
+  // 五维雷达
+  // =====================================================================
+  function renderRadar() {
+    var dims = state.profile.dims;
+    var seriesData = [{
+      value: dims.map(function (d) { return d.score; }), name: '本人得分',
+      areaStyle: { color: C.accent + '33' }, lineStyle: { color: C.accent, width: 2 }, itemStyle: { color: C.accent },
+    }];
+    var samples = dimSamples();
+    if (state.analyzed && samples.length) {
+      var avg = dims.map(function (d, i) {
+        return round1(samples.reduce(function (s, o) { return s + o.dims[i]; }, 0) / samples.length);
+      });
+      seriesData.push({
+        value: avg, name: '竞争池平均',
+        areaStyle: { color: C.accent2 + '22' }, lineStyle: { color: C.accent2, width: 2, type: 'dashed' }, itemStyle: { color: C.accent2 },
+      });
+    }
+    chartRadar.setOption({
+      animation: false,
+      tooltip: { appendToBody: true, backgroundColor: 'rgba(10,14,26,0.92)', borderColor: C.rule, textStyle: { color: C.ink, fontSize: 12 } },
+      legend: { bottom: 0, textStyle: { color: C.muted, fontSize: 11 } },
+      radar: {
+        indicator: dims.map(function (d) { return { name: d.name, max: 100 }; }),
+        axisName: { color: C.ink, fontSize: 12 },
+        splitLine: { lineStyle: { color: C.rule } },
+        splitArea: { areaStyle: { color: ['transparent', C.bg2] } },
+        axisLine: { lineStyle: { color: C.rule } },
+      },
+      series: [{ type: 'radar', data: seriesData }],
+    }, true);
+  }
+
+  // =====================================================================
+  // 五维明细
+  // =====================================================================
+  function renderDimList() {
+    var pcts = dimPercentiles();
+    var html = state.profile.dims.map(function (d, i) {
+      var pct = pcts ? pcts[i] : null;
+      var width = pct != null ? pct : d.score;
+      var lvText, lvColor;
+      if (pct == null) { lvText = '待分析'; lvColor = C.muted; }
+      else if (pct >= 75) { lvText = '领先'; lvColor = C.good; }
+      else if (pct >= 50) { lvText = '中上'; lvColor = C.warn; }
+      else { lvText = '中等'; lvColor = C.accent3; }
       return '<div class="dim-row">'
         + '<div class="name">' + d.name + '</div>'
-        + '<div class="track"><div class="fill" style="width:' + d.percentile + '%;"></div></div>'
+        + '<div class="track"><div class="fill" style="width:' + clamp(width, 0, 100) + '%;"></div></div>'
         + '<div class="sc">' + d.score.toFixed(1) + '</div>'
-        + '<div class="lv" style="color:' + d.levelColor + ';">' + d.level + '</div>'
+        + '<div class="lv" style="color:' + lvColor + ';">' + lvText + '</div>'
         + '</div>';
     }).join('');
+    document.getElementById('ov-dim-list').innerHTML = html;
+    setText('ov-dim-sub', pcts ? '各维度得分与在竞争池中的百分位' : '未录入五维数据时仅展示本人得分，录入后可计算百分位');
+  }
+
+  // =====================================================================
+  // 分数段分布
+  // =====================================================================
+  function renderDistribution() {
+    var caption = document.getElementById('ov-dist-caption');
+    if (!state.analyzed) {
+      if (caption) caption.textContent = '竞争池分数段分布（待录入数据）';
+      chartDist.setOption({
+        animation: false,
+        graphic: [{ type: 'text', left: 'center', top: 'middle', style: { text: '请输入其他候选人数据后生成分数段分布', fill: C.muted, fontSize: 13 } }],
+        xAxis: { show: false }, yAxis: { show: false },
+        grid: { left: 0, right: 0, top: 0, bottom: 0 },
+        series: [],
+      }, true);
+      return;
+    }
+
+    var st = poolStats();
+    var buckets = [
+      { range: '90-100', min: 90, max: 100.01 },
+      { range: '80-89', min: 80, max: 90 },
+      { range: '70-79', min: 70, max: 80 },
+      { range: '60-69', min: 60, max: 70 },
+      { range: '0-59', min: 0, max: 60 },
+    ];
+    buckets.forEach(function (b) { b.count = 0; });
+    var scores = state.pool.map(function (o) { return o.total; }).concat([st.self]);
+    var mineRange = null;
+    scores.forEach(function (s) {
+      for (var i = 0; i < buckets.length; i++) {
+        if (s >= buckets[i].min && s < buckets[i].max) {
+          buckets[i].count++;
+          if (s === st.self) mineRange = buckets[i].range;
+          break;
+        }
+      }
+    });
+    if (caption) caption.textContent = '竞争池分数段分布（共 ' + st.total + ' 位候选人，含本人 ' + st.self.toFixed(1) + ' 分）';
+
+    chartDist.setOption({
+      animation: false,
+      tooltip: { trigger: 'axis', appendToBody: true, backgroundColor: 'rgba(10,14,26,0.92)', borderColor: C.rule, textStyle: { color: C.ink, fontSize: 12 } },
+      grid: { left: 50, right: 20, top: 20, bottom: 30 },
+      xAxis: { type: 'category', data: buckets.map(function (b) { return b.range; }), axisLine: { lineStyle: { color: C.rule } }, axisLabel: { color: C.muted, fontSize: 11 } },
+      yAxis: { type: 'value', axisLabel: { color: C.muted, fontSize: 11 }, splitLine: { lineStyle: { color: C.rule } } },
+      series: [{
+        type: 'bar', barWidth: '45%',
+        data: buckets.map(function (b) {
+          return {
+            value: b.count,
+            itemStyle: { color: b.range === mineRange ? C.accent : C.accent2 + '88', borderRadius: [4, 4, 0, 0] },
+          };
+        }),
+        label: { show: true, position: 'top', color: C.ink, fontSize: 12, fontFamily: 'JetBrainsMono' },
+      }],
+    }, true);
+  }
+
+  // =====================================================================
+  // 竞争池输入解析
+  // =====================================================================
+  function parsePool(text) {
+    var items = [];
+    var errors = [];
+    text.split(/\r?\n/).forEach(function (line, idx) {
+      line = line.trim();
+      if (!line) return;
+      var parts = line.split(/[,，\t]+/).map(function (s) { return s.trim(); }).filter(Boolean);
+      if (!parts.length) return;
+      var name = '候选人' + (items.length + 1);
+      if (isNaN(parseFloat(parts[0]))) name = parts.shift();
+      if (!parts.length) { errors.push('第 ' + (idx + 1) + ' 行缺少总分'); return; }
+      var total = parseFloat(parts[0]);
+      if (isNaN(total) || total < 0 || total > 100) { errors.push('第 ' + (idx + 1) + ' 行总分无效'); return; }
+      var dims = null;
+      if (parts.length >= 6) {
+        var d = parts.slice(1, 6).map(parseFloat);
+        if (d.every(function (x) { return !isNaN(x) && x >= 0 && x <= 100; })) dims = d;
+      }
+      items.push({ name: name, total: total, dims: dims });
+    });
+    return { items: items, errors: errors };
+  }
+
+  function renderAll() {
+    renderMetrics();
+    renderFocus();
+    renderGrowth();
+    renderSingle();
+    renderTable();
+    renderRank();
+    renderRadar();
+    renderDimList();
+    renderDistribution();
+  }
+
+  function applyJob(name) {
+    var job = catalog.filter(function (j) { return j.name === name; })[0];
+    if (!job) return;
+    state.job = job;
+    state.profile = buildProfile(job);
+    renderAll();
+  }
+
+  // =====================================================================
+  // 交互事件
+  // =====================================================================
+  if (selectEl) {
+    selectEl.addEventListener('change', function () { applyJob(selectEl.value); });
+  }
+
+  var analyzeBtn = document.getElementById('ov-pool-analyze');
+  var clearBtn = document.getElementById('ov-pool-clear');
+  var poolInput = document.getElementById('ov-pool-input');
+  var poolMsg = document.getElementById('ov-pool-msg');
+
+  if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', function () {
+      var parsed = parsePool(poolInput ? poolInput.value : '');
+      if (!parsed.items.length) {
+        state.pool = [];
+        state.analyzed = false;
+        if (poolMsg) {
+          poolMsg.textContent = parsed.errors.length ? parsed.errors[0] : '请输入至少一位其他候选人的匹配总分';
+          poolMsg.style.color = C.bad;
+        }
+        renderAll();
+        return;
+      }
+      state.pool = parsed.items;
+      state.analyzed = true;
+      if (poolMsg) {
+        poolMsg.textContent = '已录入 ' + parsed.items.length + ' 位候选人'
+          + (parsed.errors.length ? '，另有 ' + parsed.errors.length + ' 行格式有误已跳过' : '');
+        poolMsg.style.color = C.good;
+      }
+      renderAll();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function () {
+      state.pool = [];
+      state.analyzed = false;
+      if (poolInput) poolInput.value = '';
+      if (poolMsg) {
+        poolMsg.textContent = '尚未录入数据，排名与分数段分布需录入后生成';
+        poolMsg.style.color = C.muted;
+      }
+      renderAll();
+    });
+  }
+
+  window.addEventListener('resize', function () {
+    chartGrowth.resize();
+    chartSingle.resize();
+    chartRadar.resize();
+    chartDist.resize();
+  });
+
+  // =====================================================================
+  // 初始化：默认算法工程师（若存在），否则第一个岗位
+  // =====================================================================
+  var defaultName = seenJob['算法工程师'] ? '算法工程师' : (catalog[0] ? catalog[0].name : '');
+  if (defaultName) {
+    if (selectEl) selectEl.value = defaultName;
+    applyJob(defaultName);
   }
 })();
