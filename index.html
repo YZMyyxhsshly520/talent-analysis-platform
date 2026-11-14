@@ -53,9 +53,8 @@ body {
 .tab-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border-color: transparent; }
 
 /* Views */
-.view { display: none; }
-.view.active { display: block; animation: fade .3s ease; }
-@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.view { display: none; opacity: 1; }
+.view.active { display: block; }
 
 /* Hero */
 .hero { padding: 48px 0 32px; text-align: center; }
@@ -375,6 +374,18 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       <div class="card-sub">按优先级排序，包含难度、预计用时与公开学习资源</div>
       <div class="suggestion-list" id="as-suggestion-list"></div>
     </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">成长路径规划</div>
+      <div class="card-sub">基于技能依赖关系的拓扑排序，生成有先后顺序的分阶段学习路线图</div>
+      <div id="growth-path-container"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">学习计划生成</div>
+      <div class="card-sub">可执行的周度学习排期与里程碑检查点</div>
+      <div id="learning-plan-container"></div>
+    </div>
   </section>
 
   <div id="as-empty-hint" class="card empty" style="margin-top:16px;">
@@ -382,6 +393,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     <div>填写技能数据并点击"生成分析与建议"后，结果将显示在这里。</div>
   </div>
 
+</div>
 </div>
 
 <!-- 市场洞察视图 -->
@@ -502,7 +514,6 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
     </div>
   </section>
 
-</div>
 </div>
 
 <footer>TalentAnalysis Platform · 学习资源来自公开数据（Coursera / B站 / 慕课网 / 官方文档等）· 2026-11-13</footer>
