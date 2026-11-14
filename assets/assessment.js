@@ -234,6 +234,31 @@
   var BASE_K = 0.15;
 
   // =====================================================================
+  // 技能依赖关系图（key 依赖 value）
+  // =====================================================================
+  var SKILL_PREREQUISITES = {
+    '深度学习': ['机器学习', 'Python'],
+    '机器学习': ['Python', '算法'],
+    '算法': ['Python'],
+    '大数据': ['Python', 'Linux'],
+    'PyTorch': ['Python', '深度学习'],
+    'TensorFlow': ['Python', '深度学习'],
+    'SpringBoot': ['Java'],
+    'React': ['JavaScript'],
+    'Vue': ['JavaScript'],
+    'TypeScript': ['JavaScript'],
+    'Kubernetes': ['Docker', 'Linux'],
+    'Redis': ['MySQL'],
+    'Docker': ['Linux'],
+  };
+
+  var PHASE_THRESHOLDS = [
+    { name: '基础夯实', min: 0.0, max: 0.40, color: '#22d3ee' },
+    { name: '进阶提升', min: 0.40, max: 0.70, color: '#a855f7' },
+    { name: '精通冲刺', min: 0.70, max: 0.90, color: '#f472b6' },
+  ];
+
+  // =====================================================================
   // DOM 工具
   // =====================================================================
   var skillRowsEl = document.getElementById('as-skill-rows');
@@ -372,6 +397,8 @@
     renderGrowthChart(projections);
     renderSummary(projections);
     renderSuggestions(projections);
+    renderGrowthPath(projections);
+    renderLearningPlan(projections);
 
     // 滚动到结果
     document.getElementById('as-results').scrollIntoView({ behavior: 'smooth' });
@@ -497,6 +524,332 @@
         '<div class="priority-bar" style="margin-top:12px;"><span class="dot ' + pl.cls + '"></span>' + pl.text + '</div>' +
       '</div>';
     }).join('');
+  }
+
+  // =====================================================================
+  // 成长路径规划：拓扑排序 + 分阶段路线图
+  // =====================================================================
+  function getPrerequisites(skill) {
+    return SKILL_PREREQUISITES[skill] || [];
+  }
+
+  function topologicalSort(skills) {
+    var skillSet = {};
+    skills.forEach(function (s) { skillSet[s] = true; });
+    var inDegree = {};
+    var graph = {};
+    skills.forEach(function (s) { inDegree[s] = 0; graph[s] = []; });
+
+    skills.forEach(function (s) {
+      getPrerequisites(s).forEach(function (pre) {
+        if (skillSet[pre]) {
+          graph[pre].push(s);
+          inDegree[s]++;
+        }
+      });
+    });
+
+    var queue = skills.filter(function (s) { return inDegree[s] === 0; });
+    var result = [];
+    while (queue.length > 0) {
+      var node = queue.shift();
+      result.push(node);
+      graph[node].forEach(function (nxt) {
+        inDegree[nxt]--;
+        if (inDegree[nxt] === 0) queue.push(nxt);
+      });
+    }
+    skills.forEach(function (s) {
+      if (result.indexOf(s) === -1) result.push(s);
+    });
+    return result;
+  }
+
+  function determinePhase(current) {
+    for (var i = 0; i < PHASE_THRESHOLDS.length; i++) {
+      if (current < PHASE_THRESHOLDS[i].max) return PHASE_THRESHOLDS[i].name;
+    }
+    return PHASE_THRESHOLDS[PHASE_THRESHOLDS.length - 1].name;
+  }
+
+  function monthsToPhaseEnd(skill, current, target, rate) {
+    var kb = getKB(skill);
+    var difficulty = kb ? kb.difficulty : DEFAULT_DIFFICULTY;
+    var k = BASE_K * rate / difficulty;
+    if (k <= 0 || current >= target) return 0;
+    var phaseEnd = target;
+    for (var i = 0; i < PHASE_THRESHOLDS.length; i++) {
+      if (current < PHASE_THRESHOLDS[i].max) {
+        phaseEnd = Math.min(target, PHASE_THRESHOLDS[i].max);
+        break;
+      }
+    }
+    if (phaseEnd <= current) return 0;
+    try {
+      var ratio = (target - phaseEnd) / (target - current);
+      if (ratio > 0 && ratio < 1) return Math.round(-Math.log(ratio) / k * 10) / 10;
+    } catch (e) {}
+    return 0;
+  }
+
+  function buildGrowthPath(projections) {
+    var skills = projections.map(function (p) { return p.name; });
+    var sequence = topologicalSort(skills);
+
+    var nodes = sequence.map(function (skill) {
+      var p = projections.find(function (x) { return x.name === skill; });
+      var kb = getKB(skill);
+      var difficulty = kb ? kb.difficulty : DEFAULT_DIFFICULTY;
+      var current = p.current;
+      var target = p.target;
+      var rate = p.rate || 0.6;
+      return {
+        name: skill,
+        current: current,
+        target: target,
+        phase: determinePhase(current),
+        months: monthsToPhaseEnd(skill, current, target, rate),
+        difficulty: difficulty,
+        prereqs: getPrerequisites(skill).filter(function (pre) { return skills.indexOf(pre) !== -1; }),
+      };
+    });
+
+    // 并行组分配
+    var skillToGroup = {};
+    nodes.forEach(function (node) {
+      var maxPreGroup = -1;
+      node.prereqs.forEach(function (pre) {
+        if (skillToGroup[pre] != null) maxPreGroup = Math.max(maxPreGroup, skillToGroup[pre]);
+      });
+      var group = maxPreGroup + 1;
+      node.parallelGroup = group;
+      skillToGroup[node.name] = group;
+    });
+
+    // 分阶段
+    var phaseMap = {};
+    nodes.forEach(function (n) {
+      if (!phaseMap[n.phase]) phaseMap[n.phase] = [];
+      phaseMap[n.phase].push(n);
+    });
+
+    var phases = [];
+    PHASE_THRESHOLDS.forEach(function (meta) {
+      var phaseNodes = phaseMap[meta.name] || [];
+      if (phaseNodes.length === 0) return;
+      var duration = Math.max.apply(null, phaseNodes.map(function (n) { return n.months; })) || 0;
+      var goals = {
+        '基础夯实': '掌握 ' + phaseNodes.length + ' 项基础技能，达到入门水平',
+        '进阶提升': '提升 ' + phaseNodes.length + ' 项技能至熟练水平',
+        '精通冲刺': '精通 ' + phaseNodes.length + ' 项核心技能，达到岗位要求',
+      };
+      var milestones = {
+        '基础夯实': '能独立完成基础任务，通过技术面试基础题',
+        '进阶提升': '能参与中型项目开发，解决常见技术问题',
+        '精通冲刺': '能独立负责核心模块，达到岗位 JD 要求',
+      };
+      phases.push({
+        name: meta.name,
+        goal: goals[meta.name],
+        duration: duration,
+        skills: phaseNodes.map(function (n) { return n.name; }),
+        milestone: milestones[meta.name],
+        color: meta.color,
+      });
+    });
+
+    var totalMonths = 0;
+    var groupMax = {};
+    nodes.forEach(function (n) {
+      if (!groupMax[n.parallelGroup] || groupMax[n.parallelGroup] < n.months) {
+        groupMax[n.parallelGroup] = n.months;
+      }
+    });
+    Object.keys(groupMax).forEach(function (g) { totalMonths += groupMax[g]; });
+
+    return { sequence: sequence, nodes: nodes, phases: phases, totalMonths: Math.round(totalMonths * 10) / 10 };
+  }
+
+  function renderGrowthPath(projections) {
+    var path = buildGrowthPath(projections);
+    var container = document.getElementById('growth-path-container');
+
+    // 学习顺序
+    var seqHtml = '<div style="margin-bottom:20px;">';
+    seqHtml += '<div style="font-size:13px;color:var(--muted);margin-bottom:10px;">📚 推荐学习顺序（基于技能依赖关系拓扑排序）：</div>';
+    seqHtml += '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">';
+    path.sequence.forEach(function (s, i) {
+      var node = path.nodes.find(function (n) { return n.name === s; });
+      var phaseColor = PHASE_THRESHOLDS.find(function (p) { return p.name === node.phase; }).color;
+      seqHtml += '<span style="padding:6px 12px;border-radius:8px;background:rgba(99,102,241,0.1);border:1px solid ' + phaseColor + '40;font-size:13px;">' + s + '</span>';
+      if (i < path.sequence.length - 1) seqHtml += '<span style="color:var(--muted);">→</span>';
+    });
+    seqHtml += '</div>';
+    seqHtml += '<div style="font-size:12px;color:var(--muted);margin-top:10px;">⏱ 预计总用时：<strong style="color:var(--ink);">' + path.totalMonths + ' 个月</strong></div>';
+    seqHtml += '</div>';
+
+    // 分阶段路线图
+    var phasesHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">';
+    path.phases.forEach(function (phase) {
+      phasesHtml += '<div style="background:var(--bg);border:1px solid ' + phase.color + '40;border-radius:10px;padding:16px;">';
+      phasesHtml += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">';
+      phasesHtml += '<span style="font-weight:700;color:' + phase.color + ';">' + phase.name + '</span>';
+      phasesHtml += '<span style="font-size:11px;color:var(--muted);font-family:JetBrainsMono,monospace;">' + phase.duration + ' 月</span>';
+      phasesHtml += '</div>';
+      phasesHtml += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">' + phase.goal + '</div>';
+      phasesHtml += '<div style="font-size:12px;margin-bottom:8px;">技能：' + phase.skills.join('、') + '</div>';
+      phasesHtml += '<div style="font-size:11px;color:var(--accent3);padding-top:8px;border-top:1px solid var(--rule);">🎯 ' + phase.milestone + '</div>';
+      phasesHtml += '</div>';
+    });
+    phasesHtml += '</div>';
+
+    container.innerHTML = seqHtml + phasesHtml;
+  }
+
+  // =====================================================================
+  // 学习计划生成：周度排期 + 里程碑
+  // =====================================================================
+  function generateLearningPlan(projections) {
+    var path = buildGrowthPath(projections);
+    var weeklyHours = 10;
+    var skillPlans = {};
+
+    path.nodes.forEach(function (node) {
+      var kb = getKB(node.name);
+      var totalHours = kb ? kb.hours : DEFAULT_HOURS;
+      var gap = Math.max(0, node.target - node.current);
+      var hoursNeeded = Math.round(gap * totalHours * 10) / 10;
+      skillPlans[node.name] = {
+        current: node.current,
+        target: node.target,
+        hoursNeeded: hoursNeeded,
+        parallelGroup: node.parallelGroup,
+        phase: node.phase,
+        resources: kb ? kb.resources : [],
+      };
+    });
+
+    // 按并行组分组
+    var groups = {};
+    Object.keys(skillPlans).forEach(function (skill) {
+      var g = skillPlans[skill].parallelGroup;
+      if (!groups[g]) groups[g] = [];
+      groups[g].push(skill);
+    });
+
+    var tasks = [];
+    var currentWeek = 1;
+    Object.keys(groups).sort(function (a, b) { return a - b; }).forEach(function (gid) {
+      var groupSkills = groups[gid];
+      var groupTotal = groupSkills.reduce(function (s, sk) { return s + skillPlans[sk].hoursNeeded; }, 0);
+      if (groupTotal <= 0) return;
+      var weeksForGroup = Math.max(1, Math.ceil(groupTotal / weeklyHours));
+
+      groupSkills.forEach(function (skill) {
+        var plan = skillPlans[skill];
+        var hoursNeeded = plan.hoursNeeded;
+        var ratio = hoursNeeded / groupTotal;
+        var weeklySkillHours = Math.round(weeklyHours * ratio * 10) / 10;
+
+        for (var w = 0; w < weeksForGroup; w++) {
+          var weekNum = currentWeek + w;
+          var progressRatio = (w + 1) / weeksForGroup;
+          var expectedLevel = Math.round((plan.current + (plan.target - plan.current) * progressRatio) * 100) / 100;
+          var desc = '';
+          if (w === 0) desc = '入门 ' + skill + '，掌握基础概念与环境搭建';
+          else if (w === weeksForGroup - 1) desc = '完成 ' + skill + ' 进阶学习，进行项目实战';
+          else desc = '深入学习 ' + skill + '，练习核心知识点';
+
+          tasks.push({
+            week: weekNum,
+            skill: skill,
+            hours: weeklySkillHours,
+            targetLevel: expectedLevel,
+            description: desc,
+            resources: plan.resources.slice(0, 2),
+          });
+        }
+      });
+      currentWeek += weeksForGroup;
+    });
+
+    tasks.sort(function (a, b) { return a.week - b.week || a.skill.localeCompare(b.skill); });
+
+    // 里程碑
+    var milestones = [];
+    var totalWeeks = tasks.length > 0 ? Math.max.apply(null, tasks.map(function (t) { return t.week; })) : 0;
+    for (var mw = 4; mw <= totalWeeks; mw += 4) {
+      var weekTasks = tasks.filter(function (t) { return t.week === mw; });
+      if (weekTasks.length === 0) continue;
+      var skillsInWeek = Array.from(new Set(weekTasks.map(function (t) { return t.skill; })));
+      var avgTarget = Math.round(weekTasks.reduce(function (s, t) { return s + t.targetLevel; }, 0) / weekTasks.length * 100) / 100;
+      milestones.push({
+        week: mw,
+        skills: skillsInWeek,
+        expectedLevel: avgTarget,
+        checkMethod: '通过项目实战或在线测验验证掌握度是否达到 ' + (avgTarget * 100).toFixed(0) + '%',
+      });
+    }
+
+    var totalHours = tasks.reduce(function (s, t) { return s + t.hours; }, 0);
+    return {
+      totalWeeks: totalWeeks,
+      totalHours: Math.round(totalHours),
+      weeklyHours: weeklyHours,
+      tasks: tasks,
+      milestones: milestones,
+      skillPlans: skillPlans,
+    };
+  }
+
+  function renderLearningPlan(projections) {
+    var plan = generateLearningPlan(projections);
+    var container = document.getElementById('learning-plan-container');
+
+    // 概览统计
+    var html = '<div class="summary-stats" style="margin-bottom:16px;">';
+    html += '<div class="stat"><div class="v">' + plan.totalWeeks + '</div><div class="l">总周数</div></div>';
+    html += '<div class="stat"><div class="v">' + plan.totalHours + 'h</div><div class="l">预计总学时</div></div>';
+    html += '<div class="stat"><div class="v">' + plan.milestones.length + '</div><div class="l">里程碑检查点</div></div>';
+    html += '</div>';
+
+    // 周度任务表（前 8 周）
+    var showWeeks = Math.min(8, plan.totalWeeks);
+    html += '<div style="font-size:13px;font-weight:600;margin-bottom:10px;">📅 前 ' + showWeeks + ' 周任务安排：</div>';
+    html += '<div style="overflow-x:auto;">';
+    html += '<table style="width:100%;font-size:12px;border-collapse:collapse;">';
+    html += '<thead><tr style="color:var(--muted);border-bottom:1px solid var(--rule);">';
+    html += '<th style="text-align:left;padding:8px;">周次</th><th style="text-align:left;padding:8px;">技能</th>';
+    html += '<th style="text-align:left;padding:8px;">时长</th><th style="text-align:left;padding:8px;">目标掌握度</th>';
+    html += '<th style="text-align:left;padding:8px;">任务描述</th>';
+    html += '</tr></thead><tbody>';
+    plan.tasks.filter(function (t) { return t.week <= showWeeks; }).forEach(function (t) {
+      html += '<tr style="border-bottom:1px solid var(--rule);">';
+      html += '<td style="padding:8px;font-family:JetBrainsMono,monospace;">第 ' + t.week + ' 周</td>';
+      html += '<td style="padding:8px;font-weight:600;">' + t.skill + '</td>';
+      html += '<td style="padding:8px;color:var(--accent3);">' + t.hours + 'h</td>';
+      html += '<td style="padding:8px;">' + (t.targetLevel * 100).toFixed(0) + '%</td>';
+      html += '<td style="padding:8px;color:var(--muted);">' + t.description + '</td>';
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+
+    // 里程碑
+    html += '<div style="font-size:13px;font-weight:600;margin:20px 0 10px;">🎯 里程碑检查点（每 4 周）：</div>';
+    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+    plan.milestones.slice(0, 6).forEach(function (m) {
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border-radius:8px;border:1px solid var(--rule);">';
+      html += '<span style="font-family:JetBrainsMono,monospace;font-size:12px;color:var(--accent3);min-width:70px;">第 ' + m.week + ' 周</span>';
+      html += '<span style="font-size:12px;flex:1;">检查：' + m.skills.join('、') + '</span>';
+      html += '<span style="font-size:12px;color:var(--muted);">期望 ' + (m.expectedLevel * 100).toFixed(0) + '%</span>';
+      html += '</div>';
+    });
+    if (plan.milestones.length > 6) {
+      html += '<div style="font-size:11px;color:var(--muted);text-align:center;">... 还有 ' + (plan.milestones.length - 6) + ' 个检查点</div>';
+    }
+    html += '</div>';
+
+    container.innerHTML = html;
   }
 
   // =====================================================================

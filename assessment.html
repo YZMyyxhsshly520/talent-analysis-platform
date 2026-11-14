@@ -171,7 +171,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
         <div></div>
       </div>
 
-      <div id="skill-rows"></div>
+      <div id="as-skill-rows"></div>
 
       <div class="btn-row">
         <button class="btn btn-primary" onclick="addSkillRow()">+ 添加技能</button>
@@ -183,7 +183,7 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
   </section>
 
   <!-- Results Section -->
-  <section id="results" style="display:none;">
+  <section id="as-results" style="display:none;">
     <div class="section-head">
       <span class="section-num">02</span>
       <h2>成长预测与学习建议</h2>
@@ -193,25 +193,39 @@ footer { border-top: 1px solid var(--rule); padding: 24px 0; margin-top: 32px; t
       <div class="card">
         <figure class="chart-figure">
           <figcaption>技能成长曲线预测</figcaption>
-          <div id="chart-growth" class="chart-box"></div>
+          <div id="as-chart-growth" class="chart-box"></div>
         </figure>
       </div>
       <div class="card">
         <div class="card-title">总体概览</div>
         <div class="card-sub">基于你填写的技能数据</div>
-        <div class="summary-stats" id="summary-stats"></div>
-        <div id="priority-list" style="font-size:13px;"></div>
+        <div class="summary-stats" id="as-summary-stats"></div>
+        <div id="as-priority-list" style="font-size:13px;"></div>
       </div>
     </div>
 
     <div class="card" style="margin-top:16px;">
       <div class="card-title">学习建议详情</div>
       <div class="card-sub">按优先级排序，包含难度、预计用时与公开学习资源</div>
-      <div class="suggestion-list" id="suggestion-list"></div>
+      <div class="suggestion-list" id="as-suggestion-list"></div>
+    </div>
+
+    <!-- Growth Path Section -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">成长路径规划</div>
+      <div class="card-sub">基于技能依赖关系的拓扑排序，生成有先后顺序的分阶段学习路线图</div>
+      <div id="growth-path-container"></div>
+    </div>
+
+    <!-- Learning Plan Section -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">学习计划生成</div>
+      <div class="card-sub">可执行的周度学习排期与里程碑检查点</div>
+      <div id="learning-plan-container"></div>
     </div>
   </section>
 
-  <div id="empty-hint" class="card empty" style="margin-top:16px;">
+  <div id="as-empty-hint" class="card empty" style="margin-top:16px;">
     <div class="empty-icon">📊</div>
     <div>填写技能数据并点击"生成分析与建议"后，结果将显示在这里。</div>
   </div>
